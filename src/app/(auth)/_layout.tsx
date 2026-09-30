@@ -10,10 +10,10 @@ export default function AuthLayout() {
   const { session, role } = useAuthStore();
 
   if (session && role === 'client') {
-    return <Redirect href="/(client)" />;
+    return <Redirect href="/(client)/(tabs)" />;
   }
   if (session && role === 'driver') {
-    return <Redirect href="/(driver)" />;
+    return <Redirect href="/(driver)/(tabs)" />;
   }
 
   return <Stack screenOptions={{ headerShown: false }} />;
