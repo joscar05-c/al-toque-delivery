@@ -1,0 +1,589 @@
+-- 0. HABILITAR EXTENSIONES NECESARIAS
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- 1. CREACIÓN DE TIPOS ENUMERADOS (Deben crearse antes que las tablas)
+-- Nota: Supongo que estos enums existían en tu BD original aunque no estaban en los CREATE TABLE.
+-- Si ya existen en Supabase, puedes omitir esta sección.
+DO $$ BEGIN
+    CREATE TYPE public.roles_name_enum AS ENUM ('client', 'driver', 'restaurant_owner', 'admin');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.addresses_type_enum AS ENUM ('home', 'work', 'other');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.device_tokens_platform_enum AS ENUM ('android', 'ios', 'web');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.driver_applications_vehicle_type_enum AS ENUM ('motorcycle', 'bicycle', 'car');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.driver_applications_status_enum AS ENUM ('draft', 'pending', 'approved', 'rejected');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.restaurant_applications_city_enum AS ENUM ('bagua', 'jaen', 'chachapoyas', 'other'); -- Ajusta las ciudades según tu lógica
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.restaurant_applications_status_enum AS ENUM ('pending', 'approved', 'rejected');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.restaurants_city_enum AS ENUM ('bagua', 'jaen', 'chachapoyas', 'other'); -- Ajusta según tu lógica
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.orders_status_enum AS ENUM ('pending', 'accepted', 'preparing', 'ready', 'picked_up', 'delivered', 'cancelled');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE public.restaurant_delivery_config_delivery_type_enum AS ENUM ('platform', 'restaurant_own', 'pickup_only');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+
+-- 2. CREACIÓN DE TABLAS
+
+-- public.categories
+DROP TABLE IF EXISTS public.categories CASCADE;
+CREATE TABLE public.categories (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description varchar NULL,
+	CONSTRAINT "PK_24dbc6126a28ff948da33e97d3b" PRIMARY KEY (id),
+	CONSTRAINT "UQ_8b0be371d28245da6e4f4b61878" UNIQUE (name)
+);
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+
+-- public.payment_methods
+DROP TABLE IF EXISTS public.payment_methods CASCADE;
+CREATE TABLE public.payment_methods (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	code varchar(50) NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	is_active bool DEFAULT true NOT NULL,
+	icon_url varchar(255) NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_34f9b8c6dfb4ac3559f7e2820d1" PRIMARY KEY (id),
+	CONSTRAINT "UQ_f8aad3eab194dfdae604ca11125" UNIQUE (code)
+);
+ALTER TABLE public.payment_methods ENABLE ROW LEVEL SECURITY;
+
+-- public.restaurant_categories
+DROP TABLE IF EXISTS public.restaurant_categories CASCADE;
+CREATE TABLE public.restaurant_categories (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	icon varchar(255) NULL,
+	"isActive" bool DEFAULT true NOT NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_a20ac3db34f60a76122d5d1d821" PRIMARY KEY (id),
+	CONSTRAINT "UQ_e1df9e755a3494d1290f99fe1b3" UNIQUE (name)
+);
+ALTER TABLE public.restaurant_categories ENABLE ROW LEVEL SECURITY;
+
+-- public.roles
+DROP TABLE IF EXISTS public.roles CASCADE;
+CREATE TABLE public.roles (
+	id serial4 NOT NULL,
+	"name" public."roles_name_enum" DEFAULT 'client'::roles_name_enum NOT NULL,
+	CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY (id)
+);
+ALTER TABLE public.roles ENABLE ROW LEVEL SECURITY;
+
+-- public.users (ADAPTADA PARA SUPABASE)
+DROP TABLE IF EXISTS public.users CASCADE;
+CREATE TABLE public.users (
+	id uuid NOT NULL, -- El default UUID se quita, vendrá de auth.users
+	email varchar(100) NULL,
+	"name" varchar(50) NOT NULL,
+	phone varchar(20) NULL,
+	phone_verified bool DEFAULT false NOT NULL,
+	is_active bool DEFAULT true NOT NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	role_id int4 NULL,
+	CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY (id),
+	CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE (email),
+	CONSTRAINT "UQ_a000cca60bcf04454e727699490" UNIQUE (phone),
+    CONSTRAINT "FK_users_auth" FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE,
+	CONSTRAINT "FK_a2cecd1a3531c0b041e29ba46e1" FOREIGN KEY (role_id) REFERENCES public.roles(id)
+);
+CREATE INDEX idx_users_is_active ON public.users USING btree (is_active);
+CREATE INDEX idx_users_phone ON public.users USING btree (phone);
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- public.addresses
+DROP TABLE IF EXISTS public.addresses CASCADE;
+CREATE TABLE public.addresses (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	street varchar NOT NULL,
+	city varchar(100) NOT NULL,
+	postal_code varchar(20) NOT NULL,
+	reference text NULL,
+	"type" public."addresses_type_enum" DEFAULT 'home'::addresses_type_enum NOT NULL,
+	is_default bool DEFAULT false NOT NULL,
+	"location" public.geography(point, 4326) NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	user_id uuid NULL,
+	CONSTRAINT "PK_745d8f43d3af10ab8247465e450" PRIMARY KEY (id),
+	CONSTRAINT "FK_16aac8a9f6f9c1dd6bcb75ec023" FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
+
+-- public.device_tokens
+DROP TABLE IF EXISTS public.device_tokens CASCADE;
+CREATE TABLE public.device_tokens (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	user_id uuid NOT NULL,
+	"token" varchar(500) NOT NULL,
+	platform public."device_tokens_platform_enum" DEFAULT 'android'::device_tokens_platform_enum NOT NULL,
+	"deviceInfo" jsonb NULL,
+	"isActive" bool DEFAULT true NOT NULL,
+	last_used_at timestamp NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	updated_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_84700be257607cfb1f9dc2e52c3" PRIMARY KEY (id),
+	CONSTRAINT "FK_17e1f528b993c6d55def4cf5bea" FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX "IDX_a070dfec1c8f06cd29b854169f" ON public.device_tokens USING btree (user_id, token);
+ALTER TABLE public.device_tokens ENABLE ROW LEVEL SECURITY;
+
+-- public.driver_applications
+DROP TABLE IF EXISTS public.driver_applications CASCADE;
+CREATE TABLE public.driver_applications (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	user_id uuid NOT NULL,
+	dni varchar(20) NOT NULL,
+	vehicle_type public."driver_applications_vehicle_type_enum" NOT NULL,
+	birth_date date NOT NULL,
+	full_name varchar(100) NULL,
+	phone varchar(20) NULL,
+	email varchar(100) NULL,
+	license_number varchar(50) NULL,
+	license_expiry date NULL,
+	vehicle_plate varchar(20) NULL,
+	vehicle_brand varchar(50) NULL,
+	vehicle_model varchar(50) NULL,
+	vehicle_year int4 NULL,
+	emergency_contact_name varchar(100) NULL,
+	emergency_contact_phone varchar(20) NULL,
+	dni_photo text NULL,
+	license_front_photo text NULL,
+	license_back_photo text NULL,
+	vehicle_photo text NULL,
+	status public."driver_applications_status_enum" DEFAULT 'draft'::driver_applications_status_enum NOT NULL,
+	rejection_reason text NULL,
+	reviewed_by uuid NULL, -- Cambiado de varchar a uuid para poder hacer referencia a users
+	reviewed_at timestamp NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	updated_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_056fa729d8b15a9b1944d1073be" PRIMARY KEY (id),
+	CONSTRAINT "FK_66cd13f17547a3a4170bd0a852f" FOREIGN KEY (user_id) REFERENCES public.users(id),
+    CONSTRAINT "FK_driver_app_reviewed_by" FOREIGN KEY (reviewed_by) REFERENCES public.users(id)
+);
+ALTER TABLE public.driver_applications ENABLE ROW LEVEL SECURITY;
+
+-- public.driver_locations
+DROP TABLE IF EXISTS public.driver_locations CASCADE;
+CREATE TABLE public.driver_locations (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	driver_id uuid NOT NULL,
+	latitude numeric(10, 8) NOT NULL,
+	longitude numeric(11, 8) NOT NULL,
+	heading numeric(5, 2) NULL,
+	speed numeric(5, 2) NULL,
+	accuracy numeric(5, 2) NULL,
+	"isActive" bool DEFAULT true NOT NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_31aae5c417762bf01ec26a53f02" PRIMARY KEY (id),
+	CONSTRAINT "FK_096de534e1c6301cf7f2a4bf032" FOREIGN KEY (driver_id) REFERENCES public.users(id)
+);
+ALTER TABLE public.driver_locations ENABLE ROW LEVEL SECURITY;
+
+-- public.restaurants
+DROP TABLE IF EXISTS public.restaurants CASCADE;
+CREATE TABLE public.restaurants (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(255) NOT NULL,
+	address varchar(255) NOT NULL,
+	phone varchar(20) NOT NULL,
+	city public."restaurants_city_enum" NULL,
+	image_url varchar NULL,
+	average_prep_time int4 DEFAULT 15 NOT NULL,
+	is_active bool DEFAULT true NOT NULL,
+	"location" public.geography(point, 4326) NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	restaurant_category_id uuid NULL,
+	owner_id uuid NOT NULL,
+	CONSTRAINT "PK_e2133a72eb1cc8f588f7b503e68" PRIMARY KEY (id),
+	CONSTRAINT "FK_802e4db69f9c6b2c239592d878d" FOREIGN KEY (restaurant_category_id) REFERENCES public.restaurant_categories(id),
+	CONSTRAINT "FK_efe4eead3adf44a4649a3353efc" FOREIGN KEY (owner_id) REFERENCES public.users(id)
+);
+ALTER TABLE public.restaurants ENABLE ROW LEVEL SECURITY;
+
+-- public.restaurant_applications
+DROP TABLE IF EXISTS public.restaurant_applications CASCADE;
+CREATE TABLE public.restaurant_applications (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	user_id uuid NOT NULL,
+	business_name varchar(255) NOT NULL,
+	business_phone varchar(20) NOT NULL,
+	business_email varchar(100) NULL,
+	address text NOT NULL,
+	category_id uuid NOT NULL,
+	city public."restaurant_applications_city_enum" NOT NULL,
+	owner_name varchar(255) NOT NULL,
+	owner_dni varchar(20) NOT NULL,
+	additional_comments text NULL,
+	status public."restaurant_applications_status_enum" DEFAULT 'pending'::restaurant_applications_status_enum NOT NULL,
+	admin_notes text NULL,
+	reviewed_by uuid NULL,
+	reviewed_at timestamptz NULL,
+	restaurant_id uuid NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_43b8fd8254877b455f1bc059814" PRIMARY KEY (id),
+	CONSTRAINT "FK_23f51747c4478f09050c989b553" FOREIGN KEY (reviewed_by) REFERENCES public.users(id),
+	CONSTRAINT "FK_a493a0abf7ea9bb97dc988b748e" FOREIGN KEY (user_id) REFERENCES public.users(id),
+	CONSTRAINT "FK_f01aedac017ecac14dcb8dcb0cb" FOREIGN KEY (category_id) REFERENCES public.restaurant_categories(id)
+);
+ALTER TABLE public.restaurant_applications ENABLE ROW LEVEL SECURITY;
+
+-- public.menu_categories
+DROP TABLE IF EXISTS public.menu_categories CASCADE;
+CREATE TABLE public.menu_categories (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	"sortOrder" int4 DEFAULT 0 NOT NULL,
+	"isActive" bool DEFAULT true NOT NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	restaurant_id uuid NOT NULL,
+	CONSTRAINT "PK_124ae987900336f983881cb04e6" PRIMARY KEY (id),
+	CONSTRAINT "FK_a1650861201d802c0ad078fff8e" FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id)
+);
+ALTER TABLE public.menu_categories ENABLE ROW LEVEL SECURITY;
+
+-- public.menu_items
+DROP TABLE IF EXISTS public.menu_items CASCADE;
+CREATE TABLE public.menu_items (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(100) NOT NULL,
+	description text NULL,
+	price numeric(10, 2) NOT NULL,
+	image_url varchar NULL,
+	is_active bool DEFAULT true NOT NULL,
+	restaurant_id uuid NULL,
+	menu_category_id uuid NULL,
+	CONSTRAINT "PK_57e6188f929e5dc6919168620c8" PRIMARY KEY (id),
+	CONSTRAINT "FK_8d1ee4780bf64ae94cbf3e53705" FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id),
+	CONSTRAINT "FK_c9de071819628ca98bc8471c24d" FOREIGN KEY (menu_category_id) REFERENCES public.menu_categories(id)
+);
+ALTER TABLE public.menu_items ENABLE ROW LEVEL SECURITY;
+
+-- public.menu_option_groups
+DROP TABLE IF EXISTS public.menu_option_groups CASCADE;
+CREATE TABLE public.menu_option_groups (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(120) NOT NULL,
+	description text NULL,
+	"minSelect" int4 DEFAULT 0 NOT NULL,
+	"maxSelect" int4 DEFAULT 0 NOT NULL,
+	"isRequired" bool DEFAULT true NOT NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	restaurant_id uuid NULL,
+	CONSTRAINT "PK_67e0c1f7acc1648feef45f3e359" PRIMARY KEY (id),
+	CONSTRAINT "FK_8ea966448884ee5113fff1bebe3" FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id) ON DELETE CASCADE
+);
+ALTER TABLE public.menu_option_groups ENABLE ROW LEVEL SECURITY;
+
+-- public.menu_options
+DROP TABLE IF EXISTS public.menu_options CASCADE;
+CREATE TABLE public.menu_options (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar(120) NOT NULL,
+	"extraPrice" numeric(10, 2) DEFAULT '0'::numeric NOT NULL,
+	"isActive" bool DEFAULT true NOT NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	group_id uuid NULL,
+	CONSTRAINT "PK_72522c98c0dc774709419997958" PRIMARY KEY (id),
+	CONSTRAINT "FK_8f0643eeb59f900bff840cc313f" FOREIGN KEY (group_id) REFERENCES public.menu_option_groups(id) ON DELETE CASCADE
+);
+ALTER TABLE public.menu_options ENABLE ROW LEVEL SECURITY;
+
+-- public.orders
+DROP TABLE IF EXISTS public.orders CASCADE;
+CREATE TABLE public.orders (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	status public."orders_status_enum" DEFAULT 'pending'::orders_status_enum NOT NULL,
+	total numeric(10, 2) NOT NULL,
+	notes text NULL,
+	"deliveryAddress" text NULL,
+	estimated_prep_time int4 NULL,
+	estimated_ready_time timestamptz NULL,
+	confirmed_at timestamptz NULL,
+	created_at timestamptz DEFAULT now() NOT NULL,
+	updated_at timestamptz DEFAULT now() NOT NULL,
+	client_id uuid NULL,
+	driver_id uuid NULL,
+	restaurant_id uuid NULL,
+	CONSTRAINT "PK_710e2d4957aa5878dfe94e4ac2f" PRIMARY KEY (id),
+	CONSTRAINT "FK_222cd7bf166a2d7a6aad9cdebee" FOREIGN KEY (driver_id) REFERENCES public.users(id),
+	CONSTRAINT "FK_505ba3689ef2763acd6c4fc93a4" FOREIGN KEY (client_id) REFERENCES public.users(id),
+	CONSTRAINT "FK_85fdda5fcce2f397ef8f117a2c6" FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id)
+);
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+
+-- public.restaurant_delivery_config
+DROP TABLE IF EXISTS public.restaurant_delivery_config CASCADE;
+CREATE TABLE public.restaurant_delivery_config (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	restaurant_id uuid NOT NULL,
+	delivery_fee numeric(10, 2) DEFAULT '0'::numeric NOT NULL,
+	free_delivery_threshold numeric(10, 2) NULL,
+	min_order_amount numeric(10, 2) NULL,
+	max_delivery_distance int4 DEFAULT 10 NOT NULL,
+	estimated_delivery_time int4 DEFAULT 30 NOT NULL,
+	is_delivery_enabled bool DEFAULT true NOT NULL,
+	delivery_type public."restaurant_delivery_config_delivery_type_enum" DEFAULT 'platform'::restaurant_delivery_config_delivery_type_enum NOT NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	updated_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_54b6523c14a405837ea284a4d2e" PRIMARY KEY (id),
+	CONSTRAINT "UQ_cd67535d4bb755f616638b1f65c" UNIQUE (restaurant_id),
+	CONSTRAINT "FK_cd67535d4bb755f616638b1f65c" FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id)
+);
+ALTER TABLE public.restaurant_delivery_config ENABLE ROW LEVEL SECURITY;
+
+-- public.restaurant_drivers
+DROP TABLE IF EXISTS public.restaurant_drivers CASCADE;
+CREATE TABLE public.restaurant_drivers (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	restaurant_id uuid NOT NULL,
+	driver_id uuid NOT NULL,
+	is_active bool DEFAULT true NOT NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	updated_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_0dcf756a7bf24862ac18cefa115" PRIMARY KEY (id),
+	CONSTRAINT "UQ_159504ac40f82430603723c872a" UNIQUE (restaurant_id, driver_id),
+	CONSTRAINT "FK_80b6e3142ee2171d8481d059e2c" FOREIGN KEY (driver_id) REFERENCES public.users(id),
+	CONSTRAINT "FK_ba218430ec9de15dcddb4648b96" FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id)
+);
+ALTER TABLE public.restaurant_drivers ENABLE ROW LEVEL SECURITY;
+
+-- public.reviews
+DROP TABLE IF EXISTS public.reviews CASCADE;
+CREATE TABLE public.reviews (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	q1_app_loading_speed int2 DEFAULT '3'::smallint NOT NULL,
+	q2_product_selection_ease int2 DEFAULT '3'::smallint NOT NULL,
+	q3_menu_navigation_ease int2 DEFAULT '3'::smallint NOT NULL,
+	q4_order_accuracy int2 DEFAULT '3'::smallint NOT NULL,
+	q5_payment_address_accuracy int2 DEFAULT '3'::smallint NOT NULL,
+	q6_order_tracking_visibility int2 DEFAULT '3'::smallint NOT NULL,
+	q7_communication_need int2 DEFAULT '3'::smallint NOT NULL,
+	q8_delivery_timeliness int2 DEFAULT '3'::smallint NOT NULL,
+	q9_app_vs_phone_speed int2 DEFAULT '3'::smallint NOT NULL,
+	q10_overall_satisfaction int2 DEFAULT '3'::smallint NOT NULL,
+	q11_recommendation_likelihood int2 DEFAULT '3'::smallint NOT NULL,
+	"comment" text NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	order_id uuid NULL,
+	CONSTRAINT "PK_231ae565c273ee700b283f15c1d" PRIMARY KEY (id),
+	CONSTRAINT "REL_e4b0ed40bdd0f318108612c285" UNIQUE (order_id),
+	CONSTRAINT "FK_e4b0ed40bdd0f318108612c2851" FOREIGN KEY (order_id) REFERENCES public.orders(id)
+);
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+
+-- public.menu_item_option_groups
+DROP TABLE IF EXISTS public.menu_item_option_groups CASCADE;
+CREATE TABLE public.menu_item_option_groups (
+	group_id uuid NOT NULL,
+	menu_item_id uuid NOT NULL,
+	CONSTRAINT "PK_9c7e656e0166bd69ca314ae548b" PRIMARY KEY (group_id, menu_item_id),
+	CONSTRAINT "FK_67bb99c77749602bc9b13cc8103" FOREIGN KEY (group_id) REFERENCES public.menu_option_groups(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT "FK_79dfa533929c9478356e2185397" FOREIGN KEY (menu_item_id) REFERENCES public.menu_items(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE INDEX "IDX_67bb99c77749602bc9b13cc810" ON public.menu_item_option_groups USING btree (group_id);
+CREATE INDEX "IDX_79dfa533929c9478356e218539" ON public.menu_item_option_groups USING btree (menu_item_id);
+ALTER TABLE public.menu_item_option_groups ENABLE ROW LEVEL SECURITY;
+
+-- public.order_items
+DROP TABLE IF EXISTS public.order_items CASCADE;
+CREATE TABLE public.order_items (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	quantity int4 NOT NULL,
+	unit_price numeric(10, 2) NOT NULL,
+	"comment" text NULL,
+	"options" jsonb NULL,
+	order_id uuid NULL,
+	menu_item_id uuid NULL,
+	CONSTRAINT "PK_005269d8574e6fac0493715c308" PRIMARY KEY (id),
+	CONSTRAINT "FK_145532db85752b29c57d2b7b1f1" FOREIGN KEY (order_id) REFERENCES public.orders(id),
+	CONSTRAINT "FK_e462517174f561ece2916701c0a" FOREIGN KEY (menu_item_id) REFERENCES public.menu_items(id)
+);
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+
+-- public.order_payments
+DROP TABLE IF EXISTS public.order_payments CASCADE;
+CREATE TABLE public.order_payments (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	order_id uuid NOT NULL,
+	payment_method_code varchar(50) NOT NULL,
+	amount numeric(10, 2) NOT NULL,
+	delivery_fee numeric(10, 2) DEFAULT '0'::numeric NOT NULL,
+	subtotal numeric(10, 2) NOT NULL,
+	cash_amount numeric(10, 2) NULL,
+	change_amount numeric(10, 2) NULL,
+	transaction_reference varchar(255) NULL,
+	payment_proof_url varchar(255) NULL,
+	card_last_digits varchar(4) NULL,
+	card_brand varchar(50) NULL,
+	transaction_id varchar(255) NULL,
+	payment_status varchar(50) DEFAULT 'pending'::character varying NOT NULL,
+	verified_at timestamp NULL,
+	verified_by uuid NULL,
+	notes text NULL,
+	created_at timestamp DEFAULT now() NOT NULL,
+	updated_at timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "PK_bc14b014a69d39c7bbc4a154b69" PRIMARY KEY (id),
+	CONSTRAINT "REL_5d2ebca202f9d9370a001a571b" UNIQUE (order_id),
+	CONSTRAINT "FK_5d2ebca202f9d9370a001a571ba" FOREIGN KEY (order_id) REFERENCES public.orders(id),
+	CONSTRAINT "FK_8c8c850519619fe7fb853992970" FOREIGN KEY (verified_by) REFERENCES public.users(id)
+);
+ALTER TABLE public.order_payments ENABLE ROW LEVEL SECURITY;
+
+
+-- 3. TRIGGER PARA SINCRONIZACIÓN DE USUARIOS
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.users (id, email, name, role_id)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'name', 'Usuario Nuevo'),
+    1 -- 1 asume que es el ID del rol 'client' en tu tabla roles
+  );
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+
+
+-- TABLA: USERS
+-- Permitir al usuario ver solo su propio registro
+CREATE POLICY "Usuarios pueden ver su propio perfil" 
+ON public.users FOR SELECT 
+USING (id = auth.uid());
+
+-- Permitir al usuario actualizar solo sus propios datos (ej. cambiar nombre o teléfono)
+CREATE POLICY "Usuarios pueden actualizar su perfil" 
+ON public.users FOR UPDATE 
+USING (id = auth.uid());
+
+-- TABLA: ADDRESSES
+-- Los usuarios tienen control total (ALL: select, insert, update, delete) sobre sus propias direcciones
+CREATE POLICY "Usuarios gestionan sus propias direcciones" 
+ON public.addresses FOR ALL 
+USING (user_id = auth.uid());
+
+
+-- TABLA: ORDERS
+-- 1. Los clientes pueden ver el historial y estado de sus propios pedidos
+CREATE POLICY "Clientes ven sus pedidos" 
+ON public.orders FOR SELECT 
+USING (client_id = auth.uid());
+
+-- 2. Los clientes pueden crear un nuevo pedido (el CHECK asegura que no puedan hacerse pasar por otro)
+CREATE POLICY "Clientes crean pedidos" 
+ON public.orders FOR INSERT 
+WITH CHECK (client_id = auth.uid());
+
+-- 3. Los repartidores pueden ver los pedidos que se les han asignado
+CREATE POLICY "Repartidores ven pedidos asignados" 
+ON public.orders FOR SELECT 
+USING (driver_id = auth.uid());
+
+-- 4. Los repartidores pueden actualizar el estado de su pedido (ej. de 'picked_up' a 'delivered')
+CREATE POLICY "Repartidores actualizan estado" 
+ON public.orders FOR UPDATE 
+USING (driver_id = auth.uid());
+
+
+-- Permitir que cualquier usuario (incluso los no registrados) vea los restaurantes activos
+CREATE POLICY "Todos pueden ver restaurantes activos" 
+ON public.restaurants FOR SELECT 
+USING (is_active = true);
+
+-- Permitir que todos vean las categorías y el menú
+CREATE POLICY "Todos pueden ver categorías de restaurantes" 
+ON public.restaurant_categories FOR SELECT USING (true);
+
+CREATE POLICY "Todos pueden ver los items del menú" 
+ON public.menu_items FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Todos pueden ver categorías del menú" 
+ON public.menu_categories FOR SELECT USING (true);
+
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.users (id, email, name, phone, role_id)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'name', 'Usuario Nuevo'),
+    NEW.phone, -- Aquí capturamos el teléfono que entra por OTP
+    1
+  );
+  RETURN NEW;
+END;
+$$;
+
