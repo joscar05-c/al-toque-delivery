@@ -1165,8 +1165,13 @@ export type Address = Tables<'addresses'>;
 
 export type Restaurant = Tables<'restaurants'>;
 export type RestaurantCategory = Tables<'restaurant_categories'>;
+export type RestaurantDeliveryConfig = Tables<'restaurant_delivery_config'>;
+export type RestaurantDriver = Tables<'restaurant_drivers'>;
+export type RestaurantApplication = Tables<'restaurant_applications'>;
 export type MenuCategory = Tables<'menu_categories'>;
 export type MenuItem = Tables<'menu_items'>;
+export type MenuOptionGroup = Tables<'menu_option_groups'>;
+export type MenuOption = Tables<'menu_options'>;
 
 export type Order = Tables<'orders'>;
 export type OrderItem = Tables<'order_items'>;
@@ -1175,6 +1180,11 @@ export type OrderStatus = Enums<'orders_status_enum'>;
 
 export type DriverLocation = Tables<'driver_locations'>;
 export type DriverApplication = Tables<'driver_applications'>;
+
+export type Category = Tables<'categories'>;
+export type PaymentMethod = Tables<'payment_methods'>;
+export type Review = Tables<'reviews'>;
+export type DeviceToken = Tables<'device_tokens'>;
 
 /** Perfil de public.users con el nombre del rol embebido (join roles). */
 export type UserProfile = User & {
