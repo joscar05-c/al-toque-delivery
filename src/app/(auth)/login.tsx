@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,63 +15,42 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { supabase } from '@/lib/supabase';
 
+// Las ciudades del enum (bagua, jaen, chachapoyas) están en Perú.
+// Hazlo configurable si la app opera en más países.
+const COUNTRY_CODE = '+51';
+const PHONE_LENGTH = 9;
+
 /**
- * Login con número de teléfono (OTP por SMS):
- * 1. signInWithOtp({ phone }) -> Supabase envía el código.
- * 2. verifyOtp({ phone, token, type: 'sms' }) -> crea la sesión.
- *
- * Tras verificar, onAuthStateChange actualiza el store y el router
- * redirige automáticamente según el rol del usuario.
- *
- * Requiere un proveedor SMS (p. ej. Twilio) configurado en:
- * Supabase Dashboard > Authentication > Providers > Phone.
+ * Paso 1 del login: ingreso del número de teléfono.
+ * Envía el OTP por SMS y navega a /(auth)/verify con el número como param.
  */
 export default function LoginScreen() {
-  const [phone, setPhone] = useState('+51');
-  const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [digits, setDigits] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isPhoneValid = digits.length === PHONE_LENGTH;
 
   const sendOtp = async () => {
-    const sanitizedPhone = phone.replace(/\s/g, '');
-    if (sanitizedPhone.length < 10) {
+    if (!isPhoneValid) {
       Alert.alert(
         'Número inválido',
-        'Ingresa tu número con código de país. Ej: +51987654321',
+        `Ingresa los ${PHONE_LENGTH} dígitos de tu celular (sin el ${COUNTRY_CODE}).`,
       );
       return;
     }
 
-    setIsSubmitting(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      phone: sanitizedPhone,
-    });
-    setIsSubmitting(false);
+    const phone = `${COUNTRY_CODE}${digits}`;
+
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ phone });
+    setIsLoading(false);
 
     if (error) {
       Alert.alert('No se pudo enviar el código', error.message);
       return;
     }
-    setStep('otp');
-  };
 
-  const verifyOtp = async () => {
-    if (otp.trim().length < 6) {
-      Alert.alert('Código incompleto', 'Ingresa el código de 6 dígitos.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    const { error } = await supabase.auth.verifyOtp({
-      phone: phone.replace(/\s/g, ''),
-      token: otp.trim(),
-      type: 'sms',
-    });
-    setIsSubmitting(false);
-
-    if (error) {
-      Alert.alert('Código incorrecto', error.message);
-    }
+    router.push({ pathname: '/(auth)/verify', params: { phone } });
   };
 
   return (
@@ -78,66 +59,80 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <View className="flex-1 justify-center gap-6 px-8">
-          <View className="gap-2">
+        <View className="flex-1 justify-center gap-8 px-8">
+          {/* Encabezado */}
+          <View className="items-center gap-3">
+            <View className="h-20 w-20 items-center justify-center rounded-3xl bg-primary/10">
+              <Ionicons name="restaurant" size={40} color="#208AEF" />
+            </View>
             <Text className="text-3xl font-bold text-slate-900">
               Al Toque Delivery
             </Text>
-            <Text className="text-base text-slate-500">
-              {step === 'phone'
-                ? 'Ingresa tu número de teléfono para continuar.'
-                : `Enviamos un código SMS a ${phone}.`}
+            <Text className="text-center text-base leading-6 text-slate-500">
+              Ingresa tu número de celular y te enviaremos un código de
+              verificación por SMS.
             </Text>
           </View>
 
-          {step === 'phone' ? (
-            <TextInput
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="+51987654321"
-              keyboardType="phone-pad"
-              autoComplete="tel"
-              className="rounded-xl border border-slate-300 px-4 py-3 text-lg text-slate-900"
-            />
-          ) : (
-            <TextInput
-              value={otp}
-              onChangeText={setOtp}
-              placeholder="Código de 6 dígitos"
-              keyboardType="number-pad"
-              maxLength={6}
-              autoFocus
-              className="rounded-xl border border-slate-300 px-4 py-3 text-center text-2xl tracking-[8px] text-slate-900"
-            />
-          )}
+          {/* Input de teléfono */}
+          <View className="gap-2">
+            <Text className="text-sm font-medium text-slate-700">
+              Número de celular
+            </Text>
+            <View
+              className={`flex-row items-center rounded-xl border-2 bg-white ${
+                isPhoneValid ? 'border-primary' : 'border-slate-300'
+              }`}
+            >
+              <View className="border-r border-slate-200 px-4 py-3">
+                <Text className="text-lg font-semibold text-slate-700">
+                  {COUNTRY_CODE}
+                </Text>
+              </View>
+              <TextInput
+                value={digits}
+                onChangeText={(text) =>
+                  setDigits(text.replace(/\D/g, '').slice(0, PHONE_LENGTH))
+                }
+                placeholder="987 654 321"
+                placeholderTextColor="#94A3B8"
+                keyboardType="phone-pad"
+                autoComplete="tel"
+                maxLength={PHONE_LENGTH}
+                editable={!isLoading}
+                className="flex-1 px-4 py-3 text-lg text-slate-900"
+              />
+            </View>
+          </View>
 
+          {/* Botón enviar código */}
           <Pressable
-            onPress={step === 'phone' ? sendOtp : verifyOtp}
-            disabled={isSubmitting}
-            className="items-center rounded-xl bg-primary py-4 active:opacity-80 disabled:opacity-50"
+            onPress={sendOtp}
+            disabled={isLoading}
+            className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${
+              isLoading ? 'bg-primary/60' : 'bg-primary active:opacity-80'
+            }`}
           >
-            {isSubmitting ? (
+            {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-base font-semibold text-white">
-                {step === 'phone' ? 'Enviar código' : 'Verificar e ingresar'}
-              </Text>
+              <>
+                <Ionicons
+                  name="chatbox-ellipses-outline"
+                  size={20}
+                  color="#fff"
+                />
+                <Text className="text-base font-semibold text-white">
+                  Enviar código por SMS
+                </Text>
+              </>
             )}
           </Pressable>
 
-          {step === 'otp' && (
-            <Pressable
-              onPress={() => {
-                setStep('phone');
-                setOtp('');
-              }}
-              className="items-center py-2 active:opacity-60"
-            >
-              <Text className="text-sm font-medium text-primary">
-                Cambiar número de teléfono
-              </Text>
-            </Pressable>
-          )}
+          <Text className="text-center text-xs leading-5 text-slate-400">
+            Al continuar aceptas recibir un SMS con tu código de acceso. Pueden
+            aplicar tarifas de tu operador.
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
