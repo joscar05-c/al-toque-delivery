@@ -17,10 +17,10 @@ export default function Index() {
 
   // Con sesión -> sección según rol.
   if (role === 'client') {
-    return <Redirect href="/(client)" />;
+    return <Redirect href="/(client)/(tabs)" />;
   }
   if (role === 'driver') {
-    return <Redirect href="/(driver)" />;
+    return <Redirect href="/(driver)/(tabs)" />;
   }
 
   // La app móvil solo soporta clientes y repartidores.
