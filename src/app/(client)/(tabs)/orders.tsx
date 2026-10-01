@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -14,7 +14,9 @@ import {
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { formatDateTime, formatPrice } from '@/lib/format';
 import { fetchClientOrders, type OrderWithRestaurant } from '@/lib/orders';
+import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
+import type { Order } from '@/types/database.types';
 
 /**
  * Tab "Mis pedidos": historial del cliente (orders donde client_id = auth.uid()).
@@ -53,6 +55,40 @@ export default function ClientOrdersScreen() {
       reload('loading');
     }, [reload]),
   );
+
+  // Realtime: UPDATE en orders del cliente -> actualiza el status en vivo.
+  useEffect(() => {
+    if (!session) return;
+
+    const channel = supabase
+      .channel('orders_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `client_id=eq.${session.user.id}`,
+        },
+        (payload) => {
+          const updated = payload.new as Order;
+          // Match por id y reemplazo solo del status (conserva el join).
+          setOrders((prev) =>
+            prev.map((order) =>
+              order.id === updated.id
+                ? { ...order, status: updated.status }
+                : order,
+            ),
+          );
+        },
+      )
+      .subscribe();
+
+    // Limpieza del canal al desmontar.
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session]);
 
   const onRefresh = () => reload('refresh');
 
