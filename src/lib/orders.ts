@@ -2,16 +2,35 @@ import { supabase } from '@/lib/supabase';
 import type { CartLine } from '@/store/cartStore';
 import type {
   Address,
+  MenuItem,
   Order,
+  OrderItem,
+  OrderPayment,
   PaymentMethod,
   Restaurant,
   TablesInsert,
 } from '@/types/database.types';
 
-/** Pedido con datos básicos del restaurante embebido (join N:1). */
+/** Pedido con datos b├ísicos del restaurante embebido (join N:1). */
 export type OrderWithRestaurant = Order & {
   restaurants: Pick<Restaurant, 'name' | 'image_url'> | null;
 };
+
+/** Pedido con datos de contacto del restaurante para el detalle. */
+export type OrderDetail = Order & {
+  restaurants: Pick<Restaurant, 'name' | 'phone' | 'address'> | null;
+};
+
+/** Item del pedido con nombre e imagen del plato (join N:1). */
+export type OrderItemWithMenuItem = OrderItem & {
+  menu_items: Pick<MenuItem, 'name' | 'image_url'> | null;
+};
+
+export interface OrderFullDetail {
+  order: OrderDetail;
+  items: OrderItemWithMenuItem[];
+  payment: OrderPayment | null;
+}
 
 /** Pedidos del cliente, más recientes primero. */
 export async function fetchClientOrders(
@@ -24,8 +43,40 @@ export async function fetchClientOrders(
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  // Cast explícito: la forma del join la documenta el DTO.
+  // Cast expl├¡cito: la forma del join la documenta el DTO.
   return (data ?? []) as OrderWithRestaurant[];
+}
+
+/** Detalle completo: pedido + restaurante, items + platos, y pago (1:1). */
+export async function fetchOrderDetail(
+  orderId: string,
+): Promise<OrderFullDetail> {
+  const [orderRes, itemsRes, paymentRes] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('*, restaurants(name, phone, address)')
+      .eq('id', orderId)
+      .single(),
+    supabase
+      .from('order_items')
+      .select('*, menu_items(name, image_url)')
+      .eq('order_id', orderId),
+    supabase
+      .from('order_payments')
+      .select('*')
+      .eq('order_id', orderId)
+      .maybeSingle(),
+  ]);
+
+  if (orderRes.error) throw orderRes.error;
+  if (itemsRes.error) throw itemsRes.error;
+  if (paymentRes.error) throw paymentRes.error;
+
+  return {
+    order: orderRes.data as OrderDetail,
+    items: (itemsRes.data ?? []) as OrderItemWithMenuItem[],
+    payment: paymentRes.data,
+  };
 }
 
 export interface CreateOrderInput {
