@@ -39,7 +39,8 @@
         {
           "locationWhenInUsePermission": "Al Toque Delivery necesita tu ubicación para compartir tu posición durante las entregas."
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,

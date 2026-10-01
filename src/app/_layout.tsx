@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 import { useAuthStore } from '@/store/authStore';
+import { registerDeviceTokenForUser } from '@/lib/notifications';
 
 /**
  * Layout raíz:
@@ -16,11 +17,26 @@ import { useAuthStore } from '@/store/authStore';
 export default function RootLayout() {
   const initialize = useAuthStore((state) => state.initialize);
   const isLoading = useAuthStore((state) => state.isLoading);
+  const userId = useAuthStore((state) => state.session?.user.id);
 
   useEffect(() => {
     const unsubscribe = initialize();
     return unsubscribe;
   }, [initialize]);
+
+  // Registra token al restaurar sesión o al iniciar sesión.
+  useEffect(() => {
+    if (!userId) return;
+
+    let cancelled = false;
+    void registerDeviceTokenForUser(userId).catch((error: unknown) => {
+      if (!cancelled) console.warn('[push] No se pudo registrar token:', error);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   if (isLoading) {
     return (
