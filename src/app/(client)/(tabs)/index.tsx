@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -19,6 +20,7 @@ import {
 } from '@/lib/restaurants';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
+import { useCheckoutStore } from '@/store/checkoutStore';
 import type { Address, RestaurantCategory } from '@/types/database.types';
 
 type CategoryOption = { id: string | null; name: string };
@@ -35,6 +37,7 @@ function errorMessage(e: unknown, fallback: string): string {
  */
 export default function ClientHomeScreen() {
   const { session, profile } = useAuthStore();
+  const selectedAddress = useCheckoutStore((state) => state.selectedAddress);
 
   const [address, setAddress] = useState<Pick<Address, 'street' | 'city'> | null>(null);
   const [categories, setCategories] = useState<RestaurantCategory[]>([]);
@@ -45,6 +48,8 @@ export default function ClientHomeScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const firstName = profile?.name.split(' ')[0] ?? 'Cliente';
+  // Prioriza la elegida en checkoutStore; si no, la predeterminada de la BD.
+  const displayAddress = selectedAddress ?? address;
 
   // Dirección por defecto del usuario (RLS: solo ve las suyas).
   useEffect(() => {
@@ -133,14 +138,18 @@ export default function ClientHomeScreen() {
       <View className="gap-1 bg-white px-4 pb-4 pt-2">
         <Text className="text-sm text-slate-500">Hola de nuevo,</Text>
         <Text className="text-2xl font-bold text-slate-900">{firstName}</Text>
-        <View className="mt-1 flex-row items-center gap-1.5">
+        <Pressable
+          onPress={() => router.push('/(client)/addresses')}
+          className="mt-1 flex-row items-center gap-1.5 active:opacity-70"
+        >
           <Ionicons name="location" size={16} color="#208AEF" />
           <Text numberOfLines={1} className="flex-1 text-sm text-slate-600">
-            {address
-              ? `${address.street}, ${address.city}`
-              : 'Configura tu dirección de entrega en tu perfil'}
+            {displayAddress
+              ? `${displayAddress.street}, ${displayAddress.city}`
+              : 'Configura tu dirección de entrega'}
           </Text>
-        </View>
+          <Ionicons name="chevron-forward" size={14} color="#94A3B8" />
+        </Pressable>
       </View>
 
       {/* Carrusel de categorías */}

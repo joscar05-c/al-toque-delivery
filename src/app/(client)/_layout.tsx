@@ -22,6 +22,8 @@ export default function ClientLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="restaurant/[id]" />
+      <Stack.Screen name="addresses" />
+      <Stack.Screen name="new-address" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }
