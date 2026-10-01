@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -15,8 +16,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  AddressLocationPicker,
+  type Coordinates,
+} from '@/components/AddressLocationPicker';
 import { createAddress } from '@/lib/addresses';
 import { useAuthStore } from '@/store/authStore';
+import { useCheckoutStore } from '@/store/checkoutStore';
 import type { Enums } from '@/types/database.types';
 
 type AddressType = Enums<'addresses_type_enum'>;
@@ -27,10 +33,17 @@ const TYPE_OPTIONS: { value: AddressType; label: string }[] = [
   { value: 'other', label: 'Otro' },
 ];
 
+const DEFAULT_COORDINATES: Coordinates = {
+  latitude: -5.639,
+  longitude: -78.531,
+};
+
 /** Formulario de nueva dirección (INSERT en public.addresses). */
 export default function NewAddressScreen() {
   const { session } = useAuthStore();
+  const setSelectedAddress = useCheckoutStore((state) => state.setAddress);
 
+  const [coordinates, setCoordinates] = useState<Coordinates>(DEFAULT_COORDINATES);
   const [street, setStreet] = useState('');
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
@@ -38,6 +51,34 @@ export default function NewAddressScreen() {
   const [type, setType] = useState<AddressType>('home');
   const [isDefault, setIsDefault] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Solicita GPS al abrir y centra el pin en la posición actual.
+  useEffect(() => {
+    let cancelled = false;
+
+    const centerOnCurrentLocation = async () => {
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (!permission.granted || cancelled) return;
+
+      const current = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      if (!cancelled) {
+        setCoordinates({
+          latitude: current.coords.latitude,
+          longitude: current.coords.longitude,
+        });
+      }
+    };
+
+    void centerOnCurrentLocation().catch((error: unknown) => {
+      console.warn('[new-address] No se pudo obtener GPS:', error);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isValid =
     street.trim().length > 0 &&
@@ -56,7 +97,7 @@ export default function NewAddressScreen() {
 
     setIsSaving(true);
     try {
-      await createAddress({
+      const savedAddress = await createAddress({
         user_id: session.user.id,
         street: street.trim(),
         city: city.trim(),
@@ -64,7 +105,9 @@ export default function NewAddressScreen() {
         reference: reference.trim() || null,
         type,
         is_default: isDefault,
+        location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
       });
+      setSelectedAddress(savedAddress);
       router.back(); // useFocusEffect de la lista recarga sola
     } catch (e) {
       Alert.alert(
@@ -176,6 +219,19 @@ export default function NewAddressScreen() {
               multiline
               className="min-h-20 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900"
             />
+          </View>
+
+          {/* Pin arrastrable: POINT(longitud latitud) se guarda en PostGIS. */}
+          <View className="gap-2">
+            <Text className="text-sm font-medium text-slate-700">
+              Ubicación en el mapa
+            </Text>
+            <View className="overflow-hidden rounded-xl border border-slate-200">
+              <AddressLocationPicker
+                coordinates={coordinates}
+                onCoordinatesChange={setCoordinates}
+              />
+            </View>
           </View>
 
           {/* Predeterminada */}

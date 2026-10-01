@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
+import { DriverTrackingMap } from '@/components/DriverTrackingMap';
 import { formatDateTime, formatPrice } from '@/lib/format';
 import {
   fetchOrderDetail,
@@ -47,6 +48,11 @@ export default function OrderDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [detail, setDetail] = useState<OrderFullDetail | null>(null);
+  const [driverCoords, setDriverCoords] = useState<{
+    driverId: string;
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,6 +79,77 @@ export default function OrderDetailScreen() {
       cancelled = true;
     };
   }, [id]);
+
+  // Realtime GPS: suscribe al repartidor cuando recogió el pedido.
+  useEffect(() => {
+    const order = detail?.order;
+    const driverId = order?.driver_id;
+    const isTracking = order?.status === 'picked_up' || order?.status === 'delivered';
+    if (!driverId || !isTracking) return;
+
+    let active = true;
+    const applyLocation = (row: {
+      driver_id?: unknown;
+      latitude?: unknown;
+      longitude?: unknown;
+    }) => {
+      if (
+        !active ||
+        row.driver_id !== driverId ||
+        typeof row.latitude !== 'number' ||
+        typeof row.longitude !== 'number'
+      ) {
+        return;
+      }
+      setDriverCoords({ driverId, latitude: row.latitude, longitude: row.longitude });
+    };
+
+    const channel = supabase
+      .channel('driver_tracking')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'driver_locations',
+          filter: `driver_id=eq.${driverId}`,
+        },
+        (payload) => applyLocation(payload.new),
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'driver_locations',
+          filter: `driver_id=eq.${driverId}`,
+        },
+        (payload) => applyLocation(payload.new),
+      )
+      .subscribe();
+
+    // Ubicación inicial antes del siguiente evento Realtime.
+    supabase
+      .from('driver_locations')
+      .select('driver_id, latitude, longitude')
+      .eq('driver_id', driverId)
+      .eq('isActive', true)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) {
+          console.warn('[order-tracking] No se pudo cargar GPS:', error.message);
+          return;
+        }
+        if (data) applyLocation(data);
+      });
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, [detail?.order]);
 
   // Realtime: UPDATE de este pedido -> el timeline avanza solo.
   useEffect(() => {
@@ -161,6 +238,26 @@ export default function OrderDetailScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
+        {/* Mapa en vivo desde picked_up hasta entregado. */}
+        {(order.status === 'picked_up' || order.status === 'delivered') &&
+          order.driver_id && (
+            <View className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+              {driverCoords?.driverId === order.driver_id ? (
+                <DriverTrackingMap
+                  latitude={driverCoords.latitude}
+                  longitude={driverCoords.longitude}
+                />
+              ) : (
+                <View className="h-[250px] items-center justify-center gap-2 bg-slate-100">
+                  <ActivityIndicator size="large" color="#208AEF" />
+                  <Text className="text-sm text-slate-500">
+                    Buscando al repartidor…
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+
         {/* Parte 1: Timeline (o banner de cancelado) */}
         {isCancelled ? (
           <View className="flex-row items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
