@@ -4,7 +4,7 @@
  * IMPORTANTE: este archivo refleja el esquema real de la base de datos.
  * Si el esquema cambia, lo ideal es regenerarlo con la CLI oficial:
  *
- *   npx supabase gen types typescript --project-id <TU_PROJECT_ID> > src/types/database.types.ts
+ *   npx supabase gen types typescript --project-id <TU_PROJECT_ID> > packages/shared/types/database.types.ts
  *
  * Notas del esquema:
  * - geography(Point, 4326) de PostGIS se expone como string (hex WKB / GeoJSON).

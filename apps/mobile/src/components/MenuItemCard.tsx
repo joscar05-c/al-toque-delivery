@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 
 import { formatPrice } from '@/lib/format';
-import type { MenuItem } from '@/types/database.types';
+import type { MenuItem } from '@delivery/shared';
 
 interface MenuItemCardProps {
   item: MenuItem;

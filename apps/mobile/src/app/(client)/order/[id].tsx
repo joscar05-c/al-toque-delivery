@@ -19,7 +19,7 @@ import {
   type OrderFullDetail,
 } from '@/lib/orders';
 import { supabase } from '@/lib/supabase';
-import type { Order, OrderStatus } from '@/types/database.types';
+import type { Order, OrderStatus } from '@delivery/shared';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 

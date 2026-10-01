@@ -2,7 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 import { create } from 'zustand';
 
 import { supabase } from '@/lib/supabase';
-import type { RoleName, UserProfile } from '@/types/database.types';
+import type { RoleName, UserProfile } from '@delivery/shared';
 
 /**
  * Consulta public.users (enlazada a auth.users por id) y hace join con

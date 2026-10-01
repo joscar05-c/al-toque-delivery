@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { Order, User } from '@/types/database.types';
+import type { Order, User } from '@delivery/shared';
 
 export type DriverOrder = Order & {
   client: Pick<User, 'name'> | null;

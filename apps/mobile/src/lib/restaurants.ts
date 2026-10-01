@@ -5,7 +5,7 @@ import type {
   Restaurant,
   RestaurantCategory,
   RestaurantDeliveryConfig,
-} from '@/types/database.types';
+} from '@delivery/shared';
 
 /** Restaurante con el nombre de su categoría embebido (join N:1). */
 export type RestaurantWithCategory = Restaurant & {

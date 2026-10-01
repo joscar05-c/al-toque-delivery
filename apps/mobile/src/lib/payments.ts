@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { PaymentMethod } from '@/types/database.types';
+import type { PaymentMethod } from '@delivery/shared';
 
 /** Métodos de pago activos (is_active = true), orden alfabético. */
 export async function fetchActivePaymentMethods(): Promise<PaymentMethod[]> {

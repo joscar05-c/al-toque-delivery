@@ -25,7 +25,7 @@ import {
   useCartStore,
 } from '@/store/cartStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
-import type { PaymentMethod } from '@/types/database.types';
+import type { PaymentMethod } from '@delivery/shared';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 

@@ -1,0 +1,20 @@
+{
+  "name": "@delivery/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./types/database.types": "./types/database.types.ts"
+  },
+  "files": [
+    "index.ts",
+    "types",
+    "constants",
+    "utils"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -23,7 +23,7 @@ import {
 import { createAddress } from '@/lib/addresses';
 import { useAuthStore } from '@/store/authStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
-import type { Enums } from '@/types/database.types';
+import type { Enums } from '@delivery/shared';
 
 type AddressType = Enums<'addresses_type_enum'>;
 

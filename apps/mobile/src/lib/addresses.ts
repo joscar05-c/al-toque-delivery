@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { Address, TablesInsert } from '@/types/database.types';
+import type { Address, TablesInsert } from '@delivery/shared';
 
 /** Direcciones del usuario (RLS: user_id = auth.uid()). Default primero. */
 export async function fetchUserAddresses(userId: string): Promise<Address[]> {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import type { MenuItem } from '@/types/database.types';
+import type { MenuItem } from '@delivery/shared';
 
 export interface CartLine {
   item: MenuItem;

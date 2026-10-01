@@ -9,7 +9,7 @@ import type {
   PaymentMethod,
   Restaurant,
   TablesInsert,
-} from '@/types/database.types';
+} from '@delivery/shared';
 
 /** Pedido con datos b├ísicos del restaurante embebido (join N:1). */
 export type OrderWithRestaurant = Order & {

@@ -11,7 +11,7 @@ import {
 
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
-import type { RoleName } from '@/types/database.types';
+import type { RoleName } from '@delivery/shared';
 
 interface ProfileData {
   name: string;

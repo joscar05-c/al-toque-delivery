@@ -21,7 +21,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
-import type { Address, RestaurantCategory } from '@/types/database.types';
+import type { Address, RestaurantCategory } from '@delivery/shared';
 
 type CategoryOption = { id: string | null; name: string };
 

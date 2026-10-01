@@ -23,7 +23,7 @@ import type {
   OrderItem,
   OrderStatus,
   User,
-} from '@/types/database.types';
+} from '@delivery/shared';
 
 type DriverOrderDetail = Order & {
   client: Pick<User, 'name' | 'phone'> | null;

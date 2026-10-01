@@ -7,7 +7,7 @@ import * as aesjs from 'aes-js';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-import type { Database } from '@/types/database.types';
+import type { Database } from '@delivery/shared';
 
 /**
  * expo-secure-store NO soporta valores mayores a 2048 bytes y el token de

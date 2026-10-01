@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchUserAddresses } from '@/lib/addresses';
 import { useAuthStore } from '@/store/authStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
-import type { Address, Enums } from '@/types/database.types';
+import type { Address, Enums } from '@delivery/shared';
 
 type AddressType = Enums<'addresses_type_enum'>;
 type IconName = React.ComponentProps<typeof Ionicons>['name'];

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import type { Enums } from '@/types/database.types';
+import type { Enums } from '@delivery/shared';
 
 type OrderStatus = Enums<'orders_status_enum'>;
 

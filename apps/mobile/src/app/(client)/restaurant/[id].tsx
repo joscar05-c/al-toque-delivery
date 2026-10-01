@@ -25,7 +25,7 @@ import {
   selectTotalPrice,
   useCartStore,
 } from '@/store/cartStore';
-import type { Enums, MenuItem } from '@/types/database.types';
+import type { Enums, MenuItem } from '@delivery/shared';
 
 type DeliveryType = Enums<'restaurant_delivery_config_delivery_type_enum'>;
 

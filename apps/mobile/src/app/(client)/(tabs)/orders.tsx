@@ -16,7 +16,7 @@ import { formatDateTime, formatPrice } from '@/lib/format';
 import { fetchClientOrders, type OrderWithRestaurant } from '@/lib/orders';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
-import type { Order } from '@/types/database.types';
+import type { Order } from '@delivery/shared';
 
 /**
  * Tab "Mis pedidos": historial del cliente (orders donde client_id = auth.uid()).

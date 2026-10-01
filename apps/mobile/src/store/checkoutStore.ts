@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import type { Address, PaymentMethod } from '@/types/database.types';
+import type { Address, PaymentMethod } from '@delivery/shared';
 
 interface CheckoutState {
   /** Dirección elegida para la entrega (public.addresses). */
