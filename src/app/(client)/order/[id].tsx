@@ -312,6 +312,31 @@ export default function OrderDetailScreen() {
           </View>
         )}
 
+        {order.status === 'delivered' && (
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: '/(client)/order/review/[order_id]',
+                params: { order_id: order.id },
+              })
+            }
+            className="flex-row items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 active:opacity-80"
+          >
+            <View className="h-11 w-11 items-center justify-center rounded-full bg-amber-100">
+              <Ionicons name="star" size={21} color="#D97706" />
+            </View>
+            <View className="flex-1">
+              <Text className="font-bold text-amber-900">
+                ¿Cómo fue tu experiencia?
+              </Text>
+              <Text className="mt-0.5 text-sm text-amber-700">
+                Toca para calificar este pedido.
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#B45309" />
+          </Pressable>
+        )}
+
         {/* Restaurante */}
         <View className="gap-1.5 rounded-2xl border border-slate-200 bg-white p-4">
           <Text className="text-base font-bold text-slate-900">

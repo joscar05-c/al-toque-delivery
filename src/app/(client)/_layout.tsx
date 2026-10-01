@@ -26,6 +26,7 @@ export default function ClientLayout() {
       <Stack.Screen name="new-address" options={{ presentation: 'modal' }} />
       <Stack.Screen name="checkout" />
       <Stack.Screen name="order/[id]" />
+      <Stack.Screen name="order/review/[order_id]" />
     </Stack>
   );
 }
