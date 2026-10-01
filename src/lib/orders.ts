@@ -4,8 +4,29 @@ import type {
   Address,
   Order,
   PaymentMethod,
+  Restaurant,
   TablesInsert,
 } from '@/types/database.types';
+
+/** Pedido con datos básicos del restaurante embebido (join N:1). */
+export type OrderWithRestaurant = Order & {
+  restaurants: Pick<Restaurant, 'name' | 'image_url'> | null;
+};
+
+/** Pedidos del cliente, más recientes primero. */
+export async function fetchClientOrders(
+  clientId: string,
+): Promise<OrderWithRestaurant[]> {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*, restaurants(name, image_url)')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  // Cast explícito: la forma del join la documenta el DTO.
+  return (data ?? []) as OrderWithRestaurant[];
+}
 
 export interface CreateOrderInput {
   clientId: string;
