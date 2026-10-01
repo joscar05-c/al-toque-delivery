@@ -250,19 +250,27 @@ export default function RestaurantMenuScreen() {
         }
       />
 
-      {/* Resumen del carrito (la navegación al checkout llega en la Fase 3) */}
+      {/* Barra del carrito: navega al checkout */}
       {cartRestaurantId === id && totalItems > 0 && (
-        <View className="absolute inset-x-4 bottom-6 flex-row items-center justify-between rounded-2xl bg-primary px-5 py-4">
+        <Pressable
+          onPress={() => router.push('/(client)/checkout')}
+          className="absolute inset-x-4 bottom-6 flex-row items-center justify-between rounded-2xl bg-primary px-5 py-4 active:opacity-90"
+        >
           <View className="flex-row items-center gap-2">
             <Ionicons name="cart" size={20} color="#fff" />
             <Text className="font-semibold text-white">
               {totalItems} {totalItems === 1 ? 'plato' : 'platos'}
             </Text>
           </View>
-          <Text className="text-base font-bold text-white">
-            {formatPrice(totalPrice)}
-          </Text>
-        </View>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-base font-bold text-white">
+              {formatPrice(totalPrice)}
+            </Text>
+            <Text className="text-sm font-semibold text-white/80">
+              Ir a pagar
+            </Text>
+          </View>
+        </Pressable>
       )}
     </SafeAreaView>
   );

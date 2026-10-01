@@ -24,6 +24,7 @@ export default function ClientLayout() {
       <Stack.Screen name="restaurant/[id]" />
       <Stack.Screen name="addresses" />
       <Stack.Screen name="new-address" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="checkout" />
     </Stack>
   );
 }
