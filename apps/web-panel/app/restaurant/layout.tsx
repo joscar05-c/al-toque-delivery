@@ -2,19 +2,14 @@
 
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
+import { signOut } from '@/app/auth/actions';
 
 export default async function RestaurantLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-
-  async function signOut() {
-    await supabase.auth.signOut();
-    redirect('/login');
-  }
+  await createClient();
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
