@@ -10,9 +10,9 @@ import { useAuthStore } from '@/store/authStore';
 export default function Index() {
   const { session, role, profile, signOut } = useAuthStore();
 
-  // Sin sesión -> stack de autenticación (login con teléfono).
+  // Sin sesión -> navegación pública (ver restaurantes sin login).
   if (!session) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(public)/(tabs)/index" />;
   }
 
   // Con sesión -> sección según rol.

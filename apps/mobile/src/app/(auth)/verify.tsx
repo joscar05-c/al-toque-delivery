@@ -53,20 +53,23 @@ export default function VerifyScreen() {
       return;
     }
 
+    console.log('[Verify] Verifying OTP for:', phone);
     setIsLoading(true);
     const { error } = await supabase.auth.verifyOtp({
       phone,
       token: otp,
       type: 'sms',
     });
+    console.log('[Verify] OTP result:', { error: error?.message });
     setIsLoading(false);
 
     if (error) {
       Alert.alert('Código incorrecto', error.message);
       setOtp('');
       inputRef.current?.focus();
+      return;
     }
-    // Éxito: el authStore y los guards se encargan de la redirección.
+    console.log('[Verify] OTP verified successfully, waiting for authStore redirect...');
   };
 
   return (

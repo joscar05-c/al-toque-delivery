@@ -40,9 +40,11 @@ export default function LoginScreen() {
     }
 
     const phone = `${COUNTRY_CODE}${digits}`;
+    console.log('[Login] Sending OTP to:', phone);
 
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOtp({ phone });
+    console.log('[Login] OTP result:', { error: error?.message, code: (error as any)?.status });
     setIsLoading(false);
 
     if (error) {
@@ -127,6 +129,18 @@ export default function LoginScreen() {
                 </Text>
               </>
             )}
+          </Pressable>
+
+          {/* Botón Saltar */}
+          <Pressable
+            onPress={() => router.replace('/')}
+            disabled={isLoading}
+            className="flex-row items-center justify-center gap-2 rounded-xl py-3 border border-slate-300 active:opacity-70"
+          >
+            <Ionicons name="play-skip-forward-outline" size={20} color="#64748B" />
+            <Text className="text-base font-medium text-slate-600">
+              Saltar y explorar
+            </Text>
           </Pressable>
 
           <Text className="text-center text-xs leading-5 text-slate-400">

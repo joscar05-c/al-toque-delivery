@@ -9,6 +9,7 @@ import type { RoleName, UserProfile } from '@delivery/shared';
  * public.roles para resolver el nombre del rol ('client' | 'driver' | ...).
  */
 async function fetchProfile(userId: string): Promise<UserProfile | null> {
+  console.log('[authStore] fetchProfile called for:', userId);
   const { data, error } = await supabase
     .from('users')
     .select('*, roles(name)')
@@ -16,10 +17,11 @@ async function fetchProfile(userId: string): Promise<UserProfile | null> {
     .single();
 
   if (error) {
-    console.error('[authStore] Error obteniendo el perfil:', error.message);
+    console.error('[authStore] Error obteniendo el perfil:', error.message, error.code);
     return null;
   }
 
+  console.log('[authStore] Profile data:', data);
   return data as UserProfile;
 }
 
@@ -67,14 +69,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[authStore] onAuthStateChange:', event, session?.user?.id);
       // No usar async directamente en el callback: Supabase mantiene un lock
       // interno y podría interbloquearse. Se difiere con setTimeout.
       setTimeout(async () => {
         if (event === 'SIGNED_OUT' || !session) {
+          console.log('[authStore] Signed out or no session');
           set({ session: null, profile: null, role: null });
           return;
         }
+        console.log('[authStore] Fetching profile for:', session.user.id);
         const profile = await fetchProfile(session.user.id);
+        console.log('[authStore] Profile fetched:', profile?.roles?.name);
         set({
           session,
           profile,
