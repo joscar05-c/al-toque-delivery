@@ -1,23 +1,54 @@
-import Link from 'next/link';
+'use server';
 
-export default function RestaurantOrdersPage() {
-  return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Restaurante · Pedidos</h1>
-          <p className="mt-1 text-gray-600">Gestión de pedidos del restaurante</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-500">Pendiente: implementar listado de pedidos</p>
-          <Link
-            href="/login"
-            className="mt-4 inline-block text-indigo-600 hover:text-indigo-500"
-          >
-            Cerrar sesión
-          </Link>
-        </div>
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
+import RealtimeBoard from './RealtimeBoard';
+
+export default async function RestaurantOrdersPage() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  const { data: restaurant, error: restError } = await supabase
+    .from('restaurants')
+    .select('id')
+    .eq('owner_id', user.id)
+    .single();
+
+  if (restError || !restaurant) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-600">No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
-    </main>
+    );
+  }
+
+  const { data: orders, error } = await supabase
+    .from('orders')
+    .select('id, status, total, notes, deliveryAddress, estimated_prep_time, created_at, client_id')
+    .eq('restaurant_id', restaurant.id)
+    .in('status', ['pending', 'accepted', 'preparing', 'ready'])
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching orders:', error);
+    return <div className="text-red-600">Error al cargar pedidos: {error.message}</div>;
+  }
+
+  return (
+    <div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Pedidos en Vivo</h1>
+        <p className="mt-1 text-gray-600">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
+      </div>
+
+      <RealtimeBoard initialOrders={orders ?? []} restaurantId={restaurant.id} />
+    </div>
   );
 }
