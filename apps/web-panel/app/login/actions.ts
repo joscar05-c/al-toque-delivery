@@ -22,34 +22,5 @@ export async function loginAction(formData: FormData) {
     return { error: authError.message };
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: 'No se pudo obtener la sesión' };
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from('users')
-    .select('role_id')
-    .eq('id', user.id)
-    .single();
-
-  if (profileError || !profile) {
-    await supabase.auth.signOut();
-    return { error: 'Perfil no encontrado' };
-  }
-
-  const roleId = profile.role_id ?? 0;
-
-  if (roleId === 4) {
-    redirect('/admin/applications');
-  }
-  if (roleId === 3) {
-    redirect('/restaurant/orders');
-  }
-
-  await supabase.auth.signOut();
-  return { error: 'No tienes acceso al panel web' };
+  redirect('/dashboard-redirect');
 }
