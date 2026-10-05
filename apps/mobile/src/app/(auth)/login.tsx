@@ -133,7 +133,7 @@ export default function LoginScreen() {
 
           {/* Botón Saltar */}
           <Pressable
-            onPress={() => router.replace('/')}
+            onPress={() => router.replace('/(public)/(tabs)')}
             disabled={isLoading}
             className="flex-row items-center justify-center gap-2 rounded-xl py-3 border border-slate-300 active:opacity-70"
           >

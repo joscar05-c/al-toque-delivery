@@ -12,7 +12,7 @@ export default function Index() {
 
   // Sin sesión -> navegación pública (ver restaurantes sin login).
   if (!session) {
-    return <Redirect href="/(public)/(tabs)/index" />;
+    return <Redirect href="/(public)/(tabs)" />;
   }
 
   // Con sesión -> sección según rol.
