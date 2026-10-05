@@ -8,9 +8,11 @@
     "scheme": "altoquedelivery",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "bundleIdentifier": "com.joscar.al-toque-delivery",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.joscar.al_toque_delivery",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
