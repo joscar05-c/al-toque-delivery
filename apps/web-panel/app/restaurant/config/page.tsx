@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import DeliveryConfigForm from './DeliveryConfigForm';
 import DriverForm from './DriverForm';
@@ -9,9 +10,7 @@ import DriverList from './DriverList';
 export default async function RestaurantConfigPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   if (!user) {
     redirect('/login');

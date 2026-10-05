@@ -1,29 +1,25 @@
-import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 import type { Database } from '@delivery/shared';
 
+import { SESSION_COOKIE } from '@/utils/firebase/session';
+
+/**
+ * Cliente Supabase para Server Components / Server Actions.
+ * La auth viene del ID token de Firebase guardado en la cookie `__session`:
+ * Supabase lo acepta como Third-Party Auth y lo mapea al rol `authenticated`,
+ * de modo que `auth.uid()` === Firebase UID en las policies de RLS.
+ */
 export async function createClient() {
   const cookieStore = await cookies();
+  const idToken = cookieStore.get(SESSION_COOKIE)?.value ?? null;
 
-  return createServerClient<Database>(
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            );
-          } catch {
-            // Server Components no pueden escribir cookies.
-          }
-        },
-      },
+      accessToken: async () => idToken,
     },
   );
 }

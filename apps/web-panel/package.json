@@ -9,10 +9,11 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit"
   },
-"dependencies": {
+  "dependencies": {
     "@delivery/shared": "*",
-    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.117.2",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^13.10.0",
     "lucide-react": "^0.548.0",
     "next": "16.3.8",
     "react": "19.2.8",

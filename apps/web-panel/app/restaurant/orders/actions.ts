@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { getSessionUser } from '@/utils/firebase/session';
 import { revalidatePath } from 'next/cache';
 
 const VALID_STATUSES = ['pending', 'accepted', 'preparing', 'ready', 'picked_up', 'delivered', 'cancelled'] as const;
@@ -13,9 +14,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   if (!user) {
     return { error: 'No autenticado' };

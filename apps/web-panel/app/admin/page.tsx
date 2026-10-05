@@ -1,15 +1,14 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import { Users, ShoppingBag, Star } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   if (!user) {
     redirect('/login');

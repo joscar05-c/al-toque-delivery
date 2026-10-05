@@ -30,6 +30,7 @@ const ROLE_LABELS: Record<RoleName, string> = {
 /** Perfil compartido por cliente y repartidor. */
 export function ProfileScreen() {
   const session = useAuthStore((state) => state.session);
+  const signOutStore = useAuthStore((state) => state.signOut);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -73,8 +74,7 @@ export function ProfileScreen() {
     setIsSigningOut(true);
 
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await signOutStore();
     } catch (error) {
       setIsSigningOut(false);
       Alert.alert(
@@ -82,7 +82,7 @@ export function ProfileScreen() {
         error instanceof Error ? error.message : 'Inténtalo de nuevo.',
       );
     }
-    // onAuthStateChange limpia Zustand y los layouts abren Login.
+    // onAuthStateChanged limpia Zustand y los layouts abren Login.
   };
 
   const name = profile?.name ?? 'Usuario';

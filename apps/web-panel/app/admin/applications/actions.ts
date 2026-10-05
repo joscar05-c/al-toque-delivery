@@ -1,14 +1,13 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { getSessionUser } from '@/utils/firebase/session';
 import { revalidatePath } from 'next/cache';
 
 export async function approveRestaurant(applicationId: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user: admin },
-  } = await supabase.auth.getUser();
+  const admin = await getSessionUser();
 
   if (!admin) {
     return { error: 'No autenticado' };

@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { supabase } from '@/lib/supabase';
+import { startPhoneVerification } from '@/lib/firebase';
+import { setPhoneConfirmation } from '@/lib/phoneAuthSession';
 
 // Las ciudades del enum (bagua, jaen, chachapoyas) están en Perú.
 // Hazlo configurable si la app opera en más países.
@@ -21,8 +22,8 @@ const COUNTRY_CODE = '+51';
 const PHONE_LENGTH = 9;
 
 /**
- * Paso 1 del login: ingreso del número de teléfono.
- * Envía el OTP por SMS y navega a /(auth)/verify con el número como param.
+ * Paso 1 del login (Firebase Phone Auth): ingreso del número.
+ * Envía el SMS y navega a /(auth)/verify con el número como param.
  */
 export default function LoginScreen() {
   const [digits, setDigits] = useState('');
@@ -40,19 +41,20 @@ export default function LoginScreen() {
     }
 
     const phone = `${COUNTRY_CODE}${digits}`;
-    console.log('[Login] Sending OTP to:', phone);
 
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ phone });
-    console.log('[Login] OTP result:', { error: error?.message, code: (error as any)?.status });
-    setIsLoading(false);
-
-    if (error) {
-      Alert.alert('No se pudo enviar el código', error.message);
-      return;
+    try {
+      const confirmation = await startPhoneVerification(phone);
+      setPhoneConfirmation(confirmation);
+      router.push({ pathname: '/(auth)/verify', params: { phone } });
+    } catch (error) {
+      Alert.alert(
+        'No se pudo enviar el código',
+        error instanceof Error ? error.message : 'Inténtalo de nuevo.',
+      );
+    } finally {
+      setIsLoading(false);
     }
-
-    router.push({ pathname: '/(auth)/verify', params: { phone } });
   };
 
   return (
@@ -135,7 +137,7 @@ export default function LoginScreen() {
           <Pressable
             onPress={() => router.replace('/(public)/(tabs)')}
             disabled={isLoading}
-            className="flex-row items-center justify-center gap-2 rounded-xl py-3 border border-slate-300 active:opacity-70"
+            className="flex-row items-center justify-center gap-2 rounded-xl border border-slate-300 py-3 active:opacity-70"
           >
             <Ionicons name="play-skip-forward-outline" size={20} color="#64748B" />
             <Text className="text-base font-medium text-slate-600">
@@ -149,6 +151,9 @@ export default function LoginScreen() {
           </Text>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Contenedor de reCAPTCHA invisible (solo web usa este id). */}
+      <View nativeID="recaptcha-container" />
     </SafeAreaView>
   );
 }

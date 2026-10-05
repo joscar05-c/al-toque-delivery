@@ -1,15 +1,14 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { getSessionUser } from '@/utils/firebase/session';
 import ApplicationRow from './ApplicationRow';
 import { redirect } from 'next/navigation';
 
 export default async function AdminApplicationsPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   if (!user) {
     redirect('/login');

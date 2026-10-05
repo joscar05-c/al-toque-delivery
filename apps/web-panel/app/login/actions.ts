@@ -1,51 +1,23 @@
 'use server';
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { verifyFirebaseIdToken } from '@/utils/firebase/admin';
+import { createSessionCookie } from '@/utils/firebase/session';
 
-import type { Database } from '@delivery/shared';
-
-async function createActionClient() {
-  const cookieStore = await cookies();
-
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          // En Server Actions SÍ se pueden escribir cookies
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
-          );
-        },
-      },
-    },
-  );
-}
-
-export async function loginAction(formData: FormData) {
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-
-  if (!email || !password) {
-    return { error: 'Email y contrase├▒a requeridos' };
+/**
+ * Recibe el ID token de Firebase (ya confirmado en el navegador) y abre la
+ * sesión httpOnly del panel. El token se valida en el servidor antes de
+ * aceptarse: nunca se confía en lo que manda el cliente.
+ */
+export async function createSessionAction(idToken: string) {
+  if (!idToken) {
+    return { error: 'Token de sesión inválido.' };
   }
 
-  const supabase = await createActionClient();
-
-  const { error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (authError) {
-    return { error: authError.message };
+  try {
+    const decoded = await verifyFirebaseIdToken(idToken);
+    await createSessionCookie(idToken, decoded.exp * 1000);
+    return { ok: true };
+  } catch {
+    return { error: 'No se pudo validar la sesión. Vuelve a iniciar sesión.' };
   }
-
-  redirect('/dashboard-redirect');
 }

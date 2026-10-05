@@ -1,10 +1,10 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
+import { clearSessionCookie } from '@/utils/firebase/session';
+
 export async function signOut() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+  await clearSessionCookie();
   redirect('/login');
 }

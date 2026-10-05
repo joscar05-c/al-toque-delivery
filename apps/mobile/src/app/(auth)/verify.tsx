@@ -14,17 +14,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { supabase } from '@/lib/supabase';
+import { confirmPhoneCode } from '@/lib/firebase';
+import { getPhoneConfirmation } from '@/lib/phoneAuthSession';
 
 const OTP_LENGTH = 6;
 
 /**
- * Paso 2 del login: verificación del código OTP de 6 dígitos.
+ * Paso 2 del login: verificación del código SMS de 6 dígitos (Firebase).
  *
  * IMPORTANTE: si la verificación es exitosa NO se redirige manualmente.
- * El listener onAuthStateChange del authStore detecta la nueva sesión,
- * consulta el rol en public.users y los guards de los layouts redirigen
- * automáticamente a /(client) o /(driver).
+ * El listener onAuthStateChanged del authStore detecta la sesión, consulta
+ * el rol en public.users y los guards de los layouts redirigen a
+ * /(client) o /(driver).
  */
 export default function VerifyScreen() {
   const { phone } = useLocalSearchParams<{ phone: string }>();
@@ -53,23 +54,27 @@ export default function VerifyScreen() {
       return;
     }
 
-    console.log('[Verify] Verifying OTP for:', phone);
-    setIsLoading(true);
-    const { error } = await supabase.auth.verifyOtp({
-      phone,
-      token: otp,
-      type: 'sms',
-    });
-    console.log('[Verify] OTP result:', { error: error?.message });
-    setIsLoading(false);
-
-    if (error) {
-      Alert.alert('Código incorrecto', error.message);
-      setOtp('');
-      inputRef.current?.focus();
+    const confirmation = getPhoneConfirmation();
+    if (!confirmation) {
+      Alert.alert('Sesión expirada', 'Vuelve a solicitar el código.');
+      router.replace('/(auth)/login');
       return;
     }
-    console.log('[Verify] OTP verified successfully, waiting for authStore redirect...');
+
+    setIsLoading(true);
+    try {
+      await confirmPhoneCode(confirmation, otp);
+      // Éxito: el authStore y los guards se encargan de la redirección.
+    } catch (error) {
+      Alert.alert(
+        'Código incorrecto',
+        error instanceof Error ? error.message : 'Inténtalo de nuevo.',
+      );
+      setOtp('');
+      inputRef.current?.focus();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

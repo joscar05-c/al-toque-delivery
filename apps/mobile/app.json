@@ -8,10 +8,12 @@
     "scheme": "altoquedelivery",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.joscar.al-toque-delivery",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "package": "com.joscar.al_toque_delivery",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -42,7 +44,9 @@
           "locationWhenInUsePermission": "Al Toque Delivery necesita tu ubicación para compartir tu posición durante las entregas."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
     ],
     "experiments": {
       "typedRoutes": true,

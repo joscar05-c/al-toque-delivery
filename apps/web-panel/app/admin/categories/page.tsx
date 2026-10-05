@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
+import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import CategoryForm from './CategoryForm';
 import CategoryRow from './CategoryRow';
@@ -8,9 +9,7 @@ import CategoryRow from './CategoryRow';
 export default async function AdminCategoriesPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   if (!user) {
     redirect('/login');
