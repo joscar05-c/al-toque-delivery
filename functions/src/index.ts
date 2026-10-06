@@ -1,7 +1,7 @@
 import { beforeUserCreated, beforeUserSignedIn } from 'firebase-functions/v2/identity';
 import { logger } from 'firebase-functions';
 
-import { getSupabaseServiceClient } from './supabase';
+import { getSupabaseServiceClient, supabaseServiceRoleKey } from './supabase';
 
 /**
  * Región de las funciones de bloqueo (Identity).
@@ -56,7 +56,7 @@ async function ensureProfile(user: {
  * Requiere Identity Platform habilitado en el proyecto Firebase.
  */
 export const onUserCreated = beforeUserCreated(
-  { region: REGION },
+  { region: REGION, secrets: [supabaseServiceRoleKey] },
   async (event) => {
     const user = event.data;
 

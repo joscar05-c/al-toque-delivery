@@ -1,4 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { defineSecret } from 'firebase-functions/params';
+
+export const supabaseServiceRoleKey = defineSecret('SUPABASE_SERVICE_ROLE_KEY');
 
 /**
  * Cliente Supabase con service_role: se salta RLS.
@@ -10,11 +13,11 @@ export function getSupabaseServiceClient(): SupabaseClient {
   if (cached) return cached;
 
   const url = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceRoleKey = supabaseServiceRoleKey.value();
 
   if (!url || !serviceRoleKey) {
     throw new Error(
-      'Faltan SUPABASE_URL y/o SUPABASE_SERVICE_ROLE_KEY en el entorno de Functions.',
+      'Faltan SUPABASE_URL (functions/.env) y/o SUPABASE_SERVICE_ROLE_KEY (Secret Manager).',
     );
   }
 
