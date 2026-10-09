@@ -2,6 +2,8 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+For the Windows Android setup, build commands, and troubleshooting steps, see [ANDROID_BUILD.md](./ANDROID_BUILD.md).
+
 ## Get started
 
 1. Install dependencies
