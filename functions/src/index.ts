@@ -78,12 +78,28 @@ export const onUserCreated = beforeUserCreated(
 );
 
 /**
- * Bloqueante: en cada login garantiza el claim `role: 'authenticated'`.
- * Cubre tokens emitidos cuyos claims fueron borrados o usuarios antiguos.
+ * Bloqueante: en cada login asegura el perfil y garantiza el claim
+ * `role: 'authenticated'`. Cubre usuarios preexistentes que no pasaron por
+ * onUserCreated y tokens cuyos claims fueron borrados.
  */
 export const onUserSignedIn = beforeUserSignedIn(
-  { region: REGION },
-  async () => {
+  { region: REGION, secrets: [supabaseServiceRoleKey] },
+  async (event) => {
+    const user = event.data;
+
+    if (user) {
+      try {
+        await ensureProfile({
+          uid: user.uid,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          displayName: user.displayName,
+        });
+      } catch (error) {
+        logger.error('[onUserSignedIn] Error asegurando perfil', error);
+      }
+    }
+
     return { customClaims: { role: 'authenticated' } };
   },
 );
