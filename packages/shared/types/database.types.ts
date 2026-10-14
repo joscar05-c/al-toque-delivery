@@ -1112,6 +1112,16 @@ export type Database = {
         Args: { p_application_id: string };
         Returns: string;
       };
+      admin_list_restaurant_owner_candidates: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          name: string;
+          email: string | null;
+          phone: string | null;
+          role_id: number;
+        }[];
+      };
       admin_create_restaurant: {
         Args: {
           p_owner_id: string;

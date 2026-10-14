@@ -15,13 +15,8 @@ export default async function AdminRestaurantsPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');
 
-  const [usersResult, restaurantsResult, categoriesResult] = await Promise.all([
-    access.supabase
-      .from('users')
-      .select('id, name, email, phone, role_id')
-      .in('role_id', [1, 3])
-      .order('name'),
-    access.supabase.from('restaurants').select('owner_id'),
+  const [ownersResult, categoriesResult] = await Promise.all([
+    access.supabase.rpc('admin_list_restaurant_owner_candidates', {}),
     access.supabase
       .from('restaurant_categories')
       .select('id, name')
@@ -29,24 +24,26 @@ export default async function AdminRestaurantsPage() {
       .order('name'),
   ]);
 
-  const queryError =
-    usersResult.error ?? restaurantsResult.error ?? categoriesResult.error;
+  const queryError = ownersResult.error ?? categoriesResult.error;
   if (queryError) {
     console.error('[AdminRestaurantsPage] Error cargando opciones:', queryError);
+    const detail =
+      queryError.code === 'PGRST202'
+        ? 'No se encuentra el RPC de candidatos. Ejecuta la migración 202610140002_admin_restaurant_owner_candidates.sql en Supabase y vuelve a cargar.'
+        : `${queryError.message} (${queryError.code})`;
+
     return (
-      <p className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
-        No se pudieron cargar los datos para crear el restaurante.
-      </p>
+      <div className="space-y-2 rounded-lg bg-red-50 p-4 text-sm text-red-700">
+        <p className="font-semibold">
+          No se pudieron cargar los datos para crear el restaurante.
+        </p>
+        <p>{detail}</p>
+      </div>
     );
   }
 
-  const users = usersResult.data ?? [];
-  const restaurants = restaurantsResult.data ?? [];
+  const owners = ownersResult.data ?? [];
   const categories = categoriesResult.data ?? [];
-  const existingOwnerIds = new Set(
-    restaurants.map((restaurant) => restaurant.owner_id),
-  );
-  const owners = users.filter((user) => !existingOwnerIds.has(user.id));
 
   return (
     <div className="max-w-4xl space-y-6">
