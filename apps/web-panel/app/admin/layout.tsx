@@ -1,15 +1,18 @@
 'use server';
 
 import Link from 'next/link';
-import { createClient } from '@/utils/supabase/server';
-import { signOut } from '@/app/auth/actions';
+import { redirect } from 'next/navigation';
+
+import { SignOutButton } from '@/components/SignOutButton';
+import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await createClient();
+  const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
+  if (!access) redirect('/dashboard-redirect');
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -51,14 +54,7 @@ export default async function AdminLayout({
       <main className="flex-1 ml-64 p-8">
         <header className="mb-8 flex justify-between items-center">
           <div></div>
-          <form action={signOut} className="inline">
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Cerrar Sesión
-            </button>
-          </form>
+          <SignOutButton className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors" />
         </header>
         {children}
       </main>

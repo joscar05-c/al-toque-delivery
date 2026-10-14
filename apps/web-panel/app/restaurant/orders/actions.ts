@@ -1,7 +1,6 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
-import { getSessionUser } from '@/utils/firebase/session';
+import { authorizeRestaurantOwner } from '@/utils/firebase/authorization';
 import { revalidatePath } from 'next/cache';
 
 const VALID_STATUSES = ['pending', 'accepted', 'preparing', 'ready', 'picked_up', 'delivered', 'cancelled'] as const;
@@ -12,23 +11,22 @@ export async function updateOrderStatus(orderId: string, status: string) {
     return { error: 'Estado inválido' };
   }
 
-  const supabase = await createClient();
+  const access = await authorizeRestaurantOwner();
+  if (!access) return { error: 'No autorizado para este restaurante' };
 
-  const user = await getSessionUser();
-
-  if (!user) {
-    return { error: 'No autenticado' };
-  }
-
-  const { error } = await supabase
+  const { data, error } = await access.supabase
     .from('orders')
     .update({ status: status as OrderStatus, updated_at: new Date().toISOString() })
-    .eq('id', orderId);
+    .eq('id', orderId)
+    .eq('restaurant_id', access.restaurantId)
+    .select('id')
+    .maybeSingle();
 
   if (error) {
     console.error('Error updating order status:', error);
     return { error: 'Error al actualizar el estado' };
   }
+  if (!data) return { error: 'Pedido no encontrado o no autorizado' };
 
   revalidatePath('/restaurant/orders');
   return { success: true };

@@ -1,15 +1,18 @@
 'use server';
 
 import Link from 'next/link';
-import { createClient } from '@/utils/supabase/server';
-import { signOut } from '@/app/auth/actions';
+import { redirect } from 'next/navigation';
+
+import { SignOutButton } from '@/components/SignOutButton';
+import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
 
 export default async function RestaurantLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await createClient();
+  const access = await authorizePanelRole(PANEL_ROLE_IDS.restaurantOwner);
+  if (!access) redirect('/dashboard-redirect');
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -48,14 +51,7 @@ export default async function RestaurantLayout({
           </Link>
         </nav>
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <form action={signOut} className="w-full">
-            <button
-              type="submit"
-              className="w-full px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-            >
-              Cerrar Sesión
-            </button>
-          </form>
+          <SignOutButton className="w-full px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors" />
         </div>
       </aside>
 

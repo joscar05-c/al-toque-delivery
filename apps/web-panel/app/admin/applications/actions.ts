@@ -1,17 +1,13 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
-import { getSessionUser } from '@/utils/firebase/session';
+import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
 import { revalidatePath } from 'next/cache';
 
 export async function approveRestaurant(applicationId: string) {
-  const supabase = await createClient();
+  const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
+  if (!access) return { error: 'No autorizado' };
 
-  const admin = await getSessionUser();
-
-  if (!admin) {
-    return { error: 'No autenticado' };
-  }
+  const { supabase, user: admin } = access;
 
   const { data: app, error: fetchError } = await supabase
     .from('restaurant_applications')

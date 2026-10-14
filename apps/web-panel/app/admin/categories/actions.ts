@@ -1,7 +1,8 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+
+import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
 
 export async function createCategory(formData: FormData) {
   const name = formData.get('name') as string;
@@ -10,7 +11,9 @@ export async function createCategory(formData: FormData) {
     return { error: 'El nombre es requerido' };
   }
 
-  const supabase = await createClient();
+  const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
+  if (!access) return { error: 'No autorizado' };
+  const { supabase } = access;
 
   const { error } = await supabase
     .from('restaurant_categories')
@@ -26,7 +29,9 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function toggleCategory(id: string, currentStatus: boolean) {
-  const supabase = await createClient();
+  const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
+  if (!access) return { error: 'No autorizado' };
+  const { supabase } = access;
 
   const { error } = await supabase
     .from('restaurant_categories')

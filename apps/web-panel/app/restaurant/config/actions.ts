@@ -1,7 +1,8 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+
+import { authorizeRestaurantOwner } from '@/utils/firebase/authorization';
 
 export async function updateDeliveryConfig(formData: FormData) {
   const restaurantId = formData.get('restaurantId') as string;
@@ -12,12 +13,13 @@ export async function updateDeliveryConfig(formData: FormData) {
     return { error: 'Datos incompletos' };
   }
 
-  const supabase = await createClient();
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado para este restaurante' };
 
-  const { error } = await supabase
+  const { error } = await access.supabase
     .from('restaurant_delivery_config')
     .upsert({
-      restaurant_id: restaurantId,
+      restaurant_id: access.restaurantId,
       delivery_fee: baseCost,
       free_delivery_threshold: freeThreshold ? parseFloat(freeThreshold) : null,
       is_delivery_enabled: true,
@@ -43,9 +45,10 @@ export async function addDriver(formData: FormData) {
     return { error: 'Email o teléfono requerido' };
   }
 
-  const supabase = await createClient();
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado para este restaurante' };
 
-  const { data: user, error: userError } = await supabase
+  const { data: user, error: userError } = await access.supabase
     .from('users')
     .select('id, email, phone')
     .or(`email.eq.${contact.trim()},phone.eq.${contact.trim()}`)
@@ -56,9 +59,9 @@ export async function addDriver(formData: FormData) {
     return { error: 'No se encontró un repartidor con ese email/teléfono' };
   }
 
-  const { error } = await supabase
+  const { error } = await access.supabase
     .from('restaurant_drivers')
-    .insert({ restaurant_id: restaurantId, driver_id: user.id, is_active: true });
+    .insert({ restaurant_id: access.restaurantId, driver_id: user.id, is_active: true });
 
   if (error) {
     console.error('Error adding driver:', error);
@@ -80,12 +83,13 @@ export async function removeDriver(formData: FormData) {
     return { error: 'Datos incompletos' };
   }
 
-  const supabase = await createClient();
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado para este restaurante' };
 
-  const { error } = await supabase
+  const { error } = await access.supabase
     .from('restaurant_drivers')
     .delete()
-    .eq('restaurant_id', restaurantId)
+    .eq('restaurant_id', access.restaurantId)
     .eq('driver_id', driverId);
 
   if (error) {
