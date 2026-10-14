@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { SESSION_COOKIE } from '@/utils/firebase/session';
+import { SESSION_COOKIE } from '@/utils/firebase/constants';
 
 /**
  * Guarda de rutas del panel. La sesión vive en la cookie httpOnly `__session`

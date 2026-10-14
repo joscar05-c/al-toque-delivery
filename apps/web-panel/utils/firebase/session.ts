@@ -2,10 +2,10 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 
+import { SESSION_COOKIE } from './constants';
 import { verifyFirebaseIdToken } from './admin';
 
-/** Cookie httpOnly con el ID token de Firebase. */
-export const SESSION_COOKIE = '__session';
+export { SESSION_COOKIE } from './constants';
 
 export interface SessionUser {
   id: string;
