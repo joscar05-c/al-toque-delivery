@@ -1108,7 +1108,22 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      admin_approve_restaurant_application: {
+        Args: { p_application_id: string };
+        Returns: string;
+      };
+      admin_create_restaurant: {
+        Args: {
+          p_owner_id: string;
+          p_name: string;
+          p_address: string;
+          p_phone: string;
+          p_city: string;
+          p_category_id?: string | null;
+          p_average_prep_time?: number;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       roles_name_enum: 'client' | 'driver' | 'restaurant_owner' | 'admin';

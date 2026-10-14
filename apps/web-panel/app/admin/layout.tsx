@@ -48,6 +48,15 @@ export default async function AdminLayout({
             </svg>
             Categorías
           </Link>
+          <Link
+            href="/admin/restaurants"
+            className="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          >
+            <svg className="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10l1.5-6h15L21 10M5 10v10h14V10M9 20v-6h6v6M3 10a2 2 0 004 0 2 2 0 004 0 2 2 0 004 0 2 2 0 004 0" />
+            </svg>
+            Restaurantes
+          </Link>
         </nav>
       </aside>
 
