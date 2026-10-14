@@ -8,6 +8,9 @@ import { getSupabaseServiceClient, supabaseServiceRoleKey } from './supabase';
  * Cámbiala si tu proyecto usa otra región primaria.
  */
 const REGION = 'us-central1';
+logger.info('[runtime] Firebase Functions Node.js version', {
+  version: process.version,
+});
 
 /** Rol por defecto para nuevos usuarios móviles (public.roles.id = 1 -> client). */
 const DEFAULT_ROLE_ID = 1;
@@ -40,8 +43,16 @@ async function ensureProfile(user: {
   );
 
   if (error) {
-    logger.error('[ensureProfile] Supabase upsert falló', error);
-    return;
+    logger.error('[ensureProfile] Supabase upsert falló', {
+      uid: user.uid,
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    // Es una blocking function: si no existe perfil no emitimos un token que
+    // luego fallará silenciosamente por RLS en la app.
+    throw new Error(`No se pudo crear el perfil Supabase (${error.code}).`);
   }
 
   logger.info('[ensureProfile] Perfil asegurado', { uid: user.uid });
@@ -61,16 +72,12 @@ export const onUserCreated = beforeUserCreated(
     const user = event.data;
 
     if (user) {
-      try {
-        await ensureProfile({
-          uid: user.uid,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          displayName: user.displayName,
-        });
-      } catch (error) {
-        logger.error('[onUserCreated] Error asegurando perfil', error);
-      }
+      await ensureProfile({
+        uid: user.uid,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        displayName: user.displayName,
+      });
     }
 
     return { customClaims: { role: 'authenticated' } };
@@ -88,16 +95,12 @@ export const onUserSignedIn = beforeUserSignedIn(
     const user = event.data;
 
     if (user) {
-      try {
-        await ensureProfile({
-          uid: user.uid,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          displayName: user.displayName,
-        });
-      } catch (error) {
-        logger.error('[onUserSignedIn] Error asegurando perfil', error);
-      }
+      await ensureProfile({
+        uid: user.uid,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        displayName: user.displayName,
+      });
     }
 
     return { customClaims: { role: 'authenticated' } };

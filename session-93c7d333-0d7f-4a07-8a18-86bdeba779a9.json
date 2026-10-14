@@ -1,0 +1,6698 @@
+{
+  "info": {
+    "id": "ses_edd57cd7cffeRZMJoadakULlN0",
+    "projectID": "3209ce949ae46224f725ce91c393f80305c69c1b",
+    "agent": "build",
+    "model": {
+      "id": "gpt-6-luna",
+      "providerID": "opencode-go",
+      "variant": "default"
+    },
+    "cost": 0.136709905,
+    "tokens": {
+      "input": 141,
+      "output": 10528,
+      "reasoning": 29355,
+      "cache": {
+        "read": 6309343,
+        "write": 429287
+      }
+    },
+    "time": {
+      "created": 1791582810755,
+      "updated": 1791826287719
+    },
+    "title": "[redacted:session-title:ses_edd57cd7cffeRZMJoadakULlN0]",
+    "location": {
+      "directory": "/[redacted:session-directory:ses_edd57cd7cffeRZMJoadakULlN0]"
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_122a832f0001xpk0ylRlqMz9Fa",
+      "time": {
+        "created": 1791582810865
+      },
+      "text": "[redacted:text:msg_122a832f0001xpk0ylRlqMz9Fa]",
+      "type": "user"
+    },
+    {
+      "id": "msg_122a8333a001fCZOXRrrXC8SyR",
+      "time": {
+        "created": 1791582810938,
+        "completed": 1791582830039
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_122a8333a001fCZOXRrrXC8SyR"
+          },
+          "time": {
+            "created": 1791582822383,
+            "completed": 1791582822940
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_5KY1OztFCQj4RJlksPdKsB5V",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8333a001fCZOXRrrXC8SyR"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8333a001fCZOXRrrXC8SyR"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8333a001fCZOXRrrXC8SyR]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8333a001fCZOXRrrXC8SyR"
+            }
+          },
+          "time": {
+            "created": 1791582823709,
+            "completed": 1791582823728
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.000790425,
+      "tokens": {
+        "input": 3,
+        "output": 104,
+        "reasoning": 45,
+        "cache": {
+          "read": 0,
+          "write": 5725
+        }
+      }
+    },
+    {
+      "id": "msg_122a87de6001xBQ1bCCRpKlRRc",
+      "time": {
+        "created": 1791582830054,
+        "completed": 1791582845122
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_122a87de6001xBQ1bCCRpKlRRc]",
+          "state": {
+            "redacted": "text-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_nn1pjWadwvxTJBL5B4xI6MOg",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a87de6001xBQ1bCCRpKlRRc"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a87de6001xBQ1bCCRpKlRRc]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a87de6001xBQ1bCCRpKlRRc"
+            }
+          },
+          "time": {
+            "created": 1791582835938,
+            "completed": 1791582836595
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_vR4qFZ2jXkd9AnyywDWApge3",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a87de6001xBQ1bCCRpKlRRc"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a87de6001xBQ1bCCRpKlRRc]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a87de6001xBQ1bCCRpKlRRc"
+            }
+          },
+          "time": {
+            "created": 1791582835973,
+            "completed": 1791582836616
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_QzqVzbuAyw8rGRoRGUi81HhC",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a87de6001xBQ1bCCRpKlRRc"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a87de6001xBQ1bCCRpKlRRc]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a87de6001xBQ1bCCRpKlRRc"
+            }
+          },
+          "time": {
+            "created": 1791582836008,
+            "completed": 1791582836728
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_acvADOqBR1YhuOeQxdG1Qas2",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a87de6001xBQ1bCCRpKlRRc"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a87de6001xBQ1bCCRpKlRRc]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a87de6001xBQ1bCCRpKlRRc"
+            }
+          },
+          "time": {
+            "created": 1791582836047,
+            "completed": 1791582836844
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_chgRFj2PsRKcETe6mJAxXlfG",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a87de6001xBQ1bCCRpKlRRc"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a87de6001xBQ1bCCRpKlRRc]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a87de6001xBQ1bCCRpKlRRc"
+            }
+          },
+          "time": {
+            "created": 1791582836093,
+            "completed": 1791582837615
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_X3UEmvUwaAsy19QmQb4tTrei",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a87de6001xBQ1bCCRpKlRRc"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a87de6001xBQ1bCCRpKlRRc"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a87de6001xBQ1bCCRpKlRRc]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a87de6001xBQ1bCCRpKlRRc"
+            }
+          },
+          "time": {
+            "created": 1791582836129,
+            "completed": 1791582837008
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.000194175,
+      "tokens": {
+        "input": 3,
+        "output": 202,
+        "reasoning": 0,
+        "cache": {
+          "read": 5725,
+          "write": 285
+        }
+      }
+    },
+    {
+      "id": "msg_122a8b8ce001ZBi3KkSCT5LX8n",
+      "time": {
+        "created": 1791582845134,
+        "completed": 1791582867155
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "time": {
+            "created": 1791582851928,
+            "completed": 1791582853610
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_KNIvmFMzN4BhbLofzqfa8MjV",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853687,
+            "completed": 1791582854667
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Rdv84l6qvrYowkfQW2cV7clF",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853724,
+            "completed": 1791582854701
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_E3r5B5rvrtAKk0kEubYUSoHs",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853770,
+            "completed": 1791582854683
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_HI2jOhCgfg5q9MptOzQSl6e7",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853815,
+            "completed": 1791582854739
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_YnialByxrzjfGeyyDiDtvKRz",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853854,
+            "completed": 1791582854756
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_qkApS5gCleBSfZWzAy1JHj1q",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853907,
+            "completed": 1791582854484
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_e6uAmAYTiFL8V6SY2ArImo48",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a8b8ce001ZBi3KkSCT5LX8n]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a8b8ce001ZBi3KkSCT5LX8n"
+            }
+          },
+          "time": {
+            "created": 1791582853938,
+            "completed": 1791582854635
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00057565,
+      "tokens": {
+        "input": 3,
+        "output": 250,
+        "reasoning": 22,
+        "cache": {
+          "read": 6010,
+          "write": 3034
+        }
+      }
+    },
+    {
+      "id": "msg_122a90ee3001jmGqPVcCkAeYHb",
+      "time": {
+        "created": 1791582867171,
+        "completed": 1791582885792
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "time": {
+            "created": 1791582873740,
+            "completed": 1791582876905
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_8XOq0NIVGamuhyqSXAljGh4w",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582876946,
+            "completed": 1791582878015
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_bkFdbxFxlEjJTTzXrEbXbZyp",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582876985,
+            "completed": 1791582878033
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_zBQ4VzUqtu7G4FMwrugn8507",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582877029,
+            "completed": 1791582878094
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_EQo6IWsBmbvFl8M7XSdQ1aRk",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582877067,
+            "completed": 1791582878108
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_1UmP69wdQCDibyuQtaFVf1NI",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582877105,
+            "completed": 1791582877667
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_bnUuQT53hKsqpdmCcr956DPw",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582877141,
+            "completed": 1791582877682
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_rh16iOPZbPawN47sK39K12xW",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582877208,
+            "completed": 1791582877826
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_3natEBy4oyHqWoVtVaucIdum",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a90ee3001jmGqPVcCkAeYHb"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a90ee3001jmGqPVcCkAeYHb"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a90ee3001jmGqPVcCkAeYHb]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a90ee3001jmGqPVcCkAeYHb"
+            }
+          },
+          "time": {
+            "created": 1791582877252,
+            "completed": 1791582877845
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.000875865,
+      "tokens": {
+        "input": 3,
+        "output": 264,
+        "reasoning": 114,
+        "cache": {
+          "read": 9044,
+          "write": 4769
+        }
+      }
+    },
+    {
+      "id": "msg_122a957b4001zH8W7iFLDFysf5",
+      "time": {
+        "created": 1791582885812,
+        "completed": 1791582906527
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "time": {
+            "created": 1791582891169,
+            "completed": 1791582894644
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_TUlG9qP6D0OgqD3SLLU0fFVg",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894684,
+            "completed": 1791582896338
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_yKy8Ghssh5hbuvaSnfqa8bO3",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894731,
+            "completed": 1791582896412
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_LrOgI6qBq8SfaNnZVKTJekVl",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894771,
+            "completed": 1791582896432
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_moqQzqGoW96mNbcHfm4gbOai",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894805,
+            "completed": 1791582896145
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_lpdhN1xjknFVRvwncuoE4kT9",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894841,
+            "completed": 1791582896210
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_UPpHSW6eR9wYvAQbObtNCJIt",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894877,
+            "completed": 1791582895832
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_AVivNk8jUFLu2eIej9aNrE5P",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894915,
+            "completed": 1791582896170
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_orUwTUVYlpFt1Hqufmpw6PUh",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a957b4001zH8W7iFLDFysf5"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a957b4001zH8W7iFLDFysf5"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a957b4001zH8W7iFLDFysf5]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a957b4001zH8W7iFLDFysf5"
+            }
+          },
+          "time": {
+            "created": 1791582894958,
+            "completed": 1791582898226
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.000930555,
+      "tokens": {
+        "input": 3,
+        "output": 281,
+        "reasoning": 186,
+        "cache": {
+          "read": 13813,
+          "write": 4469
+        }
+      }
+    },
+    {
+      "id": "msg_122a9a8b2001ma5QDL8krek3f2",
+      "time": {
+        "created": 1791582906547,
+        "completed": 1791582925209
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "time": {
+            "created": 1791582912131,
+            "completed": 1791582913636
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_122a9a8b2001ma5QDL8krek3f2]",
+          "state": {
+            "redacted": "text-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_pdvTwzorzXdyDPfovSXAIFKa",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582916353,
+            "completed": 1791582916575
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_L36Q2Xvv5EU3J6UWyT1xy83Q",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582916387,
+            "completed": 1791582916645
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_bSYwyRK7ziq1xPf5ZepU4N8K",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582916427,
+            "completed": 1791582916752
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_pkewtnKtnF85POmz66hdB9xQ",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582916852,
+            "completed": 1791582917179
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_pKdgk1NPMwnC4xE5Anp51Ji8",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582916962,
+            "completed": 1791582917921
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_HFOaZDkote8DhrwYQoeMSbU5",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582917000,
+            "completed": 1791582918046
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_1djePSSltMfSiHDfF85E9jVg",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9a8b2001ma5QDL8krek3f2"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9a8b2001ma5QDL8krek3f2"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9a8b2001ma5QDL8krek3f2]"
+              },
+              {
+                "type": "file",
+                "uri": "[redacted:tool-file-uri:msg_122a9a8b2001ma5QDL8krek3f2]",
+                "mime": "image/png",
+                "name": null
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9a8b2001ma5QDL8krek3f2"
+            }
+          },
+          "time": {
+            "created": 1791582917044,
+            "completed": 1791582917696
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.000884245,
+      "tokens": {
+        "input": 3,
+        "output": 330,
+        "reasoning": 147,
+        "cache": {
+          "read": 18282,
+          "write": 3701
+        }
+      }
+    },
+    {
+      "id": "msg_122a9f1b40015tHY0vWpN9Jkl7",
+      "time": {
+        "created": 1791582925236,
+        "completed": 1791582945372
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "time": {
+            "created": 1791582931285,
+            "completed": 1791582936003
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_zovb1yvoZutm9Q88lscGotJm",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9f1b40015tHY0vWpN9Jkl7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            }
+          },
+          "time": {
+            "created": 1791582936043,
+            "completed": 1791582936774
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_bedrqVPyjchk0TIPObDFBh4d",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9f1b40015tHY0vWpN9Jkl7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            }
+          },
+          "time": {
+            "created": 1791582936082,
+            "completed": 1791582936794
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_4KekpYPD8D1mzxVacG4pcJQj",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9f1b40015tHY0vWpN9Jkl7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            }
+          },
+          "time": {
+            "created": 1791582936127,
+            "completed": 1791582936816
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_dXxSRHSGmhPxgtcJsD6EfcXF",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9f1b40015tHY0vWpN9Jkl7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            }
+          },
+          "time": {
+            "created": 1791582936172,
+            "completed": 1791582936832
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Zwa15mgsUdSAm87LGme9PYx4",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9f1b40015tHY0vWpN9Jkl7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            }
+          },
+          "time": {
+            "created": 1791582936219,
+            "completed": 1791582936916
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_urDd9F320wUnzirEtcVF2Zci",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_122a9f1b40015tHY0vWpN9Jkl7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_122a9f1b40015tHY0vWpN9Jkl7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_122a9f1b40015tHY0vWpN9Jkl7"
+            }
+          },
+          "time": {
+            "created": 1791582936308,
+            "completed": 1791582938520
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9",
+        "end": "5f25ace9b560c67c9a811956aabf9ac0f3de73e9"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00111513,
+      "tokens": {
+        "input": 3,
+        "output": 429,
+        "reasoning": 191,
+        "cache": {
+          "read": 21983,
+          "write": 4680
+        }
+      }
+    },
+    {
+      "id": "msg_130969dfe001Zre75V0Dmu5DqH",
+      "time": {
+        "created": 1791816539648
+      },
+      "text": "[redacted:text:msg_130969dfe001Zre75V0Dmu5DqH]",
+      "type": "user"
+    },
+    {
+      "id": "msg_130969ec9001ozyHjttx0nmIrG",
+      "time": {
+        "created": 1791816539850,
+        "completed": 1791816654915
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "time": {
+            "created": 1791816571574,
+            "completed": 1791816575023
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_qY52Nb0krbQFXuzvbK0C8XHU",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575304,
+            "completed": 1791816575521
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_xJZhYF3UCUleijjM56xHbPvG",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575433,
+            "completed": 1791816577415
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Hrr9oOt6b0s61Zj8hKzCaQrL",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575571,
+            "completed": 1791816577178
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_SzL2P2h3IpQtqOvwJBa0AigF",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575631,
+            "completed": 1791816577200
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_DCekQnPlyTNEqb73QBCPpC1j",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575682,
+            "completed": 1791816612155
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_KYbuH57vR7ULNByFntMIFRkc",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575838,
+            "completed": 1791816640374
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Tyumj0kos22BVZYSNr4GcT43",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130969ec9001ozyHjttx0nmIrG"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130969ec9001ozyHjttx0nmIrG"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130969ec9001ozyHjttx0nmIrG]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130969ec9001ozyHjttx0nmIrG"
+            }
+          },
+          "time": {
+            "created": 1791816575902,
+            "completed": 1791816579308
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003894175,
+      "tokens": {
+        "input": 3,
+        "output": 353,
+        "reasoning": 137,
+        "cache": {
+          "read": 0,
+          "write": 29191
+        }
+      }
+    },
+    {
+      "id": "msg_130986b2b001sgBMlgSlgVfPCa",
+      "time": {
+        "created": 1791816657707,
+        "completed": 1791816679423
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130986b2b001sgBMlgSlgVfPCa"
+          },
+          "time": {
+            "created": 1791816663383,
+            "completed": 1791816665983
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_nM4qw9tlZ3W4mgeXh1ztBlmd",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130986b2b001sgBMlgSlgVfPCa"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130986b2b001sgBMlgSlgVfPCa"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130986b2b001sgBMlgSlgVfPCa]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130986b2b001sgBMlgSlgVfPCa"
+            }
+          },
+          "time": {
+            "created": 1791816666081,
+            "completed": 1791816666337
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_niYMniCRXaevX1k2jkXbsQ2S",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130986b2b001sgBMlgSlgVfPCa"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130986b2b001sgBMlgSlgVfPCa"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130986b2b001sgBMlgSlgVfPCa]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130986b2b001sgBMlgSlgVfPCa"
+            }
+          },
+          "time": {
+            "created": 1791816666115,
+            "completed": 1791816666878
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_jNKULaGdCdSaM5KoeZOhXB0y",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130986b2b001sgBMlgSlgVfPCa"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130986b2b001sgBMlgSlgVfPCa"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130986b2b001sgBMlgSlgVfPCa]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130986b2b001sgBMlgSlgVfPCa"
+            }
+          },
+          "time": {
+            "created": 1791816666147,
+            "completed": 1791816668686
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_BlfRSAUQGK4NTUtCI9rviGwX",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130986b2b001sgBMlgSlgVfPCa"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130986b2b001sgBMlgSlgVfPCa"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130986b2b001sgBMlgSlgVfPCa]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130986b2b001sgBMlgSlgVfPCa"
+            }
+          },
+          "time": {
+            "created": 1791816666184,
+            "completed": 1791816674589
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_FubpCYTjxlA8uFGbwatoJaGh",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130986b2b001sgBMlgSlgVfPCa"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130986b2b001sgBMlgSlgVfPCa"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130986b2b001sgBMlgSlgVfPCa]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130986b2b001sgBMlgSlgVfPCa"
+            }
+          },
+          "time": {
+            "created": 1791816666219,
+            "completed": 1791816668087
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00075521,
+      "tokens": {
+        "input": 3,
+        "output": 270,
+        "reasoning": 76,
+        "cache": {
+          "read": 29191,
+          "write": 2320
+        }
+      }
+    },
+    {
+      "id": "msg_13098c017001SrLpCsSJ9q4M4Z",
+      "time": {
+        "created": 1791816679447,
+        "completed": 1791816709325
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13098c017001SrLpCsSJ9q4M4Z"
+          },
+          "time": {
+            "created": 1791816684565,
+            "completed": 1791816688635
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Sjh3uRhiYBZkof7go6hUJSoF",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13098c017001SrLpCsSJ9q4M4Z"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13098c017001SrLpCsSJ9q4M4Z"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13098c017001SrLpCsSJ9q4M4Z]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13098c017001SrLpCsSJ9q4M4Z"
+            }
+          },
+          "time": {
+            "created": 1791816688657,
+            "completed": 1791816702333
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_kuR5UKFyHX33vKPRHnJH8b0D",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13098c017001SrLpCsSJ9q4M4Z"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13098c017001SrLpCsSJ9q4M4Z"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13098c017001SrLpCsSJ9q4M4Z]"
+              },
+              {
+                "type": "file",
+                "uri": "[redacted:tool-file-uri:msg_13098c017001SrLpCsSJ9q4M4Z]",
+                "mime": "image/png",
+                "name": null
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13098c017001SrLpCsSJ9q4M4Z"
+            }
+          },
+          "time": {
+            "created": 1791816688682,
+            "completed": 1791816688995
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_UygUNrFrLY4qd3Zcg7ZARiL9",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13098c017001SrLpCsSJ9q4M4Z"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13098c017001SrLpCsSJ9q4M4Z"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13098c017001SrLpCsSJ9q4M4Z]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13098c017001SrLpCsSJ9q4M4Z"
+            }
+          },
+          "time": {
+            "created": 1791816688706,
+            "completed": 1791816689140
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_neRKstIpKJxhowRctFFDP5Wd",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13098c017001SrLpCsSJ9q4M4Z"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13098c017001SrLpCsSJ9q4M4Z"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13098c017001SrLpCsSJ9q4M4Z]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13098c017001SrLpCsSJ9q4M4Z"
+            }
+          },
+          "time": {
+            "created": 1791816688730,
+            "completed": 1791816689029
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00085291,
+      "tokens": {
+        "input": 3,
+        "output": 260,
+        "reasoning": 305,
+        "cache": {
+          "read": 31511,
+          "write": 2040
+        }
+      }
+    },
+    {
+      "id": "msg_1309934e4001kvI9oZoX8mpF7y",
+      "time": {
+        "created": 1791816709348,
+        "completed": 1791816733865
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "time": {
+            "created": 1791816714714,
+            "completed": 1791816719517
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "time": {
+            "created": 1791816719526,
+            "completed": 1791816725668
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Fr4LzbT3eKGGMrZnlJbh0bqD",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1309934e4001kvI9oZoX8mpF7y"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1309934e4001kvI9oZoX8mpF7y]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1309934e4001kvI9oZoX8mpF7y"
+            }
+          },
+          "time": {
+            "created": 1791816725693,
+            "completed": 1791816727989
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_eHaQpNJ1rhLtcv7wCkZJHE9t",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1309934e4001kvI9oZoX8mpF7y"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1309934e4001kvI9oZoX8mpF7y]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1309934e4001kvI9oZoX8mpF7y"
+            }
+          },
+          "time": {
+            "created": 1791816725740,
+            "completed": 1791816727870
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_jT5zA8yZOWaJz6tkwYsr5qfs",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1309934e4001kvI9oZoX8mpF7y"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1309934e4001kvI9oZoX8mpF7y]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1309934e4001kvI9oZoX8mpF7y"
+            }
+          },
+          "time": {
+            "created": 1791816725771,
+            "completed": 1791816728376
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_qvniZQZQBVnUNKPye8nT6IGQ",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1309934e4001kvI9oZoX8mpF7y"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1309934e4001kvI9oZoX8mpF7y]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1309934e4001kvI9oZoX8mpF7y"
+            }
+          },
+          "time": {
+            "created": 1791816725808,
+            "completed": 1791816726011
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_keWb8DM7q1bRNT5dhlAlrXik",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1309934e4001kvI9oZoX8mpF7y"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1309934e4001kvI9oZoX8mpF7y"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1309934e4001kvI9oZoX8mpF7y]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1309934e4001kvI9oZoX8mpF7y"
+            }
+          },
+          "time": {
+            "created": 1791816725839,
+            "completed": 1791816726135
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00157031,
+      "tokens": {
+        "input": 3,
+        "output": 390,
+        "reasoning": 929,
+        "cache": {
+          "read": 33551,
+          "write": 4600
+        }
+      }
+    },
+    {
+      "id": "msg_1309994be001Gf9AtBC2YzLik6",
+      "time": {
+        "created": 1791816733886,
+        "completed": 1791816755096
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1309994be001Gf9AtBC2YzLik6"
+          },
+          "time": {
+            "created": 1791816738920,
+            "completed": 1791816743114
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1309994be001Gf9AtBC2YzLik6"
+          },
+          "time": {
+            "created": 1791816743120,
+            "completed": 1791816745181
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_71pOZw0WZtx8hIZyXl8fH3Cc",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1309994be001Gf9AtBC2YzLik6"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1309994be001Gf9AtBC2YzLik6"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1309994be001Gf9AtBC2YzLik6]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1309994be001Gf9AtBC2YzLik6"
+            }
+          },
+          "time": {
+            "created": 1791816745904,
+            "completed": 1791816749625
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00154681,
+      "tokens": {
+        "input": 3,
+        "output": 114,
+        "reasoning": 740,
+        "cache": {
+          "read": 38151,
+          "write": 5904
+        }
+      }
+    },
+    {
+      "id": "msg_13099e7ac001Dr4HiBcXMhvx5Z",
+      "time": {
+        "created": 1791816755116,
+        "completed": 1791816778133
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13099e7ac001Dr4HiBcXMhvx5Z"
+          },
+          "time": {
+            "created": 1791816760693,
+            "completed": 1791816764912
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13099e7ac001Dr4HiBcXMhvx5Z"
+          },
+          "time": {
+            "created": 1791816764917,
+            "completed": 1791816768923
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13099e7ac001Dr4HiBcXMhvx5Z"
+          },
+          "time": {
+            "created": 1791816768927,
+            "completed": 1791816772891
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_EU9YspIAOV7RhKcewWKpJDyx",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13099e7ac001Dr4HiBcXMhvx5Z"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13099e7ac001Dr4HiBcXMhvx5Z"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13099e7ac001Dr4HiBcXMhvx5Z]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13099e7ac001Dr4HiBcXMhvx5Z"
+            }
+          },
+          "time": {
+            "created": 1791816773406,
+            "completed": 1791816773416
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.001331225,
+      "tokens": {
+        "input": 3,
+        "output": 103,
+        "reasoning": 1459,
+        "cache": {
+          "read": 44055,
+          "write": 875
+        }
+      }
+    },
+    {
+      "id": "msg_1309a41af001APqGlQtaG5ujVO",
+      "time": {
+        "created": 1791816778160,
+        "completed": 1791816790460
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1309a41af001APqGlQtaG5ujVO]",
+          "state": {
+            "redacted": "text-state:msg_1309a41af001APqGlQtaG5ujVO"
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "stop",
+      "cost": 0.000791225,
+      "tokens": {
+        "input": 3,
+        "output": 259,
+        "reasoning": 0,
+        "cache": {
+          "read": 44930,
+          "write": 1697
+        }
+      }
+    },
+    {
+      "id": "msg_130ad9c28001xfaHdSdIVsMsQl",
+      "time": {
+        "created": 1791818046507
+      },
+      "text": "[redacted:text:msg_130ad9c28001xfaHdSdIVsMsQl]",
+      "type": "user"
+    },
+    {
+      "id": "msg_130ad9db4001cjwY2Gseo49bDS",
+      "time": {
+        "created": 1791818046900,
+        "completed": 1791818065858
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "time": {
+            "created": 1791818053964,
+            "completed": 1791818054776
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_130ad9db4001cjwY2Gseo49bDS]",
+          "state": {
+            "redacted": "text-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_DPotIEhxAGq6qupjZ331Zn6e",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057080,
+            "completed": 1791818059253
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_igxnJtWJcjrfTvLyLZV5t5wT",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057131,
+            "completed": 1791818059130
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_HwEGbNiH4HA4jq0iIQJm3py5",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057196,
+            "completed": 1791818059059
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_YCveWrrpgMNlMvJ6O6UoDS9M",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057233,
+            "completed": 1791818059070
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Te1wcVYXXrll5GOtGRp7JFz8",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057273,
+            "completed": 1791818059044
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_AGK7s65BAhTl43MUckW3j4Tl",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057424,
+            "completed": 1791818059274
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_oaZl4qPftLzMoy4qF7Bt5RBg",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ad9db4001cjwY2Gseo49bDS"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ad9db4001cjwY2Gseo49bDS"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ad9db4001cjwY2Gseo49bDS]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ad9db4001cjwY2Gseo49bDS"
+            }
+          },
+          "time": {
+            "created": 1791818057464,
+            "completed": 1791818059314
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.000728445,
+      "tokens": {
+        "input": 3,
+        "output": 379,
+        "reasoning": 66,
+        "cache": {
+          "read": 46627,
+          "write": 315
+        }
+      }
+    },
+    {
+      "id": "msg_130ade7e800115H0NQ739UgQXA",
+      "time": {
+        "created": 1791818065896,
+        "completed": 1791818094512
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "time": {
+            "created": 1791818072102,
+            "completed": 1791818076692
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "time": {
+            "created": 1791818076705,
+            "completed": 1791818082349
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_kzWafa7SylBhLjOxNkiOngvr",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ade7e800115H0NQ739UgQXA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ade7e800115H0NQ739UgQXA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ade7e800115H0NQ739UgQXA"
+            }
+          },
+          "time": {
+            "created": 1791818082440,
+            "completed": 1791818085393
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_kRP94SpJYn7VngJuh3smfe7I",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ade7e800115H0NQ739UgQXA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ade7e800115H0NQ739UgQXA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ade7e800115H0NQ739UgQXA"
+            }
+          },
+          "time": {
+            "created": 1791818082503,
+            "completed": 1791818087527
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_NcyRKtBaS3Xj65i7I2h9otmP",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ade7e800115H0NQ739UgQXA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ade7e800115H0NQ739UgQXA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ade7e800115H0NQ739UgQXA"
+            }
+          },
+          "time": {
+            "created": 1791818082551,
+            "completed": 1791818087384
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_fna84lM8sdi00PP73XXyFdxG",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ade7e800115H0NQ739UgQXA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ade7e800115H0NQ739UgQXA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ade7e800115H0NQ739UgQXA"
+            }
+          },
+          "time": {
+            "created": 1791818082597,
+            "completed": 1791818083893
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_ky00y9DJ9U6eyRyUqPy8KBpV",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ade7e800115H0NQ739UgQXA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ade7e800115H0NQ739UgQXA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ade7e800115H0NQ739UgQXA"
+            }
+          },
+          "time": {
+            "created": 1791818082745,
+            "completed": 1791818084410
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_jjPeFyPYKDitWzPCKqbQCx3J",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ade7e800115H0NQ739UgQXA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ade7e800115H0NQ739UgQXA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ade7e800115H0NQ739UgQXA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ade7e800115H0NQ739UgQXA"
+            }
+          },
+          "time": {
+            "created": 1791818082803,
+            "completed": 1791818083085
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00190847,
+      "tokens": {
+        "input": 3,
+        "output": 452,
+        "reasoning": 796,
+        "cache": {
+          "read": 46942,
+          "write": 6518
+        }
+      }
+    },
+    {
+      "id": "msg_130ae57d7001y2b6Ctv2ZBO0ZB",
+      "time": {
+        "created": 1791818094552,
+        "completed": 1791818141795
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130ae57d7001y2b6Ctv2ZBO0ZB"
+          },
+          "time": {
+            "created": 1791818105995,
+            "completed": 1791818110540
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130ae57d7001y2b6Ctv2ZBO0ZB"
+          },
+          "time": {
+            "created": 1791818110549,
+            "completed": 1791818114779
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_DYcj71ik7urrQ0CIj7QDzJ3h",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130ae57d7001y2b6Ctv2ZBO0ZB"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130ae57d7001y2b6Ctv2ZBO0ZB"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130ae57d7001y2b6Ctv2ZBO0ZB]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130ae57d7001y2b6Ctv2ZBO0ZB"
+            }
+          },
+          "time": {
+            "created": 1791818115567,
+            "completed": 1791818122464
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.006390525,
+      "tokens": {
+        "input": 3,
+        "output": 115,
+        "reasoning": 991,
+        "cache": {
+          "read": 53460,
+          "write": 42421
+        }
+      }
+    },
+    {
+      "id": "msg_130af10ac001EBnl179zXIeQpL",
+      "time": {
+        "created": 1791818141868,
+        "completed": 1791818187032
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130af10ac001EBnl179zXIeQpL"
+          },
+          "time": {
+            "created": 1791818154602,
+            "completed": 1791818157850
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130af10ac001EBnl179zXIeQpL"
+          },
+          "time": {
+            "created": 1791818157858,
+            "completed": 1791818164207
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Buxl9VTkqsb17vTTrYPZQJVJ",
+          "name": "webfetch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130af10ac001EBnl179zXIeQpL"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130af10ac001EBnl179zXIeQpL"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130af10ac001EBnl179zXIeQpL]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130af10ac001EBnl179zXIeQpL"
+            }
+          },
+          "time": {
+            "created": 1791818164787,
+            "completed": 1791818169710
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Q2G2gLgLXujuwWuRLKnNzVYj",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130af10ac001EBnl179zXIeQpL"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130af10ac001EBnl179zXIeQpL"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130af10ac001EBnl179zXIeQpL]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130af10ac001EBnl179zXIeQpL"
+            }
+          },
+          "time": {
+            "created": 1791818164860,
+            "completed": 1791818169587
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_E7lZDiqR0CIV0eK7asc2Vf4N",
+          "name": "webfetch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_130af10ac001EBnl179zXIeQpL"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_130af10ac001EBnl179zXIeQpL"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_130af10ac001EBnl179zXIeQpL]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_130af10ac001EBnl179zXIeQpL"
+            }
+          },
+          "time": {
+            "created": 1791818165107,
+            "completed": 1791818169618
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00188336,
+      "tokens": {
+        "input": 3,
+        "output": 109,
+        "reasoning": 1034,
+        "cache": {
+          "read": 95881,
+          "write": 2822
+        }
+      }
+    },
+    {
+      "id": "msg_130afc139001ak1R4EqEFMKIJe",
+      "time": {
+        "created": 1791818187065,
+        "completed": 1791818228106
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130afc139001ak1R4EqEFMKIJe"
+          },
+          "time": {
+            "created": 1791818205470,
+            "completed": 1791818207943
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130afc139001ak1R4EqEFMKIJe"
+          },
+          "time": {
+            "created": 1791818207955,
+            "completed": 1791818212663
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130afc139001ak1R4EqEFMKIJe"
+          },
+          "time": {
+            "created": 1791818212668,
+            "completed": 1791818217437
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_130afc139001ak1R4EqEFMKIJe"
+          },
+          "time": {
+            "created": 1791818217472,
+            "completed": 1791818218027
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_130afc139001ak1R4EqEFMKIJe]",
+          "state": {
+            "redacted": "text-state:msg_130afc139001ak1R4EqEFMKIJe"
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "stop",
+      "cost": 0.005005455,
+      "tokens": {
+        "input": 3,
+        "output": 545,
+        "reasoning": 1617,
+        "cache": {
+          "read": 98703,
+          "write": 23497
+        }
+      }
+    },
+    {
+      "id": "msg_131055995001jQ4L3jK0dDRgWz",
+      "time": {
+        "created": 1791823796632
+      },
+      "text": "[redacted:text:msg_131055995001jQ4L3jK0dDRgWz]",
+      "type": "user"
+    },
+    {
+      "id": "msg_131055b6f001EIDBLXea5eOYT8",
+      "time": {
+        "created": 1791823797104,
+        "completed": 1791823829494
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131055b6f001EIDBLXea5eOYT8"
+          },
+          "time": {
+            "created": 1791823818567,
+            "completed": 1791823820927
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_RiNy7TMgKWapFn2ATSc86fQl",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131055b6f001EIDBLXea5eOYT8"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131055b6f001EIDBLXea5eOYT8"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131055b6f001EIDBLXea5eOYT8]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131055b6f001EIDBLXea5eOYT8"
+            }
+          },
+          "time": {
+            "created": 1791823822060,
+            "completed": 1791823822095
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.015823425,
+      "tokens": {
+        "input": 3,
+        "output": 97,
+        "reasoning": 267,
+        "cache": {
+          "read": 0,
+          "write": 125129
+        }
+      }
+    },
+    {
+      "id": "msg_13105da25001GdN51nHp68dJzw",
+      "time": {
+        "created": 1791823829541,
+        "completed": 1791823846762
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_13105da25001GdN51nHp68dJzw]",
+          "state": {
+            "redacted": "text-state:msg_13105da25001GdN51nHp68dJzw"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_UOWiLJuF5lIn2Qkm2mJtsehs",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838168,
+            "completed": 1791823838778
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_CSJUDE3wpkYlpOotya0xuKw1",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838217,
+            "completed": 1791823839000
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_LNiU1l1UUy9fnSEzO3h3kaYI",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838249,
+            "completed": 1791823838975
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_n3R6S5ePqbEm0jYVPDau1xsj",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838279,
+            "completed": 1791823839158
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_yZIRYyHf2luKBmu9Eyvuh57k",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838318,
+            "completed": 1791823838938
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_dOk02AzzJBLbLFt6bgbaerbZ",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838357,
+            "completed": 1791823838957
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_oPeXbT1iGIanYRJsRJ5ndb9h",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13105da25001GdN51nHp68dJzw"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13105da25001GdN51nHp68dJzw"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13105da25001GdN51nHp68dJzw]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13105da25001GdN51nHp68dJzw"
+            }
+          },
+          "time": {
+            "created": 1791823838401,
+            "completed": 1791823839075
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.001506715,
+      "tokens": {
+        "input": 3,
+        "output": 387,
+        "reasoning": 0,
+        "cache": {
+          "read": 125129,
+          "write": 493
+        }
+      }
+    },
+    {
+      "id": "msg_131061d92001lYZounuCICGe36",
+      "time": {
+        "created": 1791823846802,
+        "completed": 1791823867832
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "time": {
+            "created": 1791823853264,
+            "completed": 1791823858137
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "time": {
+            "created": 1791823858143,
+            "completed": 1791823860037
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_II0ErbW6BtNwvGBc3iVOG30K",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131061d92001lYZounuCICGe36"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131061d92001lYZounuCICGe36]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131061d92001lYZounuCICGe36"
+            }
+          },
+          "time": {
+            "created": 1791823860068,
+            "completed": 1791823860461
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_KSKKcEbSWpDovLdAYz4WhyUp",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131061d92001lYZounuCICGe36"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131061d92001lYZounuCICGe36]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131061d92001lYZounuCICGe36"
+            }
+          },
+          "time": {
+            "created": 1791823860093,
+            "completed": 1791823860646
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_TsZSusXyDh8T1PsG4eRHvyya",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131061d92001lYZounuCICGe36"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131061d92001lYZounuCICGe36]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131061d92001lYZounuCICGe36"
+            }
+          },
+          "time": {
+            "created": 1791823860120,
+            "completed": 1791823860962
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_ZdTM5TVvfaaqOtrE04ub3M4a",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131061d92001lYZounuCICGe36"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131061d92001lYZounuCICGe36]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131061d92001lYZounuCICGe36"
+            }
+          },
+          "time": {
+            "created": 1791823860144,
+            "completed": 1791823861035
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_5aPQVWsP88GoonrLw6Mwgb4y",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131061d92001lYZounuCICGe36"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131061d92001lYZounuCICGe36]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131061d92001lYZounuCICGe36"
+            }
+          },
+          "time": {
+            "created": 1791823860166,
+            "completed": 1791823860824
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_xKxIvc2qEV6ZuDIwtixS4rvV",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131061d92001lYZounuCICGe36"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131061d92001lYZounuCICGe36"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131061d92001lYZounuCICGe36]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131061d92001lYZounuCICGe36"
+            }
+          },
+          "time": {
+            "created": 1791823860183,
+            "completed": 1791823860838
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00260302,
+      "tokens": {
+        "input": 3,
+        "output": 271,
+        "reasoning": 542,
+        "cache": {
+          "read": 125622,
+          "write": 7520
+        }
+      }
+    },
+    {
+      "id": "msg_131066fdb001SnnWVM0gy58DJ4",
+      "time": {
+        "created": 1791823867867,
+        "completed": 1791823883949
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131066fdb001SnnWVM0gy58DJ4"
+          },
+          "time": {
+            "created": 1791823874073,
+            "completed": 1791823877450
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_XmCmNkREZH0Jvs769oKDgIax",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131066fdb001SnnWVM0gy58DJ4"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131066fdb001SnnWVM0gy58DJ4"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131066fdb001SnnWVM0gy58DJ4]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131066fdb001SnnWVM0gy58DJ4"
+            }
+          },
+          "time": {
+            "created": 1791823877472,
+            "completed": 1791823877877
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_RxavpAD2zPdFkk2qaaYIsvqO",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131066fdb001SnnWVM0gy58DJ4"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131066fdb001SnnWVM0gy58DJ4"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131066fdb001SnnWVM0gy58DJ4]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131066fdb001SnnWVM0gy58DJ4"
+            }
+          },
+          "time": {
+            "created": 1791823877498,
+            "completed": 1791823877787
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_djxaQUVD1bTIjx3r9il9lPub",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131066fdb001SnnWVM0gy58DJ4"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131066fdb001SnnWVM0gy58DJ4"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131066fdb001SnnWVM0gy58DJ4]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131066fdb001SnnWVM0gy58DJ4"
+            }
+          },
+          "time": {
+            "created": 1791823877520,
+            "completed": 1791823877768
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_hKOLm3N4J1wNZrwO1AetdCAN",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131066fdb001SnnWVM0gy58DJ4"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131066fdb001SnnWVM0gy58DJ4"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131066fdb001SnnWVM0gy58DJ4]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131066fdb001SnnWVM0gy58DJ4"
+            }
+          },
+          "time": {
+            "created": 1791823877547,
+            "completed": 1791823877890
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00326497,
+      "tokens": {
+        "input": 3,
+        "output": 221,
+        "reasoning": 227,
+        "cache": {
+          "read": 133142,
+          "write": 13674
+        }
+      }
+    },
+    {
+      "id": "msg_13106aed7001VFwY9yRE1XJPA3",
+      "time": {
+        "created": 1791823883991,
+        "completed": 1791823915209
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "time": {
+            "created": 1791823890741,
+            "completed": 1791823895351
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "time": {
+            "created": 1791823895360,
+            "completed": 1791823899524
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "time": {
+            "created": 1791823899531,
+            "completed": 1791823903507
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_kt7pBg4mluxO9S9SzLwkmaIe",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13106aed7001VFwY9yRE1XJPA3"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13106aed7001VFwY9yRE1XJPA3]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13106aed7001VFwY9yRE1XJPA3"
+            }
+          },
+          "time": {
+            "created": 1791823903587,
+            "completed": 1791823904277
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Kb4fkECmXj6f3O5LnwymZx7s",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13106aed7001VFwY9yRE1XJPA3"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13106aed7001VFwY9yRE1XJPA3]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13106aed7001VFwY9yRE1XJPA3"
+            }
+          },
+          "time": {
+            "created": 1791823903620,
+            "completed": 1791823904265
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_y3WZ0aGoaI4wOZy9Fb7WcQpy",
+          "name": "glob",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13106aed7001VFwY9yRE1XJPA3"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13106aed7001VFwY9yRE1XJPA3]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13106aed7001VFwY9yRE1XJPA3"
+            }
+          },
+          "time": {
+            "created": 1791823903656,
+            "completed": 1791823904605
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_PzG4dgcj8qFik9YAo1rwQU5H",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13106aed7001VFwY9yRE1XJPA3"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13106aed7001VFwY9yRE1XJPA3]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13106aed7001VFwY9yRE1XJPA3"
+            }
+          },
+          "time": {
+            "created": 1791823903690,
+            "completed": 1791823904650
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_pfhx34YJpjZ9CSkjpx3yohoP",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13106aed7001VFwY9yRE1XJPA3"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13106aed7001VFwY9yRE1XJPA3"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13106aed7001VFwY9yRE1XJPA3]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13106aed7001VFwY9yRE1XJPA3"
+            }
+          },
+          "time": {
+            "created": 1791823903734,
+            "completed": 1791823906567
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003871085,
+      "tokens": {
+        "input": 3,
+        "output": 131,
+        "reasoning": 1416,
+        "cache": {
+          "read": 146816,
+          "write": 13033
+        }
+      }
+    },
+    {
+      "id": "msg_13107290e001bQiSnL0YLnjSNt",
+      "time": {
+        "created": 1791823915279,
+        "completed": 1791823931634
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13107290e001bQiSnL0YLnjSNt"
+          },
+          "time": {
+            "created": 1791823923249,
+            "completed": 1791823923357
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_zC3Nd2Twk30uWfAwr3aPuRjj",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13107290e001bQiSnL0YLnjSNt"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13107290e001bQiSnL0YLnjSNt"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13107290e001bQiSnL0YLnjSNt]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13107290e001bQiSnL0YLnjSNt"
+            }
+          },
+          "time": {
+            "created": 1791823923657,
+            "completed": 1791823924055
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00183829,
+      "tokens": {
+        "input": 3,
+        "output": 34,
+        "reasoning": 9,
+        "cache": {
+          "read": 159849,
+          "write": 1744
+        }
+      }
+    },
+    {
+      "id": "msg_131076928001slGWfNpHYGf22F",
+      "time": {
+        "created": 1791823931688,
+        "completed": 1791823988614
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823939027,
+            "completed": 1791823943435
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823943443,
+            "completed": 1791823947843
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823947849,
+            "completed": 1791823952233
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823952248,
+            "completed": 1791823956852
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823956867,
+            "completed": 1791823961485
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823961494,
+            "completed": 1791823965823
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823965830,
+            "completed": 1791823970735
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823970742,
+            "completed": 1791823975580
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "time": {
+            "created": 1791823975588,
+            "completed": 1791823978130
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_3rLjUDwJGicDEz4RE3gLWQ5G",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131076928001slGWfNpHYGf22F"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131076928001slGWfNpHYGf22F"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131076928001slGWfNpHYGf22F]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131076928001slGWfNpHYGf22F"
+            }
+          },
+          "time": {
+            "created": 1791823978538,
+            "completed": 1791823978721
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00387123,
+      "tokens": {
+        "input": 3,
+        "output": 41,
+        "reasoning": 4432,
+        "cache": {
+          "read": 161593,
+          "write": 148
+        }
+      }
+    },
+    {
+      "id": "msg_1310847bd001bHAmCyot59Gkk7",
+      "time": {
+        "created": 1791823988669,
+        "completed": 1791824022724
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1310847bd001bHAmCyot59Gkk7"
+          },
+          "time": {
+            "created": 1791823998041,
+            "completed": 1791824001135
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_AB89bZeHYzKek3A73J6FQPKn",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1310847bd001bHAmCyot59Gkk7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1310847bd001bHAmCyot59Gkk7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1310847bd001bHAmCyot59Gkk7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1310847bd001bHAmCyot59Gkk7"
+            }
+          },
+          "time": {
+            "created": 1791824001665,
+            "completed": 1791824001686
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00245096,
+      "tokens": {
+        "input": 3,
+        "output": 103,
+        "reasoning": 330,
+        "cache": {
+          "read": 161741,
+          "write": 4934
+        }
+      }
+    },
+    {
+      "id": "msg_13108cd310017ityTAEmYM7XM0",
+      "time": {
+        "created": 1791824022834,
+        "completed": 1791824059827
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13108cd310017ityTAEmYM7XM0"
+          },
+          "time": {
+            "created": 1791824034117,
+            "completed": 1791824038262
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13108cd310017ityTAEmYM7XM0"
+          },
+          "time": {
+            "created": 1791824038269,
+            "completed": 1791824040427
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_13108cd310017ityTAEmYM7XM0]",
+          "state": {
+            "redacted": "text-state:msg_13108cd310017ityTAEmYM7XM0"
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "stop",
+      "cost": 0.00234755,
+      "tokens": {
+        "input": 3,
+        "output": 460,
+        "reasoning": 759,
+        "cache": {
+          "read": 166675,
+          "write": 568
+        }
+      }
+    },
+    {
+      "id": "msg_13118364500127LGEuFR90ffOn",
+      "time": {
+        "created": 1791825032774
+      },
+      "text": "[redacted:text:msg_13118364500127LGEuFR90ffOn]",
+      "type": "user"
+    },
+    {
+      "id": "msg_1311836a3001ws0qdSfe1oM9X0",
+      "time": {
+        "created": 1791825032868,
+        "completed": 1791825058361
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311836a3001ws0qdSfe1oM9X0"
+          },
+          "time": {
+            "created": 1791825042212,
+            "completed": 1791825045377
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1311836a3001ws0qdSfe1oM9X0]",
+          "state": {
+            "redacted": "text-state:msg_1311836a3001ws0qdSfe1oM9X0"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_gir1bSpYyG89Oc8gHFOMfAc1",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311836a3001ws0qdSfe1oM9X0"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311836a3001ws0qdSfe1oM9X0"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311836a3001ws0qdSfe1oM9X0]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311836a3001ws0qdSfe1oM9X0"
+            }
+          },
+          "time": {
+            "created": 1791825047261,
+            "completed": 1791825047278
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.002285855,
+      "tokens": {
+        "input": 3,
+        "output": 183,
+        "reasoning": 343,
+        "cache": {
+          "read": 167243,
+          "write": 2801
+        }
+      }
+    },
+    {
+      "id": "msg_131189a90001XNtWo49zBan8s7",
+      "time": {
+        "created": 1791825058449,
+        "completed": 1791825080696
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "time": {
+            "created": 1791825068631,
+            "completed": 1791825070171
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_pz1iK12YcMyxRHbTccEbWuZ6",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131189a90001XNtWo49zBan8s7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131189a90001XNtWo49zBan8s7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131189a90001XNtWo49zBan8s7"
+            }
+          },
+          "time": {
+            "created": 1791825070212,
+            "completed": 1791825072246
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_B82FVkXD2gSyxhaViQl2wwg4",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131189a90001XNtWo49zBan8s7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131189a90001XNtWo49zBan8s7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131189a90001XNtWo49zBan8s7"
+            }
+          },
+          "time": {
+            "created": 1791825070281,
+            "completed": 1791825072270
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_RkGAV6nz6OyMZSiDYuw0GQ4w",
+          "name": "webfetch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131189a90001XNtWo49zBan8s7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131189a90001XNtWo49zBan8s7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131189a90001XNtWo49zBan8s7"
+            }
+          },
+          "time": {
+            "created": 1791825070344,
+            "completed": 1791825072213
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_TsS4VceF33DjPyeRnPH2bDyA",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131189a90001XNtWo49zBan8s7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131189a90001XNtWo49zBan8s7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131189a90001XNtWo49zBan8s7"
+            }
+          },
+          "time": {
+            "created": 1791825070385,
+            "completed": 1791825070752
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_hC4jDwsiztPjqyQPglYhQN2n",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131189a90001XNtWo49zBan8s7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131189a90001XNtWo49zBan8s7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131189a90001XNtWo49zBan8s7"
+            }
+          },
+          "time": {
+            "created": 1791825070419,
+            "completed": 1791825070837
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_TuclNQCW6ib0dcvIn7wRB8Hd",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131189a90001XNtWo49zBan8s7"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131189a90001XNtWo49zBan8s7"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131189a90001XNtWo49zBan8s7]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131189a90001XNtWo49zBan8s7"
+            }
+          },
+          "time": {
+            "created": 1791825070465,
+            "completed": 1791825071013
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.001893115,
+      "tokens": {
+        "input": 3,
+        "output": 209,
+        "reasoning": 12,
+        "cache": {
+          "read": 170044,
+          "write": 655
+        }
+      }
+    },
+    {
+      "id": "msg_13118f1a8001i2B8UP1N9WbYLP",
+      "time": {
+        "created": 1791825080744,
+        "completed": 1791825114017
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13118f1a8001i2B8UP1N9WbYLP"
+          },
+          "time": {
+            "created": 1791825089579,
+            "completed": 1791825094944
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_yfTS7dPI9HplS9xUgCIxQwfh",
+          "name": "webfetch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13118f1a8001i2B8UP1N9WbYLP"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13118f1a8001i2B8UP1N9WbYLP"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13118f1a8001i2B8UP1N9WbYLP]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13118f1a8001i2B8UP1N9WbYLP"
+            }
+          },
+          "time": {
+            "created": 1791825094976,
+            "completed": 1791825098551
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_ndh22MNneLqHeOc63WS4BzoY",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13118f1a8001i2B8UP1N9WbYLP"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13118f1a8001i2B8UP1N9WbYLP"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13118f1a8001i2B8UP1N9WbYLP]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13118f1a8001i2B8UP1N9WbYLP"
+            }
+          },
+          "time": {
+            "created": 1791825095081,
+            "completed": 1791825096832
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_ufsxyotv4oggBcMksgNez8je",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13118f1a8001i2B8UP1N9WbYLP"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13118f1a8001i2B8UP1N9WbYLP"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13118f1a8001i2B8UP1N9WbYLP]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13118f1a8001i2B8UP1N9WbYLP"
+            }
+          },
+          "time": {
+            "created": 1791825095146,
+            "completed": 1791825105138
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_G3bISbSlBI6KzrGlkYgFwNeV",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13118f1a8001i2B8UP1N9WbYLP"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13118f1a8001i2B8UP1N9WbYLP"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13118f1a8001i2B8UP1N9WbYLP]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13118f1a8001i2B8UP1N9WbYLP"
+            }
+          },
+          "time": {
+            "created": 1791825095202,
+            "completed": 1791825103030
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_ciIlRdcJPUodFPmUYvGHvGLB",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13118f1a8001i2B8UP1N9WbYLP"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13118f1a8001i2B8UP1N9WbYLP"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13118f1a8001i2B8UP1N9WbYLP]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13118f1a8001i2B8UP1N9WbYLP"
+            }
+          },
+          "time": {
+            "created": 1791825095263,
+            "completed": 1791825095794
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00763579,
+      "tokens": {
+        "input": 3,
+        "output": 200,
+        "reasoning": 446,
+        "cache": {
+          "read": 170699,
+          "write": 44844
+        }
+      }
+    },
+    {
+      "id": "msg_1311973d2001XCsnApscC7C3ka",
+      "time": {
+        "created": 1791825114066,
+        "completed": 1791825148358
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311973d2001XCsnApscC7C3ka"
+          },
+          "time": {
+            "created": 1791825122513,
+            "completed": 1791825127105
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311973d2001XCsnApscC7C3ka"
+          },
+          "time": {
+            "created": 1791825127111,
+            "completed": 1791825132437
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_ppklNBXLAJbH2CBnQ2nwy2gt",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311973d2001XCsnApscC7C3ka"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311973d2001XCsnApscC7C3ka"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311973d2001XCsnApscC7C3ka]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311973d2001XCsnApscC7C3ka"
+            }
+          },
+          "time": {
+            "created": 1791825132471,
+            "completed": 1791825139626
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Yt7H81Ny2KCSYUUuvg9WCm9L",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311973d2001XCsnApscC7C3ka"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311973d2001XCsnApscC7C3ka"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311973d2001XCsnApscC7C3ka]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311973d2001XCsnApscC7C3ka"
+            }
+          },
+          "time": {
+            "created": 1791825132502,
+            "completed": 1791825133956
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_gmsKLzZsIHpNVimf8TSTW4tJ",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311973d2001XCsnApscC7C3ka"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311973d2001XCsnApscC7C3ka"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311973d2001XCsnApscC7C3ka]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311973d2001XCsnApscC7C3ka"
+            }
+          },
+          "time": {
+            "created": 1791825132541,
+            "completed": 1791825140645
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "cc6ef4f1552c8926a33a558694f98265dd34613d"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003887355,
+      "tokens": {
+        "input": 3,
+        "output": 139,
+        "reasoning": 1032,
+        "cache": {
+          "read": 215543,
+          "write": 9169
+        }
+      }
+    },
+    {
+      "id": "msg_13119fa04001svn41sbqLtDMdz",
+      "time": {
+        "created": 1791825148420,
+        "completed": 1791825174395
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13119fa04001svn41sbqLtDMdz"
+          },
+          "time": {
+            "created": 1791825156234,
+            "completed": 1791825159455
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13119fa04001svn41sbqLtDMdz"
+          },
+          "time": {
+            "created": 1791825159460,
+            "completed": 1791825161206
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_13119fa04001svn41sbqLtDMdz]",
+          "state": {
+            "redacted": "text-state:msg_13119fa04001svn41sbqLtDMdz"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_a9l7ih4nCST63DhV35gA1HQX",
+          "name": "apply_patch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13119fa04001svn41sbqLtDMdz"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13119fa04001svn41sbqLtDMdz"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13119fa04001svn41sbqLtDMdz]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13119fa04001svn41sbqLtDMdz"
+            }
+          },
+          "time": {
+            "created": 1791825162834,
+            "completed": 1791825162971
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "cc6ef4f1552c8926a33a558694f98265dd34613d",
+        "end": "a55a7dfab8dfc9df838b5734b5885db3aa1f8c24",
+        "files": [
+          "C:/laragon/www/al-toque-delivery/firebase.json",
+          "C:/laragon/www/al-toque-delivery/functions/package.json"
+        ]
+      },
+      "finish": "tool-calls",
+      "cost": 0.003486045,
+      "tokens": {
+        "input": 3,
+        "output": 262,
+        "reasoning": 677,
+        "cache": {
+          "read": 224712,
+          "write": 6153
+        }
+      }
+    },
+    {
+      "id": "msg_1311a5fad001e7Wh7KwosHsH76",
+      "time": {
+        "created": 1791825174446,
+        "completed": 1791825221236
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311a5fad001e7Wh7KwosHsH76"
+          },
+          "time": {
+            "created": 1791825183458,
+            "completed": 1791825183695
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_4QhjfQqQHKKXqHTyWzP9HwnY",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311a5fad001e7Wh7KwosHsH76"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311a5fad001e7Wh7KwosHsH76"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311a5fad001e7Wh7KwosHsH76]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311a5fad001e7Wh7KwosHsH76"
+            }
+          },
+          "time": {
+            "created": 1791825184116,
+            "completed": 1791825208476
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "a55a7dfab8dfc9df838b5734b5885db3aa1f8c24",
+        "end": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318",
+        "files": [
+          "C:/laragon/www/al-toque-delivery/functions/package-lock.json"
+        ]
+      },
+      "finish": "tool-calls",
+      "cost": 0.002461575,
+      "tokens": {
+        "input": 3,
+        "output": 45,
+        "reasoning": 19,
+        "cache": {
+          "read": 230865,
+          "write": 965
+        }
+      }
+    },
+    {
+      "id": "msg_1311b16ba001oLviZw1aGxRCPQ",
+      "time": {
+        "created": 1791825221306,
+        "completed": 1791825278490
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311b16ba001oLviZw1aGxRCPQ"
+          },
+          "time": {
+            "created": 1791825235034,
+            "completed": 1791825238157
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_vYUmqoEEvhdyvZ1GAqJLk9fH",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311b16ba001oLviZw1aGxRCPQ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311b16ba001oLviZw1aGxRCPQ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311b16ba001oLviZw1aGxRCPQ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311b16ba001oLviZw1aGxRCPQ"
+            }
+          },
+          "time": {
+            "created": 1791825238291,
+            "completed": 1791825267806
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_NAnQQQpyfZCWkv6Zf0tJXiRJ",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311b16ba001oLviZw1aGxRCPQ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311b16ba001oLviZw1aGxRCPQ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311b16ba001oLviZw1aGxRCPQ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311b16ba001oLviZw1aGxRCPQ"
+            }
+          },
+          "time": {
+            "created": 1791825238407,
+            "completed": 1791825253356
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_CeRX65SJHEij3Fes6EKDdMIj",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311b16ba001oLviZw1aGxRCPQ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311b16ba001oLviZw1aGxRCPQ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311b16ba001oLviZw1aGxRCPQ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311b16ba001oLviZw1aGxRCPQ"
+            }
+          },
+          "time": {
+            "created": 1791825238451,
+            "completed": 1791825244771
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_c2WdgBIcVxGKZxNdg2kiSZfV",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311b16ba001oLviZw1aGxRCPQ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311b16ba001oLviZw1aGxRCPQ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311b16ba001oLviZw1aGxRCPQ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311b16ba001oLviZw1aGxRCPQ"
+            }
+          },
+          "time": {
+            "created": 1791825238525,
+            "completed": 1791825244086
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318",
+        "end": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00256935,
+      "tokens": {
+        "input": 3,
+        "output": 204,
+        "reasoning": 212,
+        "cache": {
+          "read": 231830,
+          "write": 342
+        }
+      }
+    },
+    {
+      "id": "msg_1311bf696001zSwjTPYPm26CCB",
+      "time": {
+        "created": 1791825278614,
+        "completed": 1791825314682
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311bf696001zSwjTPYPm26CCB"
+          },
+          "time": {
+            "created": 1791825292920,
+            "completed": 1791825296795
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_rk0sIpGiu8vZZbMJGvpa31uX",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311bf696001zSwjTPYPm26CCB"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311bf696001zSwjTPYPm26CCB"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311bf696001zSwjTPYPm26CCB]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311bf696001zSwjTPYPm26CCB"
+            }
+          },
+          "time": {
+            "created": 1791825296818,
+            "completed": 1791825299024
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Sw2Ka183beCGUezrHzEpMe4j",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311bf696001zSwjTPYPm26CCB"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311bf696001zSwjTPYPm26CCB"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311bf696001zSwjTPYPm26CCB]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311bf696001zSwjTPYPm26CCB"
+            }
+          },
+          "time": {
+            "created": 1791825296839,
+            "completed": 1791825299815
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_JJbHo22HhSo1ilxXIvpFzTBb",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311bf696001zSwjTPYPm26CCB"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311bf696001zSwjTPYPm26CCB"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311bf696001zSwjTPYPm26CCB]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311bf696001zSwjTPYPm26CCB"
+            }
+          },
+          "time": {
+            "created": 1791825296879,
+            "completed": 1791825307064
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318",
+        "end": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318"
+      },
+      "finish": "tool-calls",
+      "cost": 0.004710145,
+      "tokens": {
+        "input": 3,
+        "output": 163,
+        "reasoning": 369,
+        "cache": {
+          "read": 232172,
+          "write": 16977
+        }
+      }
+    },
+    {
+      "id": "msg_1311c83e0001H6Snxqrw6MjolN",
+      "time": {
+        "created": 1791825314784,
+        "completed": 1791825335936
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311c83e0001H6Snxqrw6MjolN"
+          },
+          "time": {
+            "created": 1791825323936,
+            "completed": 1791825324284
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_RDkzE5qPNxTapTvgTWg6GO8y",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311c83e0001H6Snxqrw6MjolN"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311c83e0001H6Snxqrw6MjolN"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311c83e0001H6Snxqrw6MjolN]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311c83e0001H6Snxqrw6MjolN"
+            }
+          },
+          "time": {
+            "created": 1791825324563,
+            "completed": 1791825325459
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318",
+        "end": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00270529,
+      "tokens": {
+        "input": 3,
+        "output": 56,
+        "reasoning": 56,
+        "cache": {
+          "read": 249149,
+          "write": 1260
+        }
+      }
+    },
+    {
+      "id": "msg_1311cd813001x2fAZFmU8vr3Ix",
+      "time": {
+        "created": 1791825336339,
+        "completed": 1791825381467
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825345404,
+            "completed": 1791825349961
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825349969,
+            "completed": 1791825354978
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825354991,
+            "completed": 1791825359092
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825359098,
+            "completed": 1791825362988
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825362996,
+            "completed": 1791825367282
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825367289,
+            "completed": 1791825368876
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "time": {
+            "created": 1791825368881,
+            "completed": 1791825369373
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1311cd813001x2fAZFmU8vr3Ix]",
+          "state": {
+            "redacted": "text-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_urv4y73IlxlaYKcINiDgsuC0",
+          "name": "apply_patch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311cd813001x2fAZFmU8vr3Ix"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311cd813001x2fAZFmU8vr3Ix"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311cd813001x2fAZFmU8vr3Ix]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311cd813001x2fAZFmU8vr3Ix"
+            }
+          },
+          "time": {
+            "created": 1791825371869,
+            "completed": 1791825371902
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "0d2554b2a3fba1c1b145856bea8b0fdfaaac1318",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "files": [
+          "C:/laragon/www/al-toque-delivery/functions/src/index.ts"
+        ]
+      },
+      "finish": "tool-calls",
+      "cost": 0.00421539,
+      "tokens": {
+        "input": 3,
+        "output": 423,
+        "reasoning": 2822,
+        "cache": {
+          "read": 250409,
+          "write": 708
+        }
+      }
+    },
+    {
+      "id": "msg_1311d88f1001knARqeOOHZCp2e",
+      "time": {
+        "created": 1791825381617,
+        "completed": 1791825421415
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311d88f1001knARqeOOHZCp2e"
+          },
+          "time": {
+            "created": 1791825392350,
+            "completed": 1791825393813
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_twjyy4YYclqK6HNt5QHk6H6t",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311d88f1001knARqeOOHZCp2e"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311d88f1001knARqeOOHZCp2e"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311d88f1001knARqeOOHZCp2e]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311d88f1001knARqeOOHZCp2e"
+            }
+          },
+          "time": {
+            "created": 1791825393906,
+            "completed": 1791825411465
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_uqVdnZFQDKevZeQ6BKpuZUW5",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311d88f1001knARqeOOHZCp2e"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311d88f1001knARqeOOHZCp2e"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311d88f1001knARqeOOHZCp2e]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311d88f1001knARqeOOHZCp2e"
+            }
+          },
+          "time": {
+            "created": 1791825393983,
+            "completed": 1791825397158
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_BIyNsbTzTVGixO4SPHnuELKD",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311d88f1001knARqeOOHZCp2e"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311d88f1001knARqeOOHZCp2e"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311d88f1001knARqeOOHZCp2e]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311d88f1001knARqeOOHZCp2e"
+            }
+          },
+          "time": {
+            "created": 1791825394030,
+            "completed": 1791825397814
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_8JjNDzgN5IfI3hzq0jo5nBdE",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311d88f1001knARqeOOHZCp2e"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311d88f1001knARqeOOHZCp2e"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311d88f1001knARqeOOHZCp2e]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311d88f1001knARqeOOHZCp2e"
+            }
+          },
+          "time": {
+            "created": 1791825394082,
+            "completed": 1791825404217
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00303647,
+      "tokens": {
+        "input": 3,
+        "output": 184,
+        "reasoning": 49,
+        "cache": {
+          "read": 251117,
+          "write": 3268
+        }
+      }
+    },
+    {
+      "id": "msg_1311e24bb001u0IG4VxLPQs94X",
+      "time": {
+        "created": 1791825421499,
+        "completed": 1791825448421
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311e24bb001u0IG4VxLPQs94X"
+          },
+          "time": {
+            "created": 1791825431229,
+            "completed": 1791825435418
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311e24bb001u0IG4VxLPQs94X"
+          },
+          "time": {
+            "created": 1791825435431,
+            "completed": 1791825437558
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_7qneTuEwMksnWdqkgwPfy4US",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1311e24bb001u0IG4VxLPQs94X"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1311e24bb001u0IG4VxLPQs94X"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1311e24bb001u0IG4VxLPQs94X]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1311e24bb001u0IG4VxLPQs94X"
+            }
+          },
+          "time": {
+            "created": 1791825438090,
+            "completed": 1791825438118
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003056775,
+      "tokens": {
+        "input": 3,
+        "output": 96,
+        "reasoning": 759,
+        "cache": {
+          "read": 254385,
+          "write": 681
+        }
+      }
+    },
+    {
+      "id": "msg_1311e8e39001GD8SWYcKK05se0",
+      "time": {
+        "created": 1791825448505,
+        "completed": 1791825506307
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311e8e39001GD8SWYcKK05se0"
+          },
+          "time": {
+            "created": 1791825459347,
+            "completed": 1791825463629
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1311e8e39001GD8SWYcKK05se0"
+          },
+          "time": {
+            "created": 1791825463642,
+            "completed": 1791825466247
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1311e8e39001GD8SWYcKK05se0]",
+          "state": {
+            "redacted": "text-state:msg_1311e8e39001GD8SWYcKK05se0"
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "stop",
+      "cost": 0.003247835,
+      "tokens": {
+        "input": 3,
+        "output": 311,
+        "reasoning": 837,
+        "cache": {
+          "read": 255066,
+          "write": 983
+        }
+      }
+    },
+    {
+      "id": "msg_13126907f0014MWDGO8pyDIi3Q",
+      "time": {
+        "created": 1791825973375
+      },
+      "text": "[redacted:text:msg_13126907f0014MWDGO8pyDIi3Q]",
+      "type": "user"
+    },
+    {
+      "id": "msg_131269180001HKNobbRLnL0bD4",
+      "time": {
+        "created": 1791825973632,
+        "completed": 1791826016902
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131269180001HKNobbRLnL0bD4"
+          },
+          "time": {
+            "created": 1791825988580,
+            "completed": 1791825993510
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_131269180001HKNobbRLnL0bD4"
+          },
+          "time": {
+            "created": 1791825993787,
+            "completed": 1791825995437
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_131269180001HKNobbRLnL0bD4]",
+          "state": {
+            "redacted": "text-state:msg_131269180001HKNobbRLnL0bD4"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_besQHHeyd0vTdq4uXROSKcRh",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131269180001HKNobbRLnL0bD4"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131269180001HKNobbRLnL0bD4"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131269180001HKNobbRLnL0bD4]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131269180001HKNobbRLnL0bD4"
+            }
+          },
+          "time": {
+            "created": 1791825997116,
+            "completed": 1791825997229
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003137915,
+      "tokens": {
+        "input": 3,
+        "output": 159,
+        "reasoning": 655,
+        "cache": {
+          "read": 256049,
+          "write": 1361
+        }
+      }
+    },
+    {
+      "id": "msg_131273adb001s2KzUIBrAWlGHZ",
+      "time": {
+        "created": 1791826016987,
+        "completed": 1791826066032
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "tool",
+          "id": "call_HaDVfL9beS3e62F7MpNorcFH",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131273adb001s2KzUIBrAWlGHZ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131273adb001s2KzUIBrAWlGHZ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131273adb001s2KzUIBrAWlGHZ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131273adb001s2KzUIBrAWlGHZ"
+            }
+          },
+          "time": {
+            "created": 1791826028276,
+            "completed": 1791826037237
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_JlnaNy1btmM9qt7EE6fmTVHI",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131273adb001s2KzUIBrAWlGHZ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131273adb001s2KzUIBrAWlGHZ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131273adb001s2KzUIBrAWlGHZ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131273adb001s2KzUIBrAWlGHZ"
+            }
+          },
+          "time": {
+            "created": 1791826028387,
+            "completed": 1791826057350
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_hCyAb99qK7mm3z2xdTdr9LmJ",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131273adb001s2KzUIBrAWlGHZ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131273adb001s2KzUIBrAWlGHZ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131273adb001s2KzUIBrAWlGHZ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131273adb001s2KzUIBrAWlGHZ"
+            }
+          },
+          "time": {
+            "created": 1791826028522,
+            "completed": 1791826029540
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_0DCiUJ3ZVV6daHjrGYmfhRCg",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131273adb001s2KzUIBrAWlGHZ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131273adb001s2KzUIBrAWlGHZ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131273adb001s2KzUIBrAWlGHZ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131273adb001s2KzUIBrAWlGHZ"
+            }
+          },
+          "time": {
+            "created": 1791826028577,
+            "completed": 1791826029350
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_W3SBj5KJZbtY2Z1izMj4javK",
+          "name": "read",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131273adb001s2KzUIBrAWlGHZ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131273adb001s2KzUIBrAWlGHZ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131273adb001s2KzUIBrAWlGHZ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131273adb001s2KzUIBrAWlGHZ"
+            }
+          },
+          "time": {
+            "created": 1791826028612,
+            "completed": 1791826029423
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_tu62M2JXKjwbvX07qQxBCIVu",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_131273adb001s2KzUIBrAWlGHZ"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_131273adb001s2KzUIBrAWlGHZ"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_131273adb001s2KzUIBrAWlGHZ]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_131273adb001s2KzUIBrAWlGHZ"
+            }
+          },
+          "time": {
+            "created": 1791826028664,
+            "completed": 1791826033596
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.002831025,
+      "tokens": {
+        "input": 3,
+        "output": 276,
+        "reasoning": 0,
+        "cache": {
+          "read": 257410,
+          "write": 949
+        }
+      }
+    },
+    {
+      "id": "msg_13127fafa001DSmaGy5eqsR7HA",
+      "time": {
+        "created": 1791826066170,
+        "completed": 1791826120497
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13127fafa001DSmaGy5eqsR7HA"
+          },
+          "time": {
+            "created": 1791826074464,
+            "completed": 1791826077173
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_1XB5hCWGj5q9Vr6nsxXwDFBK",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13127fafa001DSmaGy5eqsR7HA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13127fafa001DSmaGy5eqsR7HA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13127fafa001DSmaGy5eqsR7HA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13127fafa001DSmaGy5eqsR7HA"
+            }
+          },
+          "time": {
+            "created": 1791826077285,
+            "completed": 1791826079130
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_EXpm6FPHs4I8pp5E2e8EBTis",
+          "name": "websearch",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13127fafa001DSmaGy5eqsR7HA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13127fafa001DSmaGy5eqsR7HA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13127fafa001DSmaGy5eqsR7HA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13127fafa001DSmaGy5eqsR7HA"
+            }
+          },
+          "time": {
+            "created": 1791826077354,
+            "completed": 1791826079162
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_M4QDBnDNYD6z2FIknwcSFP6g",
+          "name": "grep",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13127fafa001DSmaGy5eqsR7HA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13127fafa001DSmaGy5eqsR7HA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13127fafa001DSmaGy5eqsR7HA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13127fafa001DSmaGy5eqsR7HA"
+            }
+          },
+          "time": {
+            "created": 1791826077432,
+            "completed": 1791826095739
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_73ZtDPWIWZMFJxzUqMC5XDxS",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13127fafa001DSmaGy5eqsR7HA"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13127fafa001DSmaGy5eqsR7HA"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13127fafa001DSmaGy5eqsR7HA]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13127fafa001DSmaGy5eqsR7HA"
+            }
+          },
+          "time": {
+            "created": 1791826077475,
+            "completed": 1791826110059
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003080265,
+      "tokens": {
+        "input": 3,
+        "output": 181,
+        "reasoning": 198,
+        "cache": {
+          "read": 258359,
+          "write": 2455
+        }
+      }
+    },
+    {
+      "id": "msg_13128cfea001zGsVm7MzWlCMPp",
+      "time": {
+        "created": 1791826120683,
+        "completed": 1791826234696
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "time": {
+            "created": 1791826132237,
+            "completed": 1791826136863
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "time": {
+            "created": 1791826136873,
+            "completed": 1791826141405
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "time": {
+            "created": 1791826141418,
+            "completed": 1791826146031
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "time": {
+            "created": 1791826146042,
+            "completed": 1791826150513
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "time": {
+            "created": 1791826150525,
+            "completed": 1791826154189
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "time": {
+            "created": 1791826154196,
+            "completed": 1791826154799
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_XbcWlNYGLaYqC4suMgrK9Ytw",
+          "name": "bash",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_13128cfea001zGsVm7MzWlCMPp"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_13128cfea001zGsVm7MzWlCMPp"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_13128cfea001zGsVm7MzWlCMPp]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_13128cfea001zGsVm7MzWlCMPp"
+            }
+          },
+          "time": {
+            "created": 1791826155329,
+            "completed": 1791826215979
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.00582694,
+      "tokens": {
+        "input": 3,
+        "output": 84,
+        "reasoning": 2588,
+        "cache": {
+          "read": 260814,
+          "write": 15060
+        }
+      }
+    },
+    {
+      "id": "msg_1312a8ded001PEkz58AKQLPHqi",
+      "time": {
+        "created": 1791826234861,
+        "completed": 1791826262861
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1312a8ded001PEkz58AKQLPHqi"
+          },
+          "time": {
+            "created": 1791826243659,
+            "completed": 1791826247947
+          }
+        },
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1312a8ded001PEkz58AKQLPHqi"
+          },
+          "time": {
+            "created": 1791826247953,
+            "completed": 1791826251930
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1312a8ded001PEkz58AKQLPHqi]",
+          "state": {
+            "redacted": "text-state:msg_1312a8ded001PEkz58AKQLPHqi"
+          }
+        },
+        {
+          "type": "tool",
+          "id": "call_Tk8b61Lxc5rSw0q9nIWSNxYw",
+          "name": "todowrite",
+          "providerState": {
+            "redacted": "tool-provider-state:msg_1312a8ded001PEkz58AKQLPHqi"
+          },
+          "state": {
+            "status": "completed",
+            "input": {
+              "redacted": "tool-input:msg_1312a8ded001PEkz58AKQLPHqi"
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "[redacted:tool-output:msg_1312a8ded001PEkz58AKQLPHqi]"
+              }
+            ],
+            "metadata": {
+              "redacted": "tool-metadata:msg_1312a8ded001PEkz58AKQLPHqi"
+            }
+          },
+          "time": {
+            "created": 1791826253711,
+            "completed": 1791826253725
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "tool-calls",
+      "cost": 0.003728415,
+      "tokens": {
+        "input": 3,
+        "output": 185,
+        "reasoning": 928,
+        "cache": {
+          "read": 275874,
+          "write": 3303
+        }
+      }
+    },
+    {
+      "id": "msg_1312afb99001hKbmReKAnI6R3W",
+      "time": {
+        "created": 1791826262937,
+        "completed": 1791826287508
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "gpt-6-luna",
+        "providerID": "opencode-go",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "reasoning",
+          "text": "",
+          "state": {
+            "redacted": "reasoning-state:msg_1312afb99001hKbmReKAnI6R3W"
+          },
+          "time": {
+            "created": 1791826273064,
+            "completed": 1791826277616
+          }
+        },
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1312afb99001hKbmReKAnI6R3W]",
+          "state": {
+            "redacted": "text-state:msg_1312afb99001hKbmReKAnI6R3W"
+          }
+        }
+      ],
+      "snapshot": {
+        "start": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2",
+        "end": "5e22fbf8dc8aa5ccbd49d428fd532f4f6b2d5de2"
+      },
+      "finish": "stop",
+      "cost": 0.003312945,
+      "tokens": {
+        "input": 3,
+        "output": 214,
+        "reasoning": 516,
+        "cache": {
+          "read": 279177,
+          "write": 1247
+        }
+      }
+    },
+    {
+      "id": "msg_1312afb99001MpC1UUubiidpco",
+      "time": {
+        "created": 1791826262937
+      },
+      "type": "system",
+      "text": "[redacted:system:msg_1312afb99001MpC1UUubiidpco]"
+    }
+  ]
+}
