@@ -50,7 +50,7 @@ module.exports = ({ config }) => ({
 
 ## Android (ya configurado)
 
-La clave actual es `AIzaSyB3xurYrIbP0ii-h9udnY8iEbF46J4UMuI`. Para que funcione correctamente en Google Cloud Console:
+La clave actual es ``. Para que funcione correctamente en Google Cloud Console:
 
 1. Ve a [APIs y servicios](https://console.cloud.google.com/apis) → tu proyecto → **Habilitar el "Maps SDK for Android"**.
 2. Ve a [Credenciales](https://console.cloud.google.com/apis/credentials) → tu clave → **Restricciones de aplicación**:
