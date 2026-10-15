@@ -52,7 +52,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={isPending}
           />
         </div>
@@ -63,7 +63,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={isPending}
           >
             <option value="">Selecciona una categoría</option>
@@ -82,7 +82,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={isPending}
           />
         </div>
@@ -93,7 +93,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={isPending}
           />
         </div>
@@ -106,7 +106,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           disabled={isPending}
           placeholder="Descripción opcional del plato"
         />

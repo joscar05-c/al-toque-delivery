@@ -28,7 +28,7 @@ export default function CategoryForm({ restaurantId }: CategoryFormProps) {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Nombre de la categoría (ej. Entradas, Bebidas)"
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
         disabled={isPending}
       />
       <button
