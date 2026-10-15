@@ -105,7 +105,8 @@ export default function NewAddressScreen() {
         reference: reference.trim() || null,
         type,
         is_default: isDefault,
-        location: `POINT(${coordinates.longitude} ${coordinates.latitude})`,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
       });
       setSelectedAddress(savedAddress);
       router.back(); // useFocusEffect de la lista recarga sola

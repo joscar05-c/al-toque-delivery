@@ -1,4 +1,4 @@
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 export interface Coordinates {
   latitude: number;
@@ -16,6 +16,7 @@ export function AddressLocationPicker({
 }: AddressLocationPickerProps) {
   return (
     <MapView
+      provider={PROVIDER_GOOGLE}
       style={{ height: 250, width: '100%' }}
       region={{
         ...coordinates,

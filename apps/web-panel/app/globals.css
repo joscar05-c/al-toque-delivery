@@ -12,15 +12,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* NOTA: Los paneles (admin / restaurante) están diseñados solo para tema claro
+   (tarjetas bg-white, textos text-gray--*, sin variantes dark:). El modo oscuro
+   automático del sistema volvía el color del body claro y dejaba ilegibles los
+   textos/inputs/botones que heredan ese color sobre fondos claros. Por eso se
+   fuerza tema claro en el body. La landing (app/page.tsx) usa variantes dark:
+   propias y sigue funcionando en modo oscuro. */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Los campos de formulario se muestran sobre tarjetas blancas (bg-white).
+   Forzamos texto oscuro para que sea legible tanto en modo claro como oscuro,
+   ya que el body hereda un color claro en prefers-color-scheme: dark. */
+input,
+select,
+textarea {
+  color: #171717;
 }

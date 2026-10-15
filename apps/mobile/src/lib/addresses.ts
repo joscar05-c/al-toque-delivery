@@ -14,23 +14,34 @@ export async function fetchUserAddresses(userId: string): Promise<Address[]> {
   return data ?? [];
 }
 
-/** Crea una dirección. Si es default, limpia el default anterior del usuario. */
+/** Crea una dirección. Si es default, la función RPC limpia el default anterior. */
 export async function createAddress(
-  input: TablesInsert<'addresses'>,
+  input: Omit<TablesInsert<'addresses'>, 'location'> & {
+    latitude: number;
+    longitude: number;
+  },
 ): Promise<Address> {
-  if (input.is_default && input.user_id) {
-    await supabase
-      .from('addresses')
-      .update({ is_default: false })
-      .eq('user_id', input.user_id);
+  const { data, error } = await supabase.rpc('create_address', {
+    p_user_id: input.user_id ?? '',
+    p_street: input.street,
+    p_city: input.city,
+    p_postal_code: input.postal_code,
+    p_reference: input.reference ?? '',
+    p_type: input.type ?? 'home',
+    p_is_default: input.is_default ?? false,
+    p_latitude: input.latitude,
+    p_longitude: input.longitude,
+  });
+
+  if (error) {
+    throw new Error(
+      `Error ${error.code}: ${error.message}${error.details ? `\nDetalles: ${error.details}` : ''}${error.hint ? `\n${error.hint}` : ''}`,
+    );
+  }
+  
+  if (!data || data.length === 0) {
+    throw new Error('No se pudo crear la dirección (sin datos retornados)');
   }
 
-  const { data, error } = await supabase
-    .from('addresses')
-    .insert(input)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  return data[0];
 }

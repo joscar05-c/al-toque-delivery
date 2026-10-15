@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View } from 'react-native';
 
 interface DriverTrackingMapProps {
@@ -10,6 +10,7 @@ interface DriverTrackingMapProps {
 export function DriverTrackingMap({ latitude, longitude }: DriverTrackingMapProps) {
   return (
     <MapView
+      provider={PROVIDER_GOOGLE}
       style={{ height: 250, width: '100%' }}
       region={{
         latitude,

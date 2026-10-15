@@ -1108,6 +1108,20 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      create_address: {
+        Args: {
+          p_user_id: string;
+          p_street: string;
+          p_city: string;
+          p_postal_code: string;
+          p_reference: string;
+          p_type: Database['public']['Enums']['addresses_type_enum'];
+          p_is_default: boolean;
+          p_latitude: number;
+          p_longitude: number;
+        };
+        Returns: Database['public']['Tables']['addresses']['Row'][];
+      };
       admin_approve_restaurant_application: {
         Args: { p_application_id: string };
         Returns: string;
