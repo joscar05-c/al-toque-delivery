@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { createMenuItem } from './actions';
+import { createClient } from '@/utils/supabase/client';
+import { createMenuItem, createMenuImageUploadUrl } from './actions';
 
 interface MenuItemFormProps {
   restaurantId: string;
@@ -14,28 +15,75 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
   const [price, setPrice] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [preview, setPreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    } else {
-      setPreview(null);
-    }
+    const file = e.target.files?.[0] ?? null;
+    setImageFile(file);
+    setPreview(file ? URL.createObjectURL(file) : null);
   }
 
   async function handleSubmit(formData: FormData) {
     setError(null);
     startTransition(async () => {
-      const result = await createMenuItem(formData);
+      // Generar una URL de subida firmada en el servidor (service_role, bypass
+      // RLS) y subir el archivo directo a esa URL. Así no dependemos del token
+      // de Firebase en el cliente ni del límite de body del Server Action.
+      let imageUrl: string | null = null;
+      if (imageFile && imageFile.size > 0) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+        const signed = await createMenuImageUploadUrl(restaurantId, fileName);
+        if (signed.error || !signed.signedUrl) {
+          setError(signed.error ?? 'Error al preparar la subida de la imagen');
+          return;
+        }
+
+        // Hacemos el PUT directo a la URL firmada con fetch. No usamos
+        // supabase-js uploadToSignedUrl porque éste re-valida el JWT de la URL
+        // en el cliente y falla con "Invalid Compact JWS" (incompatibilidad de
+        // versiones). La URL firmada ya viene autorizada por el servidor.
+        const uploadRes = await fetch(signed.signedUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': imageFile.type || 'application/octet-stream',
+            'Cache-Control': '3600',
+            'x-upsert': 'false',
+          },
+          body: imageFile,
+        });
+
+        if (!uploadRes.ok) {
+          const detail = await uploadRes.text().catch(() => '');
+          console.error('Error uploading image:', uploadRes.status, detail);
+          setError('Error al subir la imagen');
+          return;
+        }
+
+        const supabase = createClient();
+        const { data: urlData } = supabase.storage.from('menu_images').getPublicUrl(signed.filePath);
+        imageUrl = urlData.publicUrl;
+      }
+
+      // Armamos un FormData limpio (sin el File) y pasamos la URL aparte.
+      const payload = new FormData();
+      payload.append('restaurantId', restaurantId);
+      payload.append('name', (formData.get('name') as string) ?? '');
+      payload.append('description', (formData.get('description') as string) ?? '');
+      payload.append('price', (formData.get('price') as string) ?? '');
+      payload.append('categoryId', (formData.get('categoryId') as string) ?? '');
+
+      const result = await createMenuItem(payload, imageUrl);
       if (result.error) setError(result.error);
       else {
         setName('');
         setDescription('');
         setPrice('');
         setCategoryId('');
+        setImageFile(null);
         if (preview) URL.revokeObjectURL(preview);
         setPreview(null);
       }
