@@ -46,7 +46,7 @@ export default async function RestaurantMenuPage() {
     .from('menu_items')
     .select('id, name, description, price, image_url, is_active, menu_category_id')
     .eq('restaurant_id', restaurant.id)
-    .order('created_at', { ascending: false });
+    .order('name', { ascending: true });
 
   if (itemsError) {
     console.error('Error fetching menu items:', itemsError);
