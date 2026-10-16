@@ -83,27 +83,27 @@ export default function VerifyScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <View className="flex-1 gap-8 px-8 pt-4">
-          {/* Botón volver */}
-          <Pressable
-            onPress={() => router.back()}
-            disabled={isLoading}
-            className="h-10 w-10 items-center justify-center rounded-full bg-slate-100 active:opacity-70"
-          >
-            <Ionicons name="chevron-back" size={22} color="#334155" />
-          </Pressable>
-
+        <View className="flex-1 justify-center gap-8 px-5 py-6">
           {/* Encabezado */}
-          <View className="gap-2">
-            <Text className="text-3xl font-bold text-slate-900">
-              Verifica tu número
-            </Text>
-            <Text className="text-base leading-6 text-slate-500">
-              Ingresa el código de {OTP_LENGTH} dígitos que enviamos por SMS a{' '}
-              <Text className="font-semibold text-slate-700">
-                {formattedPhone}
+          <View className="items-center gap-7">
+            <View
+              className="h-40 w-40 items-center justify-center rounded-full bg-primary/15"
+              accessibilityLabel="Al Toque Delivery"
+            >
+              <Ionicons name="restaurant-outline" size={42} color="#F29F30" />
+              <Text className="mt-1 text-lg font-extrabold tracking-widest text-primary">
+                AL TOQUE
               </Text>
-            </Text>
+            </View>
+
+            <View className="items-center gap-2">
+              <Text className="text-center text-[27px] font-bold text-[#1C2433]">
+                Verify phone number
+              </Text>
+              <Text className="text-center text-sm leading-5 text-[#8E98A8]">
+                We have just sent a code to {formattedPhone}.
+              </Text>
+            </View>
           </View>
 
           {/* Casillas del código OTP */}
@@ -118,17 +118,16 @@ export default function VerifyScreen() {
                 return (
                   <View
                     key={index}
-                    className={`h-14 w-12 items-center justify-center rounded-xl border-2 ${
-                      isActive
-                        ? 'border-primary bg-primary/5'
-                        : digit
-                          ? 'border-primary/40 bg-white'
-                          : 'border-slate-300 bg-slate-50'
-                    }`}
+                    className="relative h-16 w-12 flex-1 items-center justify-center rounded-2xl bg-[#F3F4F6]"
                   >
-                    <Text className="text-2xl font-bold text-slate-900">
+                    <Text className="text-2xl font-bold text-[#1C2433]">
                       {digit}
                     </Text>
+                    <View
+                      className={`absolute bottom-0 h-1 w-8 rounded-full ${
+                        isActive || digit ? 'bg-primary' : 'bg-slate-500'
+                      }`}
+                    />
                   </View>
                 );
               })}
@@ -153,27 +152,40 @@ export default function VerifyScreen() {
           </Pressable>
 
           {/* Botón verificar */}
-          <Pressable
-            onPress={verifyOtp}
-            disabled={isLoading || !isOtpComplete}
-            className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${
-              isLoading || !isOtpComplete
-                ? 'bg-primary/60'
-                : 'bg-primary active:opacity-80'
-            }`}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-base font-semibold text-white">
-                Verificar
-              </Text>
-            )}
-          </Pressable>
+          <View className="gap-4">
+            <Pressable
+              onPress={verifyOtp}
+              disabled={isLoading || !isOtpComplete}
+              className={`h-[52px] flex-row items-center justify-center gap-2 rounded-full ${
+                isLoading || !isOtpComplete
+                  ? 'bg-primary/60'
+                  : 'bg-primary active:opacity-70'
+              }`}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-base font-semibold text-white">Next</Text>
+              )}
+            </Pressable>
 
-          <Text className="text-center text-xs leading-5 text-slate-400">
-            ¿No recibiste el código? Vuelve atrás y reenvíalo a tu número.
-          </Text>
+            <Pressable
+              onPress={() => router.back()}
+              disabled={isLoading}
+              className="h-12 items-center justify-center rounded-full bg-[#F3F4F6] active:opacity-70"
+            >
+              <Text className="text-base font-semibold text-[#1C2433]">
+                Send again
+              </Text>
+            </Pressable>
+
+            <Text className="pt-1 text-center text-xs leading-5 text-[#8E98A8]">
+              By signing up you agree to{'\n'}
+              <Text className="text-primary">
+                our terms of service and privacy policy.
+              </Text>
+            </Text>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
