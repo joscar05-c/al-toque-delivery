@@ -7,8 +7,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -58,98 +61,120 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        style={styles.keyboardAvoidingView}
       >
-        <View className="flex-1 justify-center gap-8 px-8">
-          {/* Encabezado */}
-          <View className="items-center gap-3">
-            <View className="h-20 w-20 items-center justify-center rounded-3xl bg-primary/10">
-              <Ionicons name="restaurant" size={40} color="#208AEF" />
-            </View>
-            <Text className="text-3xl font-bold text-slate-900">
-              Al Toque Delivery
-            </Text>
-            <Text className="text-center text-base leading-6 text-slate-500">
-              Ingresa tu número de celular y te enviaremos un código de
-              verificación por SMS.
-            </Text>
-          </View>
-
-          {/* Input de teléfono */}
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-slate-700">
-              Número de celular
-            </Text>
-            <View
-              className={`flex-row items-center rounded-xl border-2 bg-white ${
-                isPhoneValid ? 'border-primary' : 'border-slate-300'
-              }`}
-            >
-              <View className="border-r border-slate-200 px-4 py-3">
-                <Text className="text-lg font-semibold text-slate-700">
-                  {COUNTRY_CODE}
-                </Text>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.content}>
+            {/* Encabezado y marca */}
+            <View style={styles.header}>
+              <View style={styles.logo} accessibilityLabel="Al Toque Delivery">
+                <Ionicons name="restaurant-outline" size={42} color="#F29F30" />
+                <Text style={styles.logoText}>AL TOQUE</Text>
               </View>
-              <TextInput
-                value={digits}
-                onChangeText={(text) =>
-                  setDigits(text.replace(/\D/g, '').slice(0, PHONE_LENGTH))
-                }
-                placeholder="987 654 321"
-                placeholderTextColor="#94A3B8"
-                keyboardType="phone-pad"
-                autoComplete="tel"
-                maxLength={PHONE_LENGTH}
-                editable={!isLoading}
-                className="flex-1 px-4 py-3 text-lg text-slate-900"
-              />
+
+              <View style={styles.heading}>
+                <Text style={styles.title}>Get started with Al Toque</Text>
+                <Text style={styles.subtitle}>Ingresa tu número de celular</Text>
+              </View>
+            </View>
+
+            {/* Campo de número */}
+            <View style={styles.form}>
+              <View style={styles.phoneInput}>
+                <Text style={styles.inputLabel}>Número de celular</Text>
+                <View style={styles.phoneRow}>
+                  <View style={styles.countryCode}>
+                    <Text style={styles.flag} accessibilityLabel="Perú">
+                      🇵🇪
+                    </Text>
+                    <Ionicons name="chevron-down" size={14} color="#8E98A8" />
+                    <Text style={styles.countryCodeText}>{COUNTRY_CODE}</Text>
+                  </View>
+
+                  <TextInput
+                    value={digits}
+                    onChangeText={(text) =>
+                      setDigits(text.replace(/\D/g, '').slice(0, PHONE_LENGTH))
+                    }
+                    placeholder="987 654 321"
+                    placeholderTextColor="#B8C0CC"
+                    keyboardType="phone-pad"
+                    autoComplete="tel"
+                    maxLength={PHONE_LENGTH}
+                    editable={!isLoading}
+                    style={styles.textInput}
+                    accessibilityLabel="Número de celular"
+                  />
+
+                  <View
+                    style={[
+                      styles.validationIcon,
+                      isPhoneValid && styles.validationIconValid,
+                    ]}
+                    accessibilityLabel={isPhoneValid ? 'Número válido' : undefined}
+                  >
+                    <Ionicons
+                      name="checkmark"
+                      size={15}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Acciones */}
+            <View style={styles.actions}>
+              <TouchableOpacity
+                onPress={sendOtp}
+                disabled={isLoading}
+                activeOpacity={0.7}
+                style={[
+                  styles.primaryButton,
+                  isLoading && styles.primaryButtonLoading,
+                ]}
+                accessibilityRole="button"
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.primaryButtonText}>
+                    Enviar código por SMS
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              <Pressable
+                onPress={() => router.replace('/(public)/(tabs)')}
+                disabled={isLoading}
+                style={({ pressed }) => [
+                  styles.exploreButton,
+                  pressed && styles.pressed,
+                ]}
+                accessibilityRole="button"
+              >
+                <Ionicons
+                  name="play-skip-forward-outline"
+                  size={18}
+                  color="#8E98A8"
+                />
+                <Text style={styles.exploreButtonText}>Saltar y explorar</Text>
+              </Pressable>
+
+              <Text style={styles.legalText}>
+                Al continuar aceptas recibir un SMS con tu código de acceso.
+                Pueden aplicar tarifas de tu operador.
+              </Text>
             </View>
           </View>
-
-          {/* Botón enviar código */}
-          <Pressable
-            onPress={sendOtp}
-            disabled={isLoading}
-            className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${
-              isLoading ? 'bg-primary/60' : 'bg-primary active:opacity-80'
-            }`}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <>
-                <Ionicons
-                  name="chatbox-ellipses-outline"
-                  size={20}
-                  color="#fff"
-                />
-                <Text className="text-base font-semibold text-white">
-                  Enviar código por SMS
-                </Text>
-              </>
-            )}
-          </Pressable>
-
-          {/* Botón Saltar */}
-          <Pressable
-            onPress={() => router.replace('/(public)/(tabs)')}
-            disabled={isLoading}
-            className="flex-row items-center justify-center gap-2 rounded-xl border border-slate-300 py-3 active:opacity-70"
-          >
-            <Ionicons name="play-skip-forward-outline" size={20} color="#64748B" />
-            <Text className="text-base font-medium text-slate-600">
-              Saltar y explorar
-            </Text>
-          </Pressable>
-
-          <Text className="text-center text-xs leading-5 text-slate-400">
-            Al continuar aceptas recibir un SMS con tu código de acceso. Pueden
-            aplicar tarifas de tu operador.
-          </Text>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
 
       {/* Contenedor de reCAPTCHA invisible (solo web usa este id). */}
@@ -157,3 +182,157 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+  },
+  content: {
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+    gap: 28,
+  },
+  header: {
+    alignItems: 'center',
+    gap: 28,
+  },
+  logo: {
+    width: 156,
+    height: 156,
+    borderRadius: 78,
+    backgroundColor: 'rgba(242, 159, 48, 0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  logoText: {
+    color: '#F29F30',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 1.3,
+  },
+  heading: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    color: '#1C2433',
+    fontSize: 27,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  subtitle: {
+    color: '#8E98A8',
+    fontSize: 14,
+    fontWeight: '400',
+    textAlign: 'center',
+  },
+  form: {
+    width: '100%',
+  },
+  phoneInput: {
+    minHeight: 90,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+  },
+  inputLabel: {
+    color: '#8E98A8',
+    fontSize: 12,
+    marginBottom: 6,
+  },
+  phoneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  countryCode: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  flag: {
+    fontSize: 22,
+  },
+  countryCodeText: {
+    color: '#1C2433',
+    fontSize: 16,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  textInput: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    color: '#1C2433',
+    fontSize: 16,
+  },
+  validationIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#C4CAD3',
+  },
+  validationIconValid: {
+    backgroundColor: '#10B981',
+  },
+  actions: {
+    width: '100%',
+    gap: 12,
+  },
+  primaryButton: {
+    width: '100%',
+    height: 52,
+    borderRadius: 9999,
+    backgroundColor: '#F29F30',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonLoading: {
+    opacity: 0.7,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  exploreButton: {
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 16,
+  },
+  exploreButtonText: {
+    color: '#8E98A8',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+  legalText: {
+    color: '#8E98A8',
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+});
