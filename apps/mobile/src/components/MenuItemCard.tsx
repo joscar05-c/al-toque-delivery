@@ -9,6 +9,7 @@ interface MenuItemCardProps {
   item: MenuItem;
   /** Cantidad actual de este plato en el carrito (0 = no agregado). */
   quantity: number;
+  onSelect: () => void;
   onAdd: () => void;
   onDecrement: () => void;
 }
@@ -17,55 +18,80 @@ interface MenuItemCardProps {
 export function MenuItemCard({
   item,
   quantity,
+  onSelect,
   onAdd,
   onDecrement,
 }: MenuItemCardProps) {
   return (
-    <View className="flex-row gap-3 border-b border-slate-100 bg-white px-4 py-4">
-      <View className="flex-1 gap-1">
-        <Text className="text-base font-semibold text-slate-900">
-          {item.name}
-        </Text>
-        {item.description && (
-          <Text numberOfLines={2} className="text-sm leading-5 text-slate-500">
-            {item.description}
-          </Text>
-        )}
-        <Text className="mt-1 text-base font-bold text-primary">
-          {formatPrice(item.price)}
-        </Text>
-      </View>
-
-      <View className="w-28 gap-2">
+    <View className="flex-row items-center gap-3 border-b border-[#F0F1F3] bg-white px-5 py-4">
+      <Pressable
+        onPress={onSelect}
+        accessibilityRole="button"
+        accessibilityLabel={`Ver ${item.name}`}
+        className="flex-1 flex-row items-center gap-3 active:opacity-70"
+      >
+      <View className="h-[84px] w-[84px] overflow-hidden rounded-2xl bg-[#F3F4F6]">
         {item.image_url ? (
           <Image
             source={{ uri: item.image_url }}
-            style={{ width: 112, height: 96, borderRadius: 12 }}
+            style={{ width: '100%', height: '100%' }}
             contentFit="cover"
             transition={200}
           />
         ) : (
-          <View className="h-24 w-28 items-center justify-center rounded-xl bg-slate-100">
-            <Ionicons name="fast-food-outline" size={28} color="#94A3B8" />
+          <View className="h-full w-full items-center justify-center">
+            <Ionicons name="fast-food-outline" size={30} color="#8E98A8" />
           </View>
         )}
+      </View>
 
+      <View className="flex-1 gap-1">
+        <Text
+          className="text-base font-semibold text-[#1C2433]"
+          numberOfLines={2}
+        >
+          {item.name}
+        </Text>
+        {item.description ? (
+          <Text numberOfLines={1} className="text-xs text-[#8E98A8]">
+            {item.description}
+          </Text>
+        ) : null}
+        <Text className="mt-1 text-sm font-semibold text-primary">
+          {formatPrice(item.price)}
+        </Text>
+      </View>
+      </Pressable>
+
+      <View className="w-10 items-end justify-center">
         {quantity === 0 ? (
           <Pressable
             onPress={onAdd}
-            className="flex-row items-center justify-center gap-1 rounded-full bg-primary py-2 active:opacity-80"
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Agregar ${item.name}`}
+            className="h-9 w-9 items-center justify-center rounded-full bg-primary active:opacity-70"
           >
-            <Ionicons name="add" size={16} color="#fff" />
-            <Text className="text-sm font-semibold text-white">Agregar</Text>
+            <Ionicons name="add" size={21} color="#fff" />
           </Pressable>
         ) : (
-          <View className="flex-row items-center justify-between rounded-full bg-primary px-1 py-1">
-            <Pressable onPress={onDecrement} hitSlop={8} className="px-2">
-              <Ionicons name="remove" size={18} color="#fff" />
-            </Pressable>
-            <Text className="text-sm font-bold text-white">{quantity}</Text>
-            <Pressable onPress={onAdd} hitSlop={8} className="px-2">
+          <View className="items-center gap-1 rounded-full bg-primary px-1 py-1">
+            <Pressable
+              onPress={onAdd}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`Agregar otro ${item.name}`}
+            >
               <Ionicons name="add" size={18} color="#fff" />
+            </Pressable>
+            <Text className="text-xs font-bold text-white">{quantity}</Text>
+            <Pressable
+              onPress={onDecrement}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`Quitar ${item.name}`}
+            >
+              <Ionicons name="remove" size={18} color="#fff" />
             </Pressable>
           </View>
         )}
