@@ -2,13 +2,22 @@ import { Redirect } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { useAuthStore } from '@/store/authStore';
+import { useOnboardingStore } from '@/store/onboardingStore';
 
 /**
  * Punto de entrada: decide a qué sección de la app va el usuario
- * según su sesión y su rol (public.users -> roles.name).
+ * según el onboarding, su sesión y su rol (public.users -> roles.name).
  */
 export default function Index() {
   const { session, role, profile, signOut } = useAuthStore();
+  const hasCompletedOnboarding = useOnboardingStore(
+    (state) => state.hasCompletedOnboarding,
+  );
+
+  // Si aún no completó el onboarding y no hay sesión activa -> flujo de Onboarding.
+  if (!session && !hasCompletedOnboarding) {
+    return <Redirect href="/onboarding" />;
+  }
 
   // Sin sesión -> navegación pública (ver restaurantes sin login).
   if (!session) {
