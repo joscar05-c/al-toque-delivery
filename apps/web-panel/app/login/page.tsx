@@ -2,7 +2,7 @@
 
 import type { ConfirmationResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 
 import {
   confirmPhoneCode,
@@ -11,9 +11,17 @@ import {
 
 import { createSessionAction } from './actions';
 
+// Constantes hoisted para evitar recreación en cada render
 const COUNTRY_CODE = '+51';
 const PHONE_LENGTH = 9;
 const OTP_LENGTH = 6;
+const RECAPTCHA_CONTAINER_ID = 'recaptcha-container';
+
+// Componente memoizado para el contenedor estático de reCAPTCHA
+const RecaptchaContainer = memo(() => (
+  <div id={RECAPTCHA_CONTAINER_ID} aria-hidden="true" />
+));
+RecaptchaContainer.displayName = 'RecaptchaContainer';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,6 +33,17 @@ export default function LoginPage() {
   const [confirmation, setConfirmation] = useState<ConfirmationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Functional setState para evitar closures obsoletas
+  const handleDigitsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, PHONE_LENGTH);
+    setDigits(value);
+  }, []);
+
+  const handleOtpChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH);
+    setOtp(value);
+  }, []);
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
@@ -88,109 +107,195 @@ export default function LoginPage() {
     }
   }
 
+  const handleBackToPhone = useCallback(() => {
+    setStep('phone');
+    setOtp('');
+    setConfirmation(null);
+    setError(null);
+  }, []);
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Panel Web</h2>
-          <p className="mt-2 text-sm text-gray-600">
+    <main 
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ 
+        background: 'var(--canvas)',
+        animation: 'fadeIn 0.4s ease-out',
+      }}
+    >
+      <div 
+        className="max-w-md w-full"
+        style={{
+          animation: 'slideUp 0.5s ease-out',
+        }}
+      >
+        {/* Brand Header */}
+        <div className="text-center mb-8">
+          <div 
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+            style={{ 
+              background: 'var(--brand)',
+              boxShadow: '0 4px 12px rgba(234, 88, 12, 0.2)',
+            }}
+          >
+            <svg 
+              className="w-8 h-8 text-white" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24" 
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h1 
+            className="text-2xl font-bold mb-2"
+            style={{ color: 'var(--ink)' }}
+          >
+            Al Toque
+          </h1>
+          <p 
+            className="text-sm"
+            style={{ color: 'var(--ink-secondary)' }}
+          >
             {step === 'phone'
               ? 'Ingresa tu celular para recibir un código por SMS'
               : `Ingresa el código enviado al ${phone}`}
           </p>
         </div>
 
-        {error && (
-          <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded">
-            {error}
-          </div>
-        )}
+        {/* Card */}
+        <div 
+          className="section-card p-8"
+          style={{
+            background: 'var(--surface)',
+          }}
+        >
+          {error && (
+            <div 
+              className="mb-6 p-4 rounded-lg text-sm text-center"
+              style={{ 
+                background: 'var(--danger-soft)',
+                color: 'var(--danger)',
+              }}
+            >
+              {error}
+            </div>
+          )}
 
-        {step === 'phone' ? (
-          <form onSubmit={handleSendCode} className="space-y-6" noValidate>
-            <div>
-              <label htmlFor="phone" className="sr-only">
-                Celular
-              </label>
-              <div className="flex items-center rounded-md border border-gray-300 focus-within:ring-indigo-500 focus-within:border-indigo-500">
-                <span className="pl-3 pr-2 text-sm text-gray-500 border-r border-gray-200">
-                  {COUNTRY_CODE}
-                </span>
+          {step === 'phone' ? (
+            <form onSubmit={handleSendCode} className="space-y-6" noValidate>
+              <div>
+                <label htmlFor="phone" className="panel-label">
+                  Número de celular
+                </label>
+                <div 
+                  className="flex items-center rounded-lg overflow-hidden"
+                  style={{ 
+                    border: '1px solid var(--border-strong)',
+                    background: 'var(--surface)',
+                  }}
+                >
+                  <span 
+                    className="pl-4 pr-3 py-3 text-sm font-medium border-r"
+                    style={{ 
+                      color: 'var(--ink-secondary)',
+                      borderColor: 'var(--border)',
+                      background: 'var(--surface-inset)',
+                    }}
+                  >
+                    {COUNTRY_CODE}
+                  </span>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    maxLength={PHONE_LENGTH}
+                    required
+                    placeholder="987654321"
+                    disabled={loading}
+                    onChange={handleDigitsChange}
+                    className="flex-1 px-4 py-3 border-0 focus:outline-none"
+                    style={{ 
+                      color: 'var(--ink)',
+                      background: 'transparent',
+                      fontSize: '16px',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="panel-btn-primary w-full"
+                style={{ padding: '12px 24px' }}
+              >
+                {loading ? 'Enviando código...' : 'Enviar código'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyCode} className="space-y-6" noValidate>
+              <div>
+                <label htmlFor="otp" className="panel-label">
+                  Código de verificación
+                </label>
                 <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
+                  id="otp"
+                  name="otp"
+                  type="text"
                   inputMode="numeric"
-                  autoComplete="tel-national"
-                  maxLength={PHONE_LENGTH}
+                  autoComplete="one-time-code"
+                  maxLength={OTP_LENGTH}
                   required
-                  placeholder="987654321"
+                  placeholder="000000"
                   disabled={loading}
-                  onChange={(e) =>
-                    setDigits(e.target.value.replace(/\D/g, '').slice(0, PHONE_LENGTH))
-                  }
-                  className="appearance-none relative block w-full px-3 py-2 border-0 focus:outline-none focus:ring-0 text-gray-900 sm:text-sm"
+                  onChange={handleOtpChange}
+                  className="panel-input text-center"
+                  style={{ 
+                    fontSize: '24px',
+                    letterSpacing: '0.5em',
+                    fontWeight: 600,
+                    padding: '16px',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
                 />
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Enviando código...' : 'Enviar código'}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyCode} className="space-y-6" noValidate>
-            <div>
-              <label htmlFor="otp" className="sr-only">
-                Código de verificación
-              </label>
-              <input
-                id="otp"
-                name="otp"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={OTP_LENGTH}
-                required
-                placeholder="000000"
+              <button
+                type="submit"
                 disabled={loading}
-                onChange={(e) =>
-                  setOtp(e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH))
-                }
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-center tracking-[0.5em]"
-              />
-            </div>
+                className="panel-btn-primary w-full"
+                style={{ padding: '12px 24px' }}
+              >
+                {loading ? 'Verificando...' : 'Ingresar'}
+              </button>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Verificando...' : 'Ingresar'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setStep('phone');
-                setOtp('');
-                setConfirmation(null);
-                setError(null);
-              }}
-              className="w-full text-center text-sm text-gray-500 hover:text-gray-700"
-            >
-              Usar otro número
-            </button>
-          </form>
-        )}
+              <button
+                type="button"
+                onClick={handleBackToPhone}
+                className="w-full text-center text-sm transition-colors"
+                style={{ 
+                  color: 'var(--ink-muted)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--ink-secondary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--ink-muted)';
+                }}
+              >
+                Usar otro número
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       {/* reCAPTCHA invisible de Firebase Phone Auth */}
-      <div id="recaptcha-container" />
+      <RecaptchaContainer />
     </main>
   );
 }

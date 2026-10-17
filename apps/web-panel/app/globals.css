@@ -77,6 +77,16 @@ textarea {
   color: #1C1917;
 }
 
+/* ——— Login animations ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ——— Panel skin (admin + restaurant) ——— */
 .panel-canvas {
   background: var(--canvas);
