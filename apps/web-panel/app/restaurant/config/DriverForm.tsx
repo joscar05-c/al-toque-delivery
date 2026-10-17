@@ -27,7 +27,7 @@ export default function DriverForm({ restaurantId }: DriverFormProps) {
   }
 
   return (
-    <form action={handleSubmit} className="mb-6 flex gap-3 max-w-2xl">
+    <form action={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-6">
       <input
         name="restaurantId"
         type="hidden"
@@ -38,18 +38,30 @@ export default function DriverForm({ restaurantId }: DriverFormProps) {
         value={contact}
         onChange={(e) => setContact(e.target.value)}
         placeholder="Email o teléfono del repartidor"
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="panel-input flex-1 w-full"
         disabled={isPending}
       />
       <button
         type="submit"
         disabled={isPending || !contact.trim()}
-        className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="panel-btn-primary whitespace-nowrap"
+        style={{
+          background: 'var(--success)',
+        }}
+        onMouseDown={(e) => {
+          if (!isPending && contact.trim()) (e.currentTarget.style.transform = 'scale(0.97)');
+        }}
+        onMouseUp={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
       >
         {isPending ? 'Vinculando...' : 'Vincular Repartidor'}
       </button>
-      {error && <span className="text-red-600 text-sm self-center">{error}</span>}
-      {success && <span className="text-green-600 text-sm self-center">✓ Vinculado</span>}
+      {error && <span className="text-sm self-center" style={{ color: 'var(--danger)' }}>{error}</span>}
+      {success && <span className="text-sm self-center" style={{ color: 'var(--success)' }}>✓ Vinculado</span>}
     </form>
   );
 }

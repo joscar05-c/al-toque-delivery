@@ -25,7 +25,7 @@ export default async function RestaurantConfigPage() {
   if (restError || !restaurant) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">No se encontró un restaurante asociado a tu cuenta.</p>
+        <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
     );
   }
@@ -51,14 +51,16 @@ export default async function RestaurantConfigPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Configuración del Restaurante</h1>
-        <p className="mt-1 text-gray-600">Tarifas de delivery y flota de repartidores</p>
+        <h1 className="page-title">Configuración del Restaurante</h1>
+        <p className="page-subtitle">Tarifas de delivery y flota de repartidores</p>
       </div>
 
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Tarifas de Delivery</h2>
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Tarifas de Delivery
+        </h2>
         <DeliveryConfigForm
           restaurantId={restaurant.id}
           initialBaseCost={config?.delivery_fee ?? 5}
@@ -66,8 +68,10 @@ export default async function RestaurantConfigPage() {
         />
       </section>
 
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Mi Flota de Repartidores</h2>
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Mi Flota de Repartidores
+        </h2>
         <DriverForm restaurantId={restaurant.id} />
         <DriverList drivers={drivers ?? []} restaurantId={restaurant.id} />
       </section>

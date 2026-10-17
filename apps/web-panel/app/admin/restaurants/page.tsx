@@ -33,11 +33,11 @@ export default async function AdminRestaurantsPage() {
         : `${queryError.message} (${queryError.code})`;
 
     return (
-      <div className="space-y-2 rounded-lg bg-red-50 p-4 text-sm text-red-700">
-        <p className="font-semibold">
+      <div className="section-card p-5" style={{ color: 'var(--danger)' }}>
+        <p style={{ fontSize: '14px', fontWeight: 600 }}>
           No se pudieron cargar los datos para crear el restaurante.
         </p>
-        <p>{detail}</p>
+        <p style={{ fontSize: '13px', marginTop: '4px', opacity: 0.8 }}>{detail}</p>
       </div>
     );
   }
@@ -46,20 +46,25 @@ export default async function AdminRestaurantsPage() {
   const categories = categoriesResult.data ?? [];
 
   return (
-    <div className="max-w-4xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold text-gray-900">Crear restaurante</h1>
-        <p className="mt-1 text-gray-600">
+    <div className="max-w-3xl">
+      <div className="mb-6">
+        <h1 className="page-title">Crear restaurante</h1>
+        <p className="page-subtitle">
           Asigna el restaurante a una cuenta existente. Al crearlo, esa cuenta
           recibirá el rol de propietario.
         </p>
-      </header>
+      </div>
 
       {owners.length === 0 ? (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+        <div className="section-card p-4" style={{
+          background: 'var(--warning-soft)',
+          borderColor: 'rgba(217, 119, 6, 0.2)',
+          color: '#92400E',
+          fontSize: '14px',
+        }}>
           No hay cuentas disponibles. El propietario debe iniciar sesión con su
           teléfono al menos una vez para que Firebase cree su perfil.
-        </p>
+        </div>
       ) : (
         <RestaurantCreateForm
           owners={owners}

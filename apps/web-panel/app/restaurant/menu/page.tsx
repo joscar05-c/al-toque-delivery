@@ -25,7 +25,7 @@ export default async function RestaurantMenuPage() {
   if (restError || !restaurant) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">No se encontró un restaurante asociado a tu cuenta.</p>
+        <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export default async function RestaurantMenuPage() {
 
   if (catError) {
     console.error('Error fetching categories:', catError);
-    return <div className="text-red-600">Error al cargar categorías: {catError.message}</div>;
+    return <div style={{ color: 'var(--danger)' }}>Error al cargar categorías: {catError.message}</div>;
   }
 
   const { data: items, error: itemsError } = await supabase
@@ -50,28 +50,34 @@ export default async function RestaurantMenuPage() {
 
   if (itemsError) {
     console.error('Error fetching menu items:', itemsError);
-    return <div className="text-red-600">Error al cargar platos: {itemsError.message}</div>;
+    return <div style={{ color: 'var(--danger)' }}>Error al cargar platos: {itemsError.message}</div>;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Gestión de Menú</h1>
-        <p className="mt-1 text-gray-600">Categorías y platos de tu restaurante</p>
+        <h1 className="page-title">Gestión de Menú</h1>
+        <p className="page-subtitle">Categorías y platos de tu restaurante</p>
       </div>
 
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Categorías de Menú</h2>
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Categorías de Menú
+        </h2>
         <CategoryForm restaurantId={restaurant.id} />
       </section>
 
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Agregar Plato</h2>
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Agregar Plato
+        </h2>
         <MenuItemForm restaurantId={restaurant.id} categories={categories ?? []} />
       </section>
 
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Platos del Menú</h2>
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Platos del Menú
+        </h2>
         <MenuGrid items={items ?? []} />
       </section>
     </div>

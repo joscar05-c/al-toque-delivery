@@ -3,6 +3,48 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* ——— Cocina en Vivo: Design Tokens ——— */
+  /* Canvas & surfaces */
+  --canvas: #FFFBF5;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-inset: #FDF6EE;
+  --surface-sidebar: #1C1917;
+
+  /* Text hierarchy */
+  --ink: #1C1917;
+  --ink-secondary: #57534E;
+  --ink-muted: #A8A29E;
+  --ink-on-dark: #E7E5E4;
+  --ink-muted-on-dark: #A8A29E;
+
+  /* Borders — warm, barely visible */
+  --border: rgba(120, 80, 40, 0.08);
+  --border-strong: rgba(120, 80, 40, 0.15);
+  --border-on-dark: rgba(255, 255, 255, 0.08);
+
+  /* Brand — naranja quemado */
+  --brand: #EA580C;
+  --brand-hover: #C2410C;
+  --brand-soft: rgba(234, 88, 12, 0.1);
+  --brand-on-dark: #FB923C;
+
+  /* Semantic */
+  --success: #16A34A;
+  --success-soft: rgba(22, 163, 74, 0.1);
+  --danger: #DC2626;
+  --danger-soft: rgba(220, 38, 38, 0.08);
+  --warning: #D97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --info: #2563EB;
+  --info-soft: rgba(37, 99, 235, 0.08);
+
+  /* Kitchen status colors */
+  --kitchen-pending: #F59E0B;
+  --kitchen-accepted: #3B82F6;
+  --kitchen-preparing: #EA580C;
+  --kitchen-ready: #16A34A;
 }
 
 @theme inline {
@@ -22,6 +64,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Los campos de formulario se muestran sobre tarjetas blancas (bg-white).
@@ -30,5 +74,426 @@ body {
 input,
 select,
 textarea {
-  color: #171717;
+  color: #1C1917;
+}
+
+/* ——— Panel skin (admin + restaurant) ——— */
+.panel-canvas {
+  background: var(--canvas);
+}
+
+.panel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(120, 80, 40, 0.04);
+}
+
+.panel-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.panel-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.panel-input:disabled {
+  background: var(--surface-inset);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.panel-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  background: var(--brand);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms ease, transform 100ms ease;
+}
+
+.panel-btn-primary:hover {
+  background: var(--brand-hover);
+}
+
+.panel-btn-primary:active {
+  transform: scale(0.97);
+}
+
+.panel-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.panel-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, transform 100ms ease;
+}
+
+.panel-btn-secondary:hover {
+  background: var(--surface-inset);
+  color: var(--ink);
+}
+
+.panel-btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.panel-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  margin-bottom: 4px;
+}
+
+/* ——— Responsive sidebar ——— */
+@media (max-width: 767px) {
+  /* Mobile: No sidebar visible, full width content */
+  .sidebar-desktop {
+    display: none;
+  }
+  
+  .sidebar-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+  }
+  
+  .sidebar-mobile.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+  }
+  
+  .sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .content-mobile {
+    margin-left: 0 !important;
+  }
+  
+  .mobile-menu-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 30;
+    width: 44px;
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Page title responsive */
+  .page-title {
+    font-size: 20px;
+  }
+  
+  /* Forms full width on mobile */
+  .panel-input {
+    font-size: 16px; /* prevents iOS zoom */
+    min-width: 0; /* prevents flex overflow */
+  }
+  
+  /* KPI grid on mobile */
+  .grid.grid-cols-1.md\:grid-cols-3 {
+    gap: 12px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet: Compact sidebar */
+  .sidebar-desktop {
+    width: 72px;
+  }
+  
+  .sidebar-desktop .sidebar-brand-text,
+  .sidebar-desktop .sidebar-link-text,
+  .sidebar-desktop .sidebar-signout-text {
+    display: none;
+  }
+  
+  .sidebar-desktop .sidebar-link,
+  .sidebar-desktop .sidebar-signout {
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  .content-mobile {
+    margin-left: 72px;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: Full sidebar */
+  .sidebar-desktop {
+    width: 240px;
+  }
+  
+  .content-mobile {
+    margin-left: 240px;
+  }
+}
+
+/* ——— Responsive tables ——— */
+@media (max-width: 767px) {
+  .panel-table-responsive {
+    display: block;
+  }
+  
+  .panel-table-responsive thead {
+    display: none;
+  }
+  
+  .panel-table-responsive tbody {
+    display: block;
+  }
+  
+  .panel-table-responsive tr {
+    display: block;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  
+  .panel-table-responsive td {
+    display: block;
+    padding: 8px 0;
+    border: none;
+  }
+  
+  .panel-table-responsive td:before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+
+/* ——— Responsive grids ——— */
+@media (max-width: 1023px) {
+  .grid-responsive-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .grid-responsive-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-responsive-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-responsive-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ——— Sidebar nav ——— */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-muted-on-dark);
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink-on-dark);
+}
+
+.sidebar-link[data-active="true"] {
+  background: var(--brand-soft);
+  color: var(--brand-on-dark);
+}
+
+/* Sign out button in sidebar context */
+.sidebar-signout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted-on-dark);
+  transition: background 150ms ease, color 150ms ease;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-signout:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #FCA5A5;
+}
+
+/* ——— Page chrome ——— */
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  margin-top: 4px;
+}
+
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(120, 80, 40, 0.04);
+}
+
+/* ——— Table styles ——— */
+.panel-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.panel-table thead th {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-inset);
+}
+
+.panel-table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.panel-table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.panel-table tbody td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.panel-table tbody tr:hover {
+  background: var(--surface-inset);
+}
+
+/* ——— Status badges ——— */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.badge-success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.badge-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.badge-warning {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.badge-info {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.badge-neutral {
+  background: rgba(120, 80, 40, 0.06);
+  color: var(--ink-secondary);
+}
+
+.badge-brand {
+  background: var(--brand-soft);
+  color: var(--brand);
 }

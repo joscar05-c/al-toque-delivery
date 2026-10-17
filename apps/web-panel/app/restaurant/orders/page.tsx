@@ -23,7 +23,7 @@ export default async function RestaurantOrdersPage() {
   if (restError || !restaurant) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">No se encontró un restaurante asociado a tu cuenta.</p>
+        <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
     );
   }
@@ -37,14 +37,14 @@ export default async function RestaurantOrdersPage() {
 
   if (error) {
     console.error('Error fetching orders:', error);
-    return <div className="text-red-600">Error al cargar pedidos: {error.message}</div>;
+    return <div style={{ color: 'var(--danger)' }}>Error al cargar pedidos: {error.message}</div>;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Pedidos en Vivo</h1>
-        <p className="mt-1 text-gray-600">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
+        <h1 className="page-title">Pedidos en Vivo</h1>
+        <p className="page-subtitle">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
       </div>
 
       <RealtimeBoard initialOrders={orders ?? []} restaurantId={restaurant.id} />

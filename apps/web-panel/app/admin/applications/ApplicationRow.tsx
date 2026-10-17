@@ -30,32 +30,35 @@ export default function ApplicationRow({ application }: ApplicationRowProps) {
 
   return (
     <tr className={isPending ? 'opacity-50' : ''}>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">{application.business_name}</div>
+      <td>
+        <div style={{ fontWeight: 500, color: 'var(--ink)', fontSize: '14px' }}>{application.business_name}</div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-500">{application.business_phone}</div>
+      <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--ink-secondary)', fontSize: '14px' }}>
+        {application.business_phone}
       </td>
-      <td className="px-6 py-4">
-        <div className="text-sm text-gray-500 max-w-xs truncate">{application.address}</div>
+      <td>
+        <div style={{ color: 'var(--ink-secondary)', fontSize: '14px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {application.address}
+        </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+      <td>
+        <span className="badge badge-info">
           {application.city}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <td style={{ textAlign: 'right' }}>
         <form action={handleApprove} className="inline">
           <button
             type="submit"
             disabled={isPending}
-            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="panel-btn-primary"
+            style={{ background: 'var(--success)', padding: '6px 14px', fontSize: '13px' }}
           >
             {isPending ? 'Aprobando...' : 'Aprobar'}
           </button>
         </form>
         {error && (
-          <div className="mt-2 text-red-600 text-xs">{error}</div>
+          <div style={{ marginTop: '8px', color: 'var(--danger)', fontSize: '12px' }}>{error}</div>
         )}
       </td>
     </tr>

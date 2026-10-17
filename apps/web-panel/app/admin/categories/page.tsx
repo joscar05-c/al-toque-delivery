@@ -28,34 +28,36 @@ export default async function AdminCategoriesPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Categorías Globales</h1>
-        <p className="mt-1 text-gray-600">Gestión de categorías de restaurantes</p>
+        <h1 className="page-title">Categorías Globales</h1>
+        <p className="page-subtitle">Gestión de categorías de restaurantes</p>
       </div>
 
       <CategoryForm />
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {categories?.length === 0 ? (
+      <div className="section-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="panel-table w-full">
+            <thead>
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                  No hay categorías registradas
-                </td>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th style={{ textAlign: 'right' }}>Acciones</th>
               </tr>
-            ) : (
-              categories?.map((cat) => <CategoryRow key={cat.id} category={cat} />)
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {categories?.length === 0 ? (
+                <tr>
+                  <td colSpan={4} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--ink-muted)', fontSize: '14px' }}>
+                    No hay categorías registradas
+                  </td>
+                </tr>
+              ) : (
+                categories?.map((cat) => <CategoryRow key={cat.id} category={cat} />)
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -44,33 +44,61 @@ export default async function AdminDashboardPage() {
     : 0;
 
   const kpis = [
-    { label: 'Usuarios Registrados', value: totalUsers.toLocaleString(), icon: Users, color: 'bg-blue-500' },
-    { label: 'Pedidos Entregados', value: totalDeliveredOrders.toLocaleString(), icon: ShoppingBag, color: 'bg-green-500' },
-    { label: 'Calificación Promedio', value: avgRating.toFixed(1), icon: Star, color: 'bg-amber-500', max: ' / 5' },
+    { label: 'Usuarios Registrados', value: totalUsers.toLocaleString(), icon: Users, color: 'var(--info)', bg: 'var(--info-soft)' },
+    { label: 'Pedidos Entregados', value: totalDeliveredOrders.toLocaleString(), icon: ShoppingBag, color: 'var(--success)', bg: 'var(--success-soft)' },
+    { label: 'Calificación Promedio', value: avgRating.toFixed(1), icon: Star, color: 'var(--warning)', bg: 'var(--warning-soft)', max: ' / 5' },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-gray-600">Resumen general de la plataforma</p>
+        <h1 className="page-title">Dashboard</h1>
+        <p className="page-subtitle">Resumen general de la plataforma</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center justify-between">
+            <div key={idx} className="section-card p-6">
+              <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">{kpi.label}</p>
-                  <p className="mt-2 text-3xl font-bold text-gray-900 flex items-center gap-1">
+                  <p style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: 'var(--ink-muted)',
+                  }}>
+                    {kpi.label}
+                  </p>
+                  <p style={{
+                    marginTop: '8px',
+                    fontSize: '32px',
+                    fontWeight: 700,
+                    letterSpacing: '-0.025em',
+                    color: 'var(--ink)',
+                    fontVariantNumeric: 'tabular-nums',
+                    lineHeight: 1,
+                  }} className="flex items-center gap-1">
                     {kpi.value}
-                    {kpi.max && <span className="text-xl font-normal text-gray-400">{kpi.max}</span>}
+                    {kpi.max && <span style={{ fontSize: '18px', fontWeight: 400, color: 'var(--ink-muted)' }}>{kpi.max}</span>}
                   </p>
                 </div>
-                <div className={`p-3 rounded-lg ${kpi.color}`}>
-                  <Icon className="w-6 h-6 text-white" />
+                <div
+                  style={{
+                    background: kpi.bg,
+                    color: kpi.color,
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Icon style={{ width: '20px', height: '20px' }} />
                 </div>
               </div>
             </div>
@@ -78,20 +106,36 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Star className="w-5 h-5 text-amber-500" />
-            Últimas Reseñas Recibidas
+      {/* Recent reviews */}
+      <div className="section-card overflow-hidden">
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }} className="flex items-center gap-3">
+          <div style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            background: 'var(--warning-soft)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Star style={{ width: '16px', height: '16px', color: 'var(--warning)' }} />
+          </div>
+          <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>
+            Últimas Reseñas
           </h2>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div>
           {reviews.length === 0 ? (
-            <div className="px-6 py-12 text-center text-gray-500">
+            <div style={{
+              padding: '48px 20px',
+              textAlign: 'center',
+              color: 'var(--ink-muted)',
+              fontSize: '14px',
+            }}>
               No hay reseñas registradas
             </div>
           ) : (
-            reviews.map((r) => {
+            reviews.map((r, i) => {
               const scores = [
                 r.q1_app_loading_speed,
                 r.q2_product_selection_ease,
@@ -107,20 +151,45 @@ export default async function AdminDashboardPage() {
               ];
               const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
               return (
-                <div key={r.id} className="px-6 py-4 flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                        {avg.toFixed(1)} / 5
-                      </span>
-                      <time className="text-sm text-gray-500">
-                        {new Date(r.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </time>
-                    </div>
-                    {r.comment && (
-                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">{r.comment}</p>
-                    )}
+                <div
+                  key={r.id}
+                  style={{
+                    padding: '16px 20px',
+                    borderBottom: i < reviews.length - 1 ? '1px solid var(--border)' : 'none',
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-1">
+                    <span
+                      className="badge badge-warning"
+                      style={{ fontVariantNumeric: 'tabular-nums' }}
+                    >
+                      <Star style={{ width: '12px', height: '12px' }} fill="currentColor" />
+                      {avg.toFixed(1)}
+                    </span>
+                    <time style={{
+                      fontSize: '12px',
+                      color: 'var(--ink-muted)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}>
+                      {new Date(r.created_at).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </time>
                   </div>
+                  {r.comment && (
+                    <p style={{
+                      fontSize: '14px',
+                      color: 'var(--ink-secondary)',
+                      lineHeight: 1.5,
+                      marginTop: '4px',
+                    }}>
+                      {r.comment}
+                    </p>
+                  )}
                 </div>
               );
             })

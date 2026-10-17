@@ -31,14 +31,14 @@ export default function DeliveryConfigForm({
   }
 
   return (
-    <form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+    <form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
       <input
         name="restaurantId"
         type="hidden"
         value={restaurantId}
       />
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Costo Base (S/.)</label>
+        <label className="panel-label">Costo Base (S/.)</label>
         <input
           name="baseCost"
           type="number"
@@ -47,12 +47,13 @@ export default function DeliveryConfigForm({
           value={baseCost}
           onChange={(e) => setBaseCost(e.target.value)}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="panel-input"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
           disabled={isPending}
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Umbral Envío Gratis (S/.)</label>
+        <label className="panel-label">Umbral Envío Gratis (S/.)</label>
         <input
           name="freeThreshold"
           type="number"
@@ -60,7 +61,8 @@ export default function DeliveryConfigForm({
           min="0"
           value={freeThreshold}
           onChange={(e) => setFreeThreshold(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="panel-input"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
           disabled={isPending}
           placeholder="Opcional"
         />
@@ -69,12 +71,16 @@ export default function DeliveryConfigForm({
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="panel-btn-primary"
         >
           {isPending ? 'Guardando...' : 'Guardar Configuración'}
         </button>
-        {error && <span className="text-red-600 text-sm">{error}</span>}
-        {success && <span className="text-green-600 text-sm">✓ Guardado</span>}
+        {error && <span className="text-sm" style={{ color: 'var(--danger)' }}>{error}</span>}
+        {success && (
+          <span className="text-sm flex items-center gap-1" style={{ color: 'var(--success)' }}>
+            ✓ Guardado
+          </span>
+        )}
       </div>
     </form>
   );

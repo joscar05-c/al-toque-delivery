@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { LogOut } from 'lucide-react';
 
 import { signOut } from '@/app/auth/actions';
 import { signOutClient } from '@/utils/firebase/auth-client';
 
 interface SignOutButtonProps {
-  className: string;
+  className?: string;
 }
 
-export function SignOutButton({ className }: SignOutButtonProps) {
+export function SignOutButton({ className = '' }: SignOutButtonProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   async function handleSignOut() {
@@ -31,8 +32,9 @@ export function SignOutButton({ className }: SignOutButtonProps) {
       type="button"
       onClick={handleSignOut}
       disabled={isSigningOut}
-      className={`${className} disabled:cursor-wait disabled:opacity-60`}
+      className={`sidebar-signout ${className}`}
     >
+      <LogOut className="w-4 h-4" />
       {isSigningOut ? 'Cerrando sesión...' : 'Cerrar Sesión'}
     </button>
   );

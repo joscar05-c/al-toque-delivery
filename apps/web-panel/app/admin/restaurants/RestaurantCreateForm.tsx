@@ -28,9 +28,6 @@ interface RestaurantCreateFormProps {
   cities: readonly CityOption[];
 }
 
-const inputClassName =
-  'mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 disabled:bg-gray-100';
-
 export default function RestaurantCreateForm({
   owners,
   categories,
@@ -61,16 +58,16 @@ export default function RestaurantCreateForm({
     <form
       ref={formRef}
       action={handleSubmit}
-      className="space-y-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+      className="section-card p-6 space-y-5"
     >
       <div>
-        <label htmlFor="ownerId" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="ownerId" className="panel-label">
           Propietario (cuenta registrada)
         </label>
         <select
           id="ownerId"
           name="ownerId"
-          className={inputClassName}
+          className="panel-input"
           required
           disabled={isPending}
           defaultValue=""
@@ -89,27 +86,27 @@ export default function RestaurantCreateForm({
 
       <div className="grid gap-5 md:grid-cols-2">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="name" className="panel-label">
             Nombre del restaurante
           </label>
           <input
             id="name"
             name="name"
-            className={inputClassName}
+            className="panel-input"
             maxLength={255}
             required
             disabled={isPending}
           />
         </div>
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="phone" className="panel-label">
             Teléfono del restaurante
           </label>
           <input
             id="phone"
             name="phone"
             type="tel"
-            className={inputClassName}
+            className="panel-input"
             maxLength={20}
             required
             disabled={isPending}
@@ -118,13 +115,13 @@ export default function RestaurantCreateForm({
       </div>
 
       <div>
-        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="address" className="panel-label">
           Dirección
         </label>
         <input
           id="address"
           name="address"
-          className={inputClassName}
+          className="panel-input"
           maxLength={255}
           required
           disabled={isPending}
@@ -133,13 +130,13 @@ export default function RestaurantCreateForm({
 
       <div className="grid gap-5 md:grid-cols-3">
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="city" className="panel-label">
             Ciudad
           </label>
           <select
             id="city"
             name="city"
-            className={inputClassName}
+            className="panel-input"
             required
             disabled={isPending}
             defaultValue=""
@@ -156,13 +153,13 @@ export default function RestaurantCreateForm({
         </div>
 
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="categoryId" className="panel-label">
             Categoría
           </label>
           <select
             id="categoryId"
             name="categoryId"
-            className={inputClassName}
+            className="panel-input"
             disabled={isPending}
             defaultValue=""
           >
@@ -178,7 +175,7 @@ export default function RestaurantCreateForm({
         <div>
           <label
             htmlFor="averagePrepTime"
-            className="block text-sm font-medium text-gray-700"
+            className="panel-label"
           >
             Preparación promedio (min)
           </label>
@@ -189,7 +186,8 @@ export default function RestaurantCreateForm({
             min={1}
             step={1}
             defaultValue={30}
-            className={inputClassName}
+            className="panel-input"
+            style={{ fontVariantNumeric: 'tabular-nums' }}
             required
             disabled={isPending}
           />
@@ -197,20 +195,32 @@ export default function RestaurantCreateForm({
       </div>
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <div style={{
+          padding: '12px',
+          borderRadius: '8px',
+          background: 'var(--danger-soft)',
+          fontSize: '14px',
+          color: 'var(--danger)',
+        }}>
           {error}
-        </p>
+        </div>
       )}
       {success && (
-        <p role="status" className="rounded-lg bg-green-50 p-3 text-sm text-green-700">
+        <div style={{
+          padding: '12px',
+          borderRadius: '8px',
+          background: 'var(--success-soft)',
+          fontSize: '14px',
+          color: 'var(--success)',
+        }}>
           {success}
-        </p>
+        </div>
       )}
 
       <button
         type="submit"
         disabled={isPending || owners.length === 0}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="panel-btn-primary"
       >
         {isPending ? 'Creando restaurante...' : 'Crear restaurante'}
       </button>

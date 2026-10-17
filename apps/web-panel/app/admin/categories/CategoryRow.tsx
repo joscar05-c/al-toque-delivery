@@ -25,29 +25,29 @@ export default function CategoryRow({ category }: CategoryRowProps) {
 
   return (
     <tr className={isPending ? 'opacity-50' : ''}>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{category.id.slice(0, 8)}…</td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{category.name}</td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-        }`}>
+      <td style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontSize: '13px' }}>
+        {category.id.slice(0, 8)}…
+      </td>
+      <td style={{ fontWeight: 500 }}>{category.name}</td>
+      <td>
+        <span className={`badge ${category.isActive ? 'badge-success' : 'badge-neutral'}`}>
           {category.isActive ? 'Activo' : 'Inactivo'}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <td style={{ textAlign: 'right' }}>
         <button
           type="button"
           onClick={handleToggle}
           disabled={isPending}
-          className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-            category.isActive
-              ? 'text-red-600 bg-red-50 hover:bg-red-100'
-              : 'text-green-600 bg-green-50 hover:bg-green-100'
-          } disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`panel-btn-secondary ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+          style={{
+            color: category.isActive ? 'var(--danger)' : 'var(--success)',
+            borderColor: category.isActive ? 'var(--danger-soft)' : 'var(--success-soft)',
+          }}
         >
           {isPending ? '...' : category.isActive ? 'Desactivar' : 'Activar'}
         </button>
-        {error && <div className="mt-1 text-red-600 text-xs">{error}</div>}
+        {error && <div className="mt-1" style={{ color: 'var(--danger)', fontSize: '12px' }}>{error}</div>}
       </td>
     </tr>
   );
