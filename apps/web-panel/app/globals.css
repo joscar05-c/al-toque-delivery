@@ -77,6 +77,32 @@ textarea {
   color: #1C1917;
 }
 
+/* ——— Login ——— */
+.login-hero {
+  transition: transform 600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.login-phone {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.login-phone:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-hero {
+    transition: none;
+  }
+}
+
 /* ——— Login animations ——— */
 @keyframes fadeIn {
   from { opacity: 0; }

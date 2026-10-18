@@ -2,7 +2,7 @@
 
 import type { ConfirmationResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { useState, useCallback, memo } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import {
   confirmPhoneCode,
@@ -11,22 +11,130 @@ import {
 
 import { createSessionAction } from './actions';
 
-// Constantes hoisted para evitar recreación en cada render
 const COUNTRY_CODE = '+51';
 const PHONE_LENGTH = 9;
 const OTP_LENGTH = 6;
 const RECAPTCHA_CONTAINER_ID = 'recaptcha-container';
 
-// Componente memoizado para el contenedor estático de reCAPTCHA
+type Step = 'phone' | 'otp';
+
+const COLUMNS = [
+  { key: 'pending', label: 'Pendiente', color: '#F59E0B', fillers: ['#7C02'] },
+  { key: 'accepted', label: 'Aceptado', color: '#3B82F6', fillers: [] as string[] },
+  { key: 'preparing', label: 'Preparando', color: '#EA580C', fillers: ['#B9D4', '#5E18'] },
+  { key: 'ready', label: 'Listo', color: '#16A34A', fillers: ['#2A0F'] },
+];
+
+const STEP_COPY: Record<Step, { eyebrow: string; title: string; caption: string; hint: string }> = {
+  phone: {
+    eyebrow: 'Paso 1 de 2 · Teléfono',
+    title: 'Un pedido nuevo entra a cocina',
+    caption: 'Ingresa tu celular para ver la cola en vivo.',
+    hint: 'Hola de nuevo',
+  },
+  otp: {
+    eyebrow: 'Paso 2 de 2 · Código',
+    title: 'Pedido aceptado',
+    caption: 'Confirma el código y entra al tablero.',
+    hint: 'Verifica tu número',
+  },
+};
+
 const RecaptchaContainer = memo(() => (
   <div id={RECAPTCHA_CONTAINER_ID} aria-hidden="true" />
 ));
 RecaptchaContainer.displayName = 'RecaptchaContainer';
 
+function LoginBoard({ step }: { step: Step }) {
+  const heroIndex = step === 'phone' ? 0 : 1;
+  const hero = COLUMNS[heroIndex];
+
+  return (
+    <div className="relative" aria-hidden="true">
+      <div className="grid grid-cols-4 gap-3">
+        {COLUMNS.map((col, i) => {
+          const count = col.fillers.length + (i === heroIndex ? 1 : 0);
+          return (
+            <div key={col.key} className="flex flex-col gap-2 min-w-0">
+              <div className="flex h-8 items-center justify-between px-1">
+                <span
+                  className="truncate text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: col.color }}
+                >
+                  {col.label}
+                </span>
+                <span
+                  className="text-[10px] font-bold"
+                  style={{ color: 'rgba(255,255,255,0.5)', fontVariantNumeric: 'tabular-nums' }}
+                >
+                  {count}
+                </span>
+              </div>
+
+              {i !== heroIndex && (
+                <div
+                  className="h-16 rounded-lg"
+                  style={{ border: '1px dashed rgba(255,255,255,0.12)' }}
+                />
+              )}
+
+              {col.fillers.map((id) => (
+                <div
+                  key={id}
+                  className="hidden h-14 rounded-lg px-3 py-2 lg:block"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    borderLeft: `3px solid ${col.color}`,
+                  }}
+                >
+                  <div
+                    className="font-mono text-[11px]"
+                    style={{ color: 'rgba(255,255,255,0.55)' }}
+                  >
+                    {id}
+                  </div>
+                  <div
+                    className="mt-2 h-1.5 w-2/3 rounded-full"
+                    style={{ background: 'rgba(255,255,255,0.12)' }}
+                  />
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        className="login-hero absolute left-0 top-10 flex h-16 flex-col justify-between rounded-lg px-2.5 py-2"
+        style={{
+          width: 'calc((100% - 36px) / 4)',
+          background: 'var(--surface)',
+          borderLeft: `3px solid ${hero.color}`,
+          boxShadow: `0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px ${hero.color}55`,
+          transform: `translateX(calc(${heroIndex} * (100% + 12px)))`,
+        }}
+      >
+        <span
+          className="font-mono text-[10px]"
+          style={{ color: 'var(--ink-muted)' }}
+        >
+          #A7K2
+        </span>
+        <span
+          className="text-[11px] font-semibold"
+          style={{ color: hero.color }}
+        >
+          {step === 'phone' ? 'Nuevo' : 'Aceptado'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
 
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [step, setStep] = useState<Step>('phone');
   const [digits, setDigits] = useState('');
   const [otp, setOtp] = useState('');
   const [phone, setPhone] = useState('');
@@ -34,15 +142,12 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Functional setState para evitar closures obsoletas
   const handleDigitsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, PHONE_LENGTH);
-    setDigits(value);
+    setDigits(e.target.value.replace(/\D/g, '').slice(0, PHONE_LENGTH));
   }, []);
 
   const handleOtpChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH);
-    setOtp(value);
+    setOtp(e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH));
   }, []);
 
   async function handleSendCode(e: React.FormEvent) {
@@ -114,188 +219,172 @@ export default function LoginPage() {
     setError(null);
   }, []);
 
+  const copy = STEP_COPY[step];
+
   return (
-    <main 
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{ 
-        background: 'var(--canvas)',
-        animation: 'fadeIn 0.4s ease-out',
-      }}
-    >
-      <div 
-        className="max-w-md w-full"
-        style={{
-          animation: 'slideUp 0.5s ease-out',
-        }}
+    <div className="flex min-h-screen flex-col lg:flex-row" style={{ background: 'var(--canvas)' }}>
+      <aside
+        className="flex flex-col justify-between gap-8 px-6 py-6 lg:w-[52%] lg:min-h-screen lg:px-12 lg:py-12"
+        style={{ background: 'var(--surface-sidebar)' }}
+        aria-hidden="true"
       >
-        {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div 
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-            style={{ 
-              background: 'var(--brand)',
-              boxShadow: '0 4px 12px rgba(234, 88, 12, 0.2)',
-            }}
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded-lg"
+            style={{ background: 'var(--brand)' }}
           >
-            <svg 
-              className="w-8 h-8 text-white" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24" 
-              strokeWidth={2.5}
-            >
+            <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h1 
-            className="text-2xl font-bold mb-2"
-            style={{ color: 'var(--ink)' }}
-          >
-            Al Toque
-          </h1>
-          <p 
-            className="text-sm"
-            style={{ color: 'var(--ink-secondary)' }}
-          >
-            {step === 'phone'
-              ? 'Ingresa tu celular para recibir un código por SMS'
-              : `Ingresa el código enviado al ${phone}`}
-          </p>
+          <div>
+            <p className="text-sm font-semibold" style={{ color: 'var(--ink-on-dark)' }}>Al Toque</p>
+            <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--ink-muted-on-dark)' }}>
+              Panel de operaciones
+            </p>
+          </div>
         </div>
 
-        {/* Card */}
-        <div 
-          className="section-card p-8"
-          style={{
-            background: 'var(--surface)',
-          }}
-        >
-          {error && (
-            <div 
-              className="mb-6 p-4 rounded-lg text-sm text-center"
-              style={{ 
-                background: 'var(--danger-soft)',
-                color: 'var(--danger)',
-              }}
-            >
-              {error}
-            </div>
-          )}
+        <div className="mx-auto w-full max-w-xl">
+          <LoginBoard step={step} />
+        </div>
 
-          {step === 'phone' ? (
-            <form onSubmit={handleSendCode} className="space-y-6" noValidate>
-              <div>
-                <label htmlFor="phone" className="panel-label">
-                  Número de celular
-                </label>
-                <div 
-                  className="flex items-center rounded-lg overflow-hidden"
-                  style={{ 
-                    border: '1px solid var(--border-strong)',
-                    background: 'var(--surface)',
-                  }}
-                >
-                  <span 
-                    className="pl-4 pr-3 py-3 text-sm font-medium border-r"
-                    style={{ 
-                      color: 'var(--ink-secondary)',
-                      borderColor: 'var(--border)',
-                      background: 'var(--surface-inset)',
-                    }}
-                  >
-                    {COUNTRY_CODE}
-                  </span>
+        <div className="mx-auto w-full max-w-xl" key={step} style={{ animation: 'fadeIn 0.35s ease-out' }}>
+          <p className="text-lg font-semibold" style={{ color: 'var(--ink-on-dark)' }}>
+            {copy.title}
+          </p>
+          <p className="mt-1 text-sm" style={{ color: 'var(--ink-muted-on-dark)' }}>
+            {copy.caption}
+          </p>
+          <div className="mt-5 flex items-center gap-2">
+            <span
+              className="h-1.5 rounded-full transition-all duration-300"
+              style={{ width: step === 'phone' ? 24 : 6, background: step === 'phone' ? 'var(--brand-on-dark)' : 'rgba(255,255,255,0.2)' }}
+            />
+            <span
+              className="h-1.5 rounded-full transition-all duration-300"
+              style={{ width: step === 'otp' ? 24 : 6, background: step === 'otp' ? 'var(--brand-on-dark)' : 'rgba(255,255,255,0.2)' }}
+            />
+          </div>
+        </div>
+      </aside>
+
+      <main className="flex flex-1 items-center justify-center px-5 py-10 lg:px-12">
+        <div className="w-full max-w-sm" style={{ animation: 'slideUp 0.5s ease-out' }}>
+          <div className="mb-8">
+            <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--brand)' }}>
+              {copy.eyebrow}
+            </p>
+            <h1 className="page-title mt-2">{copy.hint}</h1>
+            <p className="page-subtitle">
+              {step === 'phone'
+                ? 'Ingresa tu celular para recibir un código por SMS'
+                : `Ingresa el código enviado al ${phone}`}
+            </p>
+          </div>
+
+          <div className="section-card p-6">
+            {error && (
+              <div
+                role="alert"
+                className="mb-5 rounded-lg p-3 text-center text-sm"
+                style={{ background: 'var(--danger-soft)', color: 'var(--danger)' }}
+              >
+                {error}
+              </div>
+            )}
+
+            {step === 'phone' ? (
+              <form onSubmit={handleSendCode} className="space-y-5" noValidate>
+                <div>
+                  <label htmlFor="phone" className="panel-label">
+                    Número de celular
+                  </label>
+                  <div className="login-phone">
+                    <span
+                      className="border-r px-4 py-3 text-sm font-medium"
+                      style={{
+                        color: 'var(--ink-secondary)',
+                        borderColor: 'var(--border)',
+                        background: 'var(--surface-inset)',
+                      }}
+                    >
+                      {COUNTRY_CODE}
+                    </span>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
+                      maxLength={PHONE_LENGTH}
+                      required
+                      placeholder="987654321"
+                      disabled={loading}
+                      onChange={handleDigitsChange}
+                      className="flex-1 border-0 bg-transparent px-4 py-3 focus:outline-none"
+                      style={{
+                        color: 'var(--ink)',
+                        fontSize: '16px',
+                        fontVariantNumeric: 'tabular-nums',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" disabled={loading} className="panel-btn-primary w-full" style={{ padding: '12px 24px' }}>
+                  {loading ? 'Enviando código...' : 'Enviar código'}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyCode} className="space-y-5" noValidate>
+                <div>
+                  <label htmlFor="otp" className="panel-label">
+                    Código de verificación
+                  </label>
                   <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
+                    id="otp"
+                    name="otp"
+                    type="text"
                     inputMode="numeric"
-                    autoComplete="tel-national"
-                    maxLength={PHONE_LENGTH}
+                    autoComplete="one-time-code"
+                    maxLength={OTP_LENGTH}
                     required
-                    placeholder="987654321"
+                    placeholder="000000"
                     disabled={loading}
-                    onChange={handleDigitsChange}
-                    className="flex-1 px-4 py-3 border-0 focus:outline-none"
-                    style={{ 
-                      color: 'var(--ink)',
-                      background: 'transparent',
-                      fontSize: '16px',
+                    onChange={handleOtpChange}
+                    className="panel-input text-center"
+                    style={{
+                      fontSize: '24px',
+                      letterSpacing: '0.5em',
+                      fontWeight: 600,
+                      padding: '16px',
                       fontVariantNumeric: 'tabular-nums',
                     }}
                   />
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="panel-btn-primary w-full"
-                style={{ padding: '12px 24px' }}
-              >
-                {loading ? 'Enviando código...' : 'Enviar código'}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyCode} className="space-y-6" noValidate>
-              <div>
-                <label htmlFor="otp" className="panel-label">
-                  Código de verificación
-                </label>
-                <input
-                  id="otp"
-                  name="otp"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  maxLength={OTP_LENGTH}
-                  required
-                  placeholder="000000"
-                  disabled={loading}
-                  onChange={handleOtpChange}
-                  className="panel-input text-center"
-                  style={{ 
-                    fontSize: '24px',
-                    letterSpacing: '0.5em',
-                    fontWeight: 600,
-                    padding: '16px',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}
-                />
-              </div>
+                <button type="submit" disabled={loading} className="panel-btn-primary w-full" style={{ padding: '12px 24px' }}>
+                  {loading ? 'Verificando...' : 'Ingresar'}
+                </button>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="panel-btn-primary w-full"
-                style={{ padding: '12px 24px' }}
-              >
-                {loading ? 'Verificando...' : 'Ingresar'}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleBackToPhone}
-                className="w-full text-center text-sm transition-colors"
-                style={{ 
-                  color: 'var(--ink-muted)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--ink-secondary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--ink-muted)';
-                }}
-              >
-                Usar otro número
-              </button>
-            </form>
-          )}
+                <button
+                  type="button"
+                  onClick={handleBackToPhone}
+                  className="w-full text-center text-sm transition-colors"
+                  style={{ color: 'var(--ink-muted)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ink-secondary)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-muted)'; }}
+                >
+                  Usar otro número
+                </button>
+              </form>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* reCAPTCHA invisible de Firebase Phone Auth */}
-      <RecaptchaContainer />
-    </main>
+        <RecaptchaContainer />
+      </main>
+    </div>
   );
 }

@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import DeliveryConfigForm from './DeliveryConfigForm';
 import DriverForm from './DriverForm';
 import DriverList from './DriverList';
+import RestaurantCoverForm from './RestaurantCoverForm';
 
 export default async function RestaurantConfigPage() {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export default async function RestaurantConfigPage() {
 
   const { data: restaurant, error: restError } = await supabase
     .from('restaurants')
-    .select('id')
+    .select('id, image_url')
     .eq('owner_id', user.id)
     .single();
 
@@ -54,8 +55,18 @@ export default async function RestaurantConfigPage() {
     <div className="space-y-6">
       <div>
         <h1 className="page-title">Configuración del Restaurante</h1>
-        <p className="page-subtitle">Tarifas de delivery y flota de repartidores</p>
+        <p className="page-subtitle">Portada, tarifas de delivery y flota de repartidores</p>
       </div>
+
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Portada del Restaurante
+        </h2>
+        <RestaurantCoverForm
+          restaurantId={restaurant.id}
+          initialImageUrl={restaurant.image_url}
+        />
+      </section>
 
       <section className="section-card p-6">
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>

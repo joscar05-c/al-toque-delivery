@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { authorizeRestaurantOwner } from '@/utils/firebase/authorization';
+import { createServiceClient } from '@/utils/supabase/service';
 
 export async function updateDeliveryConfig(formData: FormData) {
   const restaurantId = formData.get('restaurantId') as string;
@@ -31,6 +32,58 @@ export async function updateDeliveryConfig(formData: FormData) {
   if (error) {
     console.error('Error updating delivery config:', error);
     return { error: 'Error al guardar la configuración' };
+  }
+
+  revalidatePath('/restaurant/config');
+  return { success: true };
+}
+
+/**
+ * Genera una URL de subida firmada para la portada del restaurante en el
+ * bucket `restaurant_images`. El archivo se sube directo a Storage con esa URL.
+ */
+export async function createRestaurantImageUploadUrl(
+  restaurantId: string,
+  fileName: string,
+): Promise<{ signedUrl: string; filePath: string; error: string | null }> {
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { signedUrl: '', filePath: '', error: 'No autorizado para este restaurante' };
+
+  const supabase = createServiceClient();
+  const filePath = `${access.restaurantId}/${fileName}`;
+
+  const { data, error } = await supabase.storage
+    .from('restaurant_images')
+    .createSignedUploadUrl(filePath);
+
+  if (error) {
+    console.error('Error creating signed upload url (restaurant image):', error);
+    return { signedUrl: '', filePath: '', error: 'Error al preparar la subida de la imagen' };
+  }
+
+  return { signedUrl: data.signedUrl, filePath, error: null };
+}
+
+/**
+ * Guarda la URL pública de la portada en `restaurants.image_url`.
+ * Se usa service_role tras validar al owner, igual que las subidas de platos,
+ * para no depender de las políticas RLS de `restaurants`.
+ */
+export async function updateRestaurantImage(restaurantId: string, imageUrl: string) {
+  if (!imageUrl) return { error: 'Imagen no válida' };
+
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado para este restaurante' };
+
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from('restaurants')
+    .update({ image_url: imageUrl, updated_at: new Date().toISOString() })
+    .eq('id', access.restaurantId);
+
+  if (error) {
+    console.error('Error updating restaurant image:', error);
+    return { error: 'Error al guardar la portada' };
   }
 
   revalidatePath('/restaurant/config');
