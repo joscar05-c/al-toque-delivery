@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Modal,
   Pressable,
   RefreshControl,
   Text,
@@ -34,15 +35,6 @@ function errorMessage(e: unknown, fallback: string): string {
   return e instanceof Error ? e.message : fallback;
 }
 
-/**
- * Home del cliente autenticado:
- * - Saludo personalizado y selector de dirección de entrega.
- * - Barra de búsqueda en tiempo real con botón para limpiar.
- * - Carrusel horizontal de categorías con botón "Ver todo" interactivo.
- * - Sección "Mejores socios" con tarjetas destacadas horizontales.
- * - Tabs de ordenamiento y filtrado ('Cercanos', 'Ventas', 'Calificación', 'Rápido').
- * - Lista vertical de restaurantes activos con estados de carga, error y vacío.
- */
 export default function ClientHomeScreen() {
   const { session, profile } = useAuthStore();
   const selectedAddress = useCheckoutStore((state) => state.selectedAddress);
@@ -54,6 +46,13 @@ export default function ClientHomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState<FilterTab>('Cercanos');
   const [showAllPartners, setShowAllPartners] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
+  // Filtros avanzados
+  const [onlyFreeDelivery, setOnlyFreeDelivery] = useState(false);
+  const [maxPrepTime, setMaxPrepTime] = useState<number | null>(null);
+  const [minRating, setMinRating] = useState<number | null>(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +60,15 @@ export default function ClientHomeScreen() {
   const firstName = profile?.name ? profile.name.split(' ')[0] : 'Cliente';
   const displayAddress = selectedAddress ?? address;
 
-  // Carga la dirección por defecto del usuario autenticado
+  const hasActiveAdvancedFilters =
+    onlyFreeDelivery || maxPrepTime !== null || minRating !== null;
+  const hasAnyFilterActive =
+    searchQuery !== '' ||
+    selectedCategory !== null ||
+    selectedTab !== 'Cercanos' ||
+    hasActiveAdvancedFilters;
+
+  // Carga la dirección por defecto del cliente
   useEffect(() => {
     if (!session) return;
 
@@ -135,47 +142,83 @@ export default function ClientHomeScreen() {
   const onRefresh = () => reload(selectedCategory, 'refresh');
   const onRetry = () => reload(selectedCategory, 'loading');
 
-  const onResetFilters = () => {
+  const onResetAllFilters = () => {
     setSearchQuery('');
     setSelectedCategory(null);
     setSelectedTab('Cercanos');
+    setOnlyFreeDelivery(false);
+    setMaxPrepTime(null);
+    setMinRating(null);
     reload(null, 'loading');
   };
 
-  // Filtrado por texto de búsqueda y ordenamiento por tab seleccionado
+  // Filtrado y ordenamiento reactivo
   const processedRestaurants = useMemo(() => {
     let list = [...restaurants];
 
+    // 1. Filtrado por texto (nombre, categoría, plato del menú, dirección)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter((r) => {
         const nameMatch = r.name.toLowerCase().includes(q);
-        const categoryMatch = r.restaurant_categories?.name?.toLowerCase().includes(q) ?? false;
+        const categoryMatch =
+          r.restaurant_categories?.name?.toLowerCase().includes(q) ?? false;
         const addressMatch = r.address ? r.address.toLowerCase().includes(q) : false;
-        return nameMatch || categoryMatch || addressMatch;
+        const menuMatch =
+          r.menu_items && Array.isArray(r.menu_items)
+            ? r.menu_items.some((m) => m.name.toLowerCase().includes(q))
+            : false;
+        return nameMatch || categoryMatch || addressMatch || menuMatch;
       });
     }
 
+    // 2. Filtro solo envío gratis
+    if (onlyFreeDelivery) {
+      list = list.filter((r) => {
+        const fee = r.restaurant_delivery_config?.delivery_fee;
+        return fee !== undefined && Number(fee) === 0;
+      });
+    }
+
+    // 3. Filtro tiempo máximo de preparación
+    if (maxPrepTime !== null) {
+      list = list.filter((r) => (r.average_prep_time || 0) <= maxPrepTime);
+    }
+
+    // 4. Filtro calificación mínima
+    if (minRating !== null) {
+      list = list.filter((r) => Number(r.rating || 0) >= minRating);
+    }
+
+    // 5. Ordenamiento por pestaña activa
     if (selectedTab === 'Rápido') {
       list.sort((a, b) => (a.average_prep_time || 0) - (b.average_prep_time || 0));
     } else if (selectedTab === 'Calificación') {
-      // Ordena alfabéticamente o por nombre
-      list.sort((a, b) => a.name.localeCompare(b.name));
+      list.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
     } else if (selectedTab === 'Ventas') {
-      // Prioriza restaurantes destacados / primer orden inverso
-      list.sort((a, b) => (b.average_prep_time || 0) - (a.average_prep_time || 0));
+      list.sort((a, b) => (b.sales_count || 0) - (a.sales_count || 0));
     }
 
     return list;
-  }, [restaurants, searchQuery, selectedTab]);
+  }, [
+    restaurants,
+    searchQuery,
+    onlyFreeDelivery,
+    maxPrepTime,
+    minRating,
+    selectedTab,
+  ]);
 
   const categoryOptions: CategoryOption[] = [
     { id: null, name: 'Todas' },
     ...categories,
   ];
 
+  // Lista de mejores socios (destacados de la BD)
   const partnersList = useMemo(() => {
-    return showAllPartners ? restaurants : restaurants.slice(0, 3);
+    const partners = restaurants.filter((r) => r.is_partner === true);
+    const base = partners.length > 0 ? partners : restaurants;
+    return showAllPartners ? base : base.slice(0, 3);
   }, [restaurants, showAllPartners]);
 
   return (
@@ -207,7 +250,7 @@ export default function ClientHomeScreen() {
           }}
           ListHeaderComponent={
             <View className="gap-6 pb-6">
-              {/* Cabecera del cliente: Saludo y selector de dirección */}
+              {/* Saludo y ubicación del cliente */}
               <View className="gap-2 pt-2">
                 <View className="flex-row items-center justify-between">
                   <View>
@@ -243,7 +286,7 @@ export default function ClientHomeScreen() {
                   <TextInput
                     value={searchQuery}
                     onChangeText={setSearchQuery}
-                    placeholder="Buscar en Al Toque..."
+                    placeholder="Buscar restaurante o comida (ej. pollo, pizza)..."
                     placeholderTextColor="#8E98A8"
                     className="flex-1 text-sm font-medium text-[#1C2433]"
                     returnKeyType="search"
@@ -260,30 +303,27 @@ export default function ClientHomeScreen() {
                   )}
                 </View>
 
-                {/* Botón de opciones/limpiar filtros */}
+                {/* Botón de opciones/filtros avanzados */}
                 <Pressable
-                  onPress={onResetFilters}
+                  onPress={() => setIsFilterModalOpen(true)}
                   hitSlop={8}
                   className={`h-12 w-12 items-center justify-center rounded-full ${
-                    selectedCategory !== null || searchQuery !== '' || selectedTab !== 'Cercanos'
-                      ? 'bg-primary'
-                      : 'bg-[#F3F4F6]'
-                  } active:opacity-70`}
-                  accessibilityLabel="Restablecer filtros"
+                    hasActiveAdvancedFilters ? 'bg-primary' : 'bg-[#F3F4F6]'
+                  } active:opacity-70 relative`}
+                  accessibilityLabel="Abrir filtros"
                 >
                   <Ionicons
                     name="options-outline"
                     size={21}
-                    color={
-                      selectedCategory !== null || searchQuery !== '' || selectedTab !== 'Cercanos'
-                        ? '#FFFFFF'
-                        : '#1C2433'
-                    }
+                    color={hasActiveAdvancedFilters ? '#FFFFFF' : '#1C2433'}
                   />
+                  {hasActiveAdvancedFilters && (
+                    <View className="absolute top-1 right-1 h-3 w-3 rounded-full bg-white border-2 border-primary" />
+                  )}
                 </Pressable>
               </View>
 
-              {/* Sección de Categorías con botón "Ver todo" interactivo */}
+              {/* Categorías con botón "Ver todo" */}
               <View className="gap-4">
                 <View className="flex-row items-center justify-between">
                   <Text className="text-xl font-semibold text-[#1C2433]">
@@ -294,7 +334,11 @@ export default function ClientHomeScreen() {
                     hitSlop={8}
                     className="active:opacity-70"
                   >
-                    <Text className={`text-sm font-medium ${selectedCategory === null ? 'text-[#8E98A8]' : 'text-primary font-semibold'}`}>
+                    <Text
+                      className={`text-sm font-medium ${
+                        selectedCategory === null ? 'text-[#8E98A8]' : 'text-primary font-bold'
+                      }`}
+                    >
                       {selectedCategory !== null ? 'Limpiar filtro' : 'Ver todo'}
                     </Text>
                   </Pressable>
@@ -319,8 +363,8 @@ export default function ClientHomeScreen() {
                 />
               </View>
 
-              {/* Sección Mejores socios con carrusel horizontal y botón "Ver todo" */}
-              {restaurants.length > 0 && (
+              {/* Sección Mejores socios */}
+              {partnersList.length > 0 && (
                 <View className="gap-4">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-xl font-semibold text-[#1C2433]">
@@ -344,80 +388,96 @@ export default function ClientHomeScreen() {
                     keyExtractor={(item) => `partner-${item.id}`}
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ paddingRight: 20 }}
-                    renderItem={({ item }) => (
-                      <Pressable
-                        onPress={() =>
-                          router.push({
-                            pathname: '/(client)/restaurant/[id]',
-                            params: { id: item.id },
-                          })
-                        }
-                        className="mr-4 w-[260px] overflow-hidden rounded-2xl bg-white active:opacity-90 shadow-sm"
-                      >
-                        {item.image_url ? (
-                          <Image
-                            source={{ uri: item.image_url }}
-                            style={{ width: '100%', height: 126 }}
-                            contentFit="cover"
-                            transition={200}
-                          />
-                        ) : (
-                          <View className="h-[126px] items-center justify-center bg-[#F3F4F6]">
-                            <Ionicons
-                              name="restaurant-outline"
-                              size={40}
-                              color="#8E98A8"
+                    renderItem={({ item }) => {
+                      const deliveryFee = item.restaurant_delivery_config?.delivery_fee !== undefined
+                        ? Number(item.restaurant_delivery_config.delivery_fee)
+                        : 2.0;
+                      return (
+                        <Pressable
+                          onPress={() =>
+                            router.push({
+                              pathname: '/(client)/restaurant/[id]',
+                              params: { id: item.id },
+                            })
+                          }
+                          className="mr-4 w-[260px] overflow-hidden rounded-2xl bg-white active:opacity-90 shadow-sm"
+                        >
+                          {item.image_url ? (
+                            <Image
+                              source={{ uri: item.image_url }}
+                              style={{ width: '100%', height: 126 }}
+                              contentFit="cover"
+                              transition={200}
                             />
-                          </View>
-                        )}
-                        <View className="gap-2 p-3">
-                          <View className="flex-row items-center gap-1.5">
-                            <Text
-                              className="text-lg font-semibold text-[#1C2433]"
-                              numberOfLines={1}
-                            >
-                              {item.name}
-                            </Text>
-                            <Ionicons
-                              name="checkmark-circle"
-                              size={16}
-                              color="#10B981"
-                            />
-                          </View>
-                          <View className="flex-row items-center gap-2">
-                            <Text className="text-sm font-medium text-[#10B981]">
-                              Disponible
-                            </Text>
-                            {item.restaurant_categories?.name ? (
-                              <>
-                                <Text className="text-[#C4CAD3]">·</Text>
+                          ) : (
+                            <View className="h-[126px] items-center justify-center bg-[#F3F4F6]">
+                              <Ionicons
+                                name="restaurant-outline"
+                                size={40}
+                                color="#8E98A8"
+                              />
+                            </View>
+                          )}
+                          <View className="gap-2 p-3">
+                            <View className="flex-row items-center justify-between">
+                              <View className="flex-row items-center gap-1.5 flex-1 pr-1">
                                 <Text
-                                  className="flex-1 text-sm text-[#8E98A8]"
+                                  className="text-base font-bold text-[#1C2433]"
                                   numberOfLines={1}
                                 >
-                                  {item.restaurant_categories.name}
+                                  {item.name}
                                 </Text>
-                              </>
-                            ) : null}
+                                <Ionicons
+                                  name="checkmark-circle"
+                                  size={16}
+                                  color="#10B981"
+                                />
+                              </View>
+                              <View className="flex-row items-center gap-1 bg-[#FFF7E6] px-1.5 py-0.5 rounded-full">
+                                <Ionicons name="star" size={11} color="#F59E0B" />
+                                <Text className="text-[11px] font-bold text-[#1C2433]">
+                                  {item.rating ? Number(item.rating).toFixed(1) : '4.8'}
+                                </Text>
+                              </View>
+                            </View>
+
+                            <View className="flex-row items-center gap-2">
+                              <Text className="text-xs font-semibold text-[#10B981]">
+                                Disponible
+                              </Text>
+                              {item.restaurant_categories?.name ? (
+                                <>
+                                  <Text className="text-[#C4CAD3]">·</Text>
+                                  <Text
+                                    className="flex-1 text-xs text-[#8E98A8]"
+                                    numberOfLines={1}
+                                  >
+                                    {item.restaurant_categories.name}
+                                  </Text>
+                                </>
+                              ) : null}
+                            </View>
+
+                            <View className="flex-row items-center justify-between pt-1 border-t border-slate-50">
+                              <View className="flex-row items-center gap-1">
+                                <Ionicons name="time" size={12} color="#F29F30" />
+                                <Text className="text-xs font-medium text-[#1C2433]">
+                                  {item.average_prep_time} min
+                                </Text>
+                              </View>
+                              <Text className="text-xs font-semibold text-[#1C2433]">
+                                {deliveryFee === 0 ? 'Envío gratis' : `S/ ${deliveryFee.toFixed(2)}`}
+                              </Text>
+                            </View>
                           </View>
-                          <View className="flex-row items-center gap-1.5">
-                            <Ionicons name="time" size={14} color="#F59E0B" />
-                            <Text className="text-xs font-medium text-[#1C2433]">
-                              {item.average_prep_time} min
-                            </Text>
-                            <Text className="mx-1 text-[#C4CAD3]">·</Text>
-                            <Text className="text-xs text-[#8E98A8]">
-                              Entrega a domicilio
-                            </Text>
-                          </View>
-                        </View>
-                      </Pressable>
-                    )}
+                        </Pressable>
+                      );
+                    }}
                   />
                 </View>
               )}
 
-              {/* Tabs interactivos de filtro y ordenamiento */}
+              {/* Tabs de ordenamiento */}
               <View className="flex-row items-center justify-between rounded-2xl bg-white px-2 shadow-sm">
                 {FILTER_TABS.map((tab) => {
                   const isActive = selectedTab === tab;
@@ -456,26 +516,151 @@ export default function ClientHomeScreen() {
               <Ionicons name="storefront-outline" size={44} color="#8E98A8" />
               <Text className="text-base font-semibold text-[#1C2433]">
                 {searchQuery
-                  ? `No hay resultados para "${searchQuery}"`
+                  ? `Sin resultados para "${searchQuery}"`
                   : 'No hay restaurantes disponibles'}
               </Text>
               <Text className="text-center text-sm text-[#8E98A8] px-4">
-                {searchQuery || selectedCategory
-                  ? 'Intenta buscar con otro término o limpia los filtros.'
+                {hasAnyFilterActive
+                  ? 'Prueba modificando tus términos de búsqueda o limpiando los filtros.'
                   : 'Vuelve a intentarlo más tarde.'}
               </Text>
-              {(searchQuery || selectedCategory) && (
+              {hasAnyFilterActive && (
                 <Pressable
-                  onPress={onResetFilters}
+                  onPress={onResetAllFilters}
                   className="mt-2 rounded-full bg-primary px-5 py-2.5 active:opacity-70"
                 >
-                  <Text className="text-sm font-semibold text-white">Limpiar filtros</Text>
+                  <Text className="text-sm font-semibold text-white">Limpiar todos los filtros</Text>
                 </Pressable>
               )}
             </View>
           }
         />
       )}
+
+      {/* Modal Bottom Sheet de Filtros Avanzados */}
+      <Modal
+        visible={isFilterModalOpen}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsFilterModalOpen(false)}
+      >
+        <View className="flex-1 justify-end bg-black/40">
+          <View className="rounded-t-3xl bg-white p-6 gap-5 shadow-2xl">
+            {/* Header del modal */}
+            <View className="flex-row items-center justify-between border-b border-slate-100 pb-3">
+              <Text className="text-xl font-bold text-[#1C2433]">Filtros de búsqueda</Text>
+              <Pressable
+                onPress={() => setIsFilterModalOpen(false)}
+                hitSlop={8}
+                className="rounded-full bg-slate-100 p-1.5"
+              >
+                <Ionicons name="close" size={20} color="#1C2433" />
+              </Pressable>
+            </View>
+
+            {/* Opción 1: Solo Envío Gratis */}
+            <Pressable
+              onPress={() => setOnlyFreeDelivery((prev) => !prev)}
+              className="flex-row items-center justify-between py-2 active:opacity-70"
+            >
+              <View className="flex-row items-center gap-3">
+                <View className="h-9 w-9 items-center justify-center rounded-full bg-emerald-50">
+                  <Ionicons name="bicycle" size={20} color="#10B981" />
+                </View>
+                <View>
+                  <Text className="text-base font-semibold text-[#1C2433]">Solo Envío Gratis</Text>
+                  <Text className="text-xs text-[#8E98A8]">Restaurantes sin costo de entrega</Text>
+                </View>
+              </View>
+              <View
+                className={`h-6 w-6 rounded-full border items-center justify-center ${
+                  onlyFreeDelivery ? 'border-primary bg-primary' : 'border-slate-300'
+                }`}
+              >
+                {onlyFreeDelivery && <Ionicons name="checkmark" size={16} color="#FFFFFF" />}
+              </View>
+            </Pressable>
+
+            {/* Opción 2: Tiempo máximo de preparación */}
+            <View className="gap-2">
+              <Text className="text-sm font-bold text-[#1C2433]">Tiempo de preparación máximo</Text>
+              <View className="flex-row gap-2">
+                {[null, 15, 20, 30].map((mins) => {
+                  const isSelected = maxPrepTime === mins;
+                  return (
+                    <Pressable
+                      key={mins ?? 'all'}
+                      onPress={() => setMaxPrepTime(mins)}
+                      className={`flex-1 items-center justify-center rounded-xl py-2.5 border ${
+                        isSelected
+                          ? 'border-primary bg-primary/10'
+                          : 'border-slate-200 bg-[#F8F9FA]'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-semibold ${
+                          isSelected ? 'text-primary font-bold' : 'text-[#1C2433]'
+                        }`}
+                      >
+                        {mins ? `≤ ${mins}m` : 'Todos'}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Opción 3: Calificación mínima */}
+            <View className="gap-2">
+              <Text className="text-sm font-bold text-[#1C2433]">Calificación mínima</Text>
+              <View className="flex-row gap-2">
+                {[null, 4.5, 4.7, 4.8].map((stars) => {
+                  const isSelected = minRating === stars;
+                  return (
+                    <Pressable
+                      key={stars ?? 'all'}
+                      onPress={() => setMinRating(stars)}
+                      className={`flex-1 items-center justify-center rounded-xl py-2.5 border ${
+                        isSelected
+                          ? 'border-primary bg-primary/10'
+                          : 'border-slate-200 bg-[#F8F9FA]'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-semibold ${
+                          isSelected ? 'text-primary font-bold' : 'text-[#1C2433]'
+                        }`}
+                      >
+                        {stars ? `★ ${stars}+` : 'Cualquiera'}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Botones de acción */}
+            <View className="flex-row items-center gap-3 pt-2">
+              <Pressable
+                onPress={() => {
+                  setOnlyFreeDelivery(false);
+                  setMaxPrepTime(null);
+                  setMinRating(null);
+                }}
+                className="flex-1 items-center justify-center rounded-full bg-slate-100 py-3.5 active:opacity-70"
+              >
+                <Text className="text-sm font-semibold text-[#1C2433]">Limpiar filtros</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setIsFilterModalOpen(false)}
+                className="flex-1 items-center justify-center rounded-full bg-primary py-3.5 active:opacity-70"
+              >
+                <Text className="text-sm font-bold text-white">Aplicar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

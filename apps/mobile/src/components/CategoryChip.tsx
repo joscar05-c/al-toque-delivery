@@ -6,6 +6,7 @@ const CATEGORY_ICONS: Record<string, ComponentProps<typeof Ionicons>['name']> = 
   todas: 'grid-outline',
   pollos: 'flame-outline',
   pollo: 'flame-outline',
+  polleria: 'flame-outline',
   pizza: 'pizza-outline',
   hamburguesas: 'fast-food-outline',
   hamburguesa: 'fast-food-outline',

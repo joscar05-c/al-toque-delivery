@@ -7,9 +7,11 @@ import type {
   RestaurantDeliveryConfig,
 } from '@delivery/shared';
 
-/** Restaurante con el nombre de su categoría embebido (join N:1). */
+/** Restaurante con categoría, configuración de delivery y platos embebidos. */
 export type RestaurantWithCategory = Restaurant & {
   restaurant_categories: Pick<RestaurantCategory, 'name'> | null;
+  restaurant_delivery_config: RestaurantDeliveryConfig | null;
+  menu_items?: { name: string }[];
 };
 
 /** Detalle de restaurante + categoría + configuración de delivery (join 1:1). */
@@ -42,7 +44,7 @@ export async function fetchActiveRestaurants(
 ): Promise<RestaurantWithCategory[]> {
   let query = supabase
     .from('restaurants')
-    .select('*, restaurant_categories(name)')
+    .select('*, restaurant_categories(name), restaurant_delivery_config(*), menu_items(name)')
     .eq('is_active', true)
     .order('name');
 
@@ -52,9 +54,7 @@ export async function fetchActiveRestaurants(
 
   const { data, error } = await query;
   if (error) throw error;
-  // Cast explícito: la forma del join está documentada por nuestros DTOs
-  // (los tipos se derivan del DDL, que es la fuente de verdad).
-  return (data ?? []) as RestaurantWithCategory[];
+  return (data ?? []) as unknown as RestaurantWithCategory[];
 }
 
 /** Detalle completo de un restaurante, incluyendo su config de entrega (1:1). */

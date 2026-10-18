@@ -929,6 +929,10 @@ export type Database = {
           image_url: string | null;
           average_prep_time: number;
           is_active: boolean;
+          rating: number | null;
+          total_reviews: number;
+          is_partner: boolean;
+          sales_count: number;
           location: string | null;
           created_at: string;
           updated_at: string;
@@ -945,6 +949,10 @@ export type Database = {
           average_prep_time?: number;
           is_active?: boolean;
           location?: string | null;
+          rating?: number | null;
+          total_reviews?: number;
+          is_partner?: boolean;
+          sales_count?: number;
           created_at?: string;
           updated_at?: string;
           restaurant_category_id?: string | null;
@@ -960,6 +968,10 @@ export type Database = {
           average_prep_time?: number;
           is_active?: boolean;
           location?: string | null;
+          rating?: number | null;
+          total_reviews?: number;
+          is_partner?: boolean;
+          sales_count?: number;
           created_at?: string;
           updated_at?: string;
           restaurant_category_id?: string | null;
