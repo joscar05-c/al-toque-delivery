@@ -7,8 +7,13 @@ import DeliveryConfigForm from './DeliveryConfigForm';
 import DriverForm from './DriverForm';
 import DriverList from './DriverList';
 import RestaurantCoverForm from './RestaurantCoverForm';
+import RestaurantSelector from '@/components/RestaurantSelector';
 
-export default async function RestaurantConfigPage() {
+interface PageProps {
+  searchParams: Promise<{ restaurantId?: string }>;
+}
+
+export default async function RestaurantConfigPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
   const user = await getSessionUser();
@@ -17,19 +22,26 @@ export default async function RestaurantConfigPage() {
     redirect('/login');
   }
 
-  const { data: restaurant, error: restError } = await supabase
-    .from('restaurants')
-    .select('id, image_url')
-    .eq('owner_id', user.id)
-    .single();
+  const resolvedParams = await searchParams;
 
-  if (restError || !restaurant) {
+  const { data: restaurants, error: restError } = await supabase
+    .from('restaurants')
+    .select('id, name, image_url')
+    .eq('owner_id', user.id)
+    .order('name');
+
+  if (restError || !restaurants || restaurants.length === 0) {
     return (
       <div className="text-center py-12">
         <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
     );
   }
+
+  const restaurant =
+    (resolvedParams?.restaurantId
+      ? restaurants.find((r) => r.id === resolvedParams.restaurantId)
+      : null) || restaurants[0];
 
   const { data: config, error: configError } = await supabase
     .from('restaurant_delivery_config')
@@ -53,9 +65,12 @@ export default async function RestaurantConfigPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Configuración del Restaurante</h1>
-        <p className="page-subtitle">Portada, tarifas de delivery y flota de repartidores</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="page-title">Configuración del Restaurante</h1>
+          <p className="page-subtitle">Portada, tarifas de delivery y flota de repartidores</p>
+        </div>
+        <RestaurantSelector restaurants={restaurants} currentId={restaurant.id} />
       </div>
 
       <section className="section-card p-6">

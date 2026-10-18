@@ -89,7 +89,7 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
 
   const handleStatusUpdate = useCallback(async (orderId: string, nextStatus: string) => {
     setPendingActions((prev) => new Set(prev).add(orderId));
-    const result = await updateOrderStatus(orderId, nextStatus);
+    const result = await updateOrderStatus(orderId, nextStatus, restaurantId);
     setPendingActions((prev) => {
       const next = new Set(prev);
       next.delete(orderId);
@@ -98,7 +98,7 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
     if (result.error) {
       alert(result.error);
     }
-  }, []);
+  }, [restaurantId]);
 
   const columns = [
     { key: 'pending', title: 'Pendiente' },

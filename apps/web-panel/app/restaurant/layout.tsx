@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 import { SignOutButton } from '@/components/SignOutButton';
 
 const navItems = [
@@ -11,8 +11,37 @@ const navItems = [
   { href: '/restaurant/config', icon: 'settings', label: 'Ajustes' },
 ];
 
-export default function RestaurantLayout({ children }: { children: React.ReactNode }) {
+function RestaurantNavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const restaurantId = searchParams.get('restaurantId');
+
+  return (
+    <>
+      {navItems.map((item) => {
+        const isActive =
+          pathname === item.href ||
+          (item.href !== '/restaurant/orders' && pathname?.startsWith(item.href));
+        const targetHref = restaurantId ? `${item.href}?restaurantId=${restaurantId}` : item.href;
+        return (
+          <Link
+            key={item.href}
+            href={targetHref}
+            className="sidebar-link"
+            data-active={isActive}
+            title={item.label}
+            onClick={onNavigate}
+          >
+            <SidebarIcon name={item.icon} />
+            <span className="sidebar-link-text">{item.label}</span>
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+export default function RestaurantLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -59,21 +88,9 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/restaurant/orders' && pathname?.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="sidebar-link"
-                data-active={isActive}
-                title={item.label}
-              >
-                <SidebarIcon name={item.icon} />
-                <span className="sidebar-link-text">{item.label}</span>
-              </Link>
-            );
-          })}
+          <Suspense fallback={null}>
+            <RestaurantNavList />
+          </Suspense>
         </nav>
 
         <div className="px-3 pb-4" style={{ borderTop: '1px solid var(--border-on-dark)' }}>
@@ -104,21 +121,9 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/restaurant/orders' && pathname?.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="sidebar-link"
-                data-active={isActive}
-                onClick={() => setMobileOpen(false)}
-              >
-                <SidebarIcon name={item.icon} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          <Suspense fallback={null}>
+            <RestaurantNavList onNavigate={() => setMobileOpen(false)} />
+          </Suspense>
         </nav>
 
         <div className="px-3 pb-4" style={{ borderTop: '1px solid var(--border-on-dark)' }}>

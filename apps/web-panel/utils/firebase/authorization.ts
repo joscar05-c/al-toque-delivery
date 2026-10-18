@@ -46,14 +46,17 @@ export async function authorizeRestaurantOwner(restaurantId?: string): Promise<{
     .select('id')
     .eq('owner_id', access.user.id);
 
-  if (restaurantId) query = query.eq('id', restaurantId);
+  if (restaurantId) {
+    query = query.eq('id', restaurantId);
+  }
 
-  const { data: restaurant, error } = await query.maybeSingle();
+  const { data: restaurants, error } = await query.limit(1);
   if (error) {
     console.error('[authorization] No se pudo verificar el restaurante:', error.message);
     return null;
   }
 
+  const restaurant = restaurants?.[0];
   if (!restaurant) return null;
 
   return { ...access, restaurantId: restaurant.id };

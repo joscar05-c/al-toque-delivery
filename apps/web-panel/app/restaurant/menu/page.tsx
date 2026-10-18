@@ -7,7 +7,13 @@ import CategoryForm from './CategoryForm';
 import MenuItemForm from './MenuItemForm';
 import MenuGrid from './MenuGrid';
 
-export default async function RestaurantMenuPage() {
+import RestaurantSelector from '@/components/RestaurantSelector';
+
+interface PageProps {
+  searchParams: Promise<{ restaurantId?: string }>;
+}
+
+export default async function RestaurantMenuPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
   const user = await getSessionUser();
@@ -16,19 +22,26 @@ export default async function RestaurantMenuPage() {
     redirect('/login');
   }
 
-  const { data: restaurant, error: restError } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('owner_id', user.id)
-    .single();
+  const resolvedParams = await searchParams;
 
-  if (restError || !restaurant) {
+  const { data: restaurants, error: restError } = await supabase
+    .from('restaurants')
+    .select('id, name, image_url')
+    .eq('owner_id', user.id)
+    .order('name');
+
+  if (restError || !restaurants || restaurants.length === 0) {
     return (
       <div className="text-center py-12">
         <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
     );
   }
+
+  const restaurant =
+    (resolvedParams?.restaurantId
+      ? restaurants.find((r) => r.id === resolvedParams.restaurantId)
+      : null) || restaurants[0];
 
   const { data: categories, error: catError } = await supabase
     .from('menu_categories')
@@ -55,9 +68,12 @@ export default async function RestaurantMenuPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Gestión de Menú</h1>
-        <p className="page-subtitle">Categorías y platos de tu restaurante</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="page-title">Gestión de Menú</h1>
+          <p className="page-subtitle">Categorías y platos de tu restaurante</p>
+        </div>
+        <RestaurantSelector restaurants={restaurants} currentId={restaurant.id} />
       </div>
 
       <section className="section-card p-6">

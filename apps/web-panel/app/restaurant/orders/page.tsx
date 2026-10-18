@@ -5,7 +5,13 @@ import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import RealtimeBoard from './RealtimeBoard';
 
-export default async function RestaurantOrdersPage() {
+import RestaurantSelector from '@/components/RestaurantSelector';
+
+interface PageProps {
+  searchParams: Promise<{ restaurantId?: string }>;
+}
+
+export default async function RestaurantOrdersPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
   const user = await getSessionUser();
@@ -14,19 +20,26 @@ export default async function RestaurantOrdersPage() {
     redirect('/login');
   }
 
-  const { data: restaurant, error: restError } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('owner_id', user.id)
-    .single();
+  const resolvedParams = await searchParams;
 
-  if (restError || !restaurant) {
+  const { data: restaurants, error: restError } = await supabase
+    .from('restaurants')
+    .select('id, name, image_url')
+    .eq('owner_id', user.id)
+    .order('name');
+
+  if (restError || !restaurants || restaurants.length === 0) {
     return (
       <div className="text-center py-12">
         <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
       </div>
     );
   }
+
+  const restaurant =
+    (resolvedParams?.restaurantId
+      ? restaurants.find((r) => r.id === resolvedParams.restaurantId)
+      : null) || restaurants[0];
 
   const { data: orders, error } = await supabase
     .from('orders')
@@ -42,9 +55,12 @@ export default async function RestaurantOrdersPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="page-title">Pedidos en Vivo</h1>
-        <p className="page-subtitle">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="page-title">Pedidos en Vivo</h1>
+          <p className="page-subtitle">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
+        </div>
+        <RestaurantSelector restaurants={restaurants} currentId={restaurant.id} />
       </div>
 
       <RealtimeBoard initialOrders={orders ?? []} restaurantId={restaurant.id} />
