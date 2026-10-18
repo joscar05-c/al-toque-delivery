@@ -87,10 +87,10 @@ export default function ClientHomeScreen() {
       });
   }, [session]);
 
-  const loadData = useCallback(async (categoryId?: string) => {
+  const loadData = useCallback(async () => {
     const [cats, rests] = await Promise.all([
       fetchRestaurantCategories(),
-      fetchActiveRestaurants(categoryId),
+      fetchActiveRestaurants(),
     ]);
     return { cats, rests };
   }, []);
@@ -118,29 +118,44 @@ export default function ClientHomeScreen() {
     };
   }, [loadData]);
 
-  const reload = (categoryId: string | null, kind: 'loading' | 'refresh') => {
-    const setBusy = kind === 'loading' ? setIsLoading : setIsRefreshing;
-    setBusy(true);
-    setError(null);
+  const onSelectCategory = (categoryId: string | null) => {
+    if (categoryId === null) {
+      setSelectedCategory(null);
+    } else {
+      setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
+    }
+  };
 
-    loadData(categoryId ?? undefined)
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const { cats, rests } = await loadData();
+      setCategories(cats);
+      setRestaurants(rests);
+      setError(null);
+    } catch (e: unknown) {
+      console.error('[home] Error refrescando datos:', e);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const onRetry = () => {
+    setIsLoading(true);
+    setError(null);
+    loadData()
       .then(({ cats, rests }) => {
         setCategories(cats);
         setRestaurants(rests);
+        setError(null);
       })
       .catch((e: unknown) => {
         setError(errorMessage(e, 'Error cargando los datos'));
       })
-      .finally(() => setBusy(false));
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
-
-  const onSelectCategory = (categoryId: string | null) => {
-    setSelectedCategory(categoryId);
-    reload(categoryId, 'loading');
-  };
-
-  const onRefresh = () => reload(selectedCategory, 'refresh');
-  const onRetry = () => reload(selectedCategory, 'loading');
 
   const onResetAllFilters = () => {
     setSearchQuery('');
@@ -149,12 +164,16 @@ export default function ClientHomeScreen() {
     setOnlyFreeDelivery(false);
     setMaxPrepTime(null);
     setMinRating(null);
-    reload(null, 'loading');
   };
 
-  // Filtrado y ordenamiento reactivo
+  // Filtrado y ordenamiento reactivo (instantáneo en memoria, sin recargar pantalla)
   const processedRestaurants = useMemo(() => {
     let list = [...restaurants];
+
+    // 0. Filtrado por categoría seleccionada
+    if (selectedCategory) {
+      list = list.filter((r) => r.restaurant_category_id === selectedCategory);
+    }
 
     // 1. Filtrado por texto (nombre, categoría, plato del menú, dirección)
     if (searchQuery.trim()) {
@@ -202,6 +221,7 @@ export default function ClientHomeScreen() {
     return list;
   }, [
     restaurants,
+    selectedCategory,
     searchQuery,
     onlyFreeDelivery,
     maxPrepTime,
