@@ -4,6 +4,7 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
   signInWithPhoneNumber as firebaseSignInWithPhoneNumber,
   signOut as firebaseSignOut,
+  updateProfile as firebaseUpdateProfile,
   type ConfirmationResult,
   type User,
 } from '@react-native-firebase/auth';
@@ -61,4 +62,11 @@ export async function confirmPhoneCode(
   code: string,
 ): Promise<void> {
   await confirmation.confirm(code);
+}
+
+/** Actualiza el perfil (nombre visible) en Firebase Auth. */
+export async function updateUserProfile(displayName: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) return;
+  await firebaseUpdateProfile(user, { displayName });
 }

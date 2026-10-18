@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
-import { useAuthStore } from '@/store/authStore';
+import { isProfileIncomplete, useAuthStore } from '@/store/authStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
 
 /**
@@ -26,6 +26,9 @@ export default function Index() {
 
   // Con sesión -> sección según rol.
   if (role === 'client') {
+    if (isProfileIncomplete(profile)) {
+      return <Redirect href="/(auth)/complete-profile" />;
+    }
     return <Redirect href="/(client)/(tabs)" />;
   }
   if (role === 'driver') {
