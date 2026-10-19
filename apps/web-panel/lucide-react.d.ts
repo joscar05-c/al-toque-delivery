@@ -1,4 +1,6 @@
 declare module 'lucide-react' {
+  import * as React from 'react';
+
   export interface LucideIconProps extends React.SVGAttributes<SVGSVGElement> {
     size?: number;
     color?: string;
@@ -16,10 +18,37 @@ declare module 'lucide-react' {
   export const CheckCircle: LucideIcon;
   export const XCircle: LucideIcon;
   export const Settings: LucideIcon;
-  // Add others as needed
   export const Menu: LucideIcon;
   export const LogOut: LucideIcon;
   export const LayoutDashboard: LucideIcon;
   export const FileText: LucideIcon;
   export const Category: LucideIcon;
+  export const Store: LucideIcon;
+  export const Edit: LucideIcon;
+  export const Edit2: LucideIcon;
+  export const Search: LucideIcon;
+  export const Plus: LucideIcon;
+  export const X: LucideIcon;
+  export const Check: LucideIcon;
+  export const AlertCircle: LucideIcon;
+  export const Filter: LucideIcon;
+  export const Tag: LucideIcon;
+  export const Phone: LucideIcon;
+  export const MapPin: LucideIcon;
+  export const User: LucideIcon;
+  export const ExternalLink: LucideIcon;
+  export const Eye: LucideIcon;
+  export const Sparkles: LucideIcon;
+  export const ArrowUpDown: LucideIcon;
+  export const Building2: LucideIcon;
+  export const Inbox: LucideIcon;
+  export const ChevronDown: LucideIcon;
+  export const ChevronUp: LucideIcon;
+  export const ToggleLeft: LucideIcon;
+  export const ToggleRight: LucideIcon;
+  export const Trash2: LucideIcon;
+  export const Image: LucideIcon;
+  export const Power: LucideIcon;
+  export const Award: LucideIcon;
+  export const MoreVertical: LucideIcon;
 }
