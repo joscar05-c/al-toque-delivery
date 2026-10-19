@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   Pressable,
+  RefreshControl,
   SectionList,
   Text,
   View,
@@ -48,6 +49,7 @@ export default function RestaurantMenuScreen() {
   const [restaurant, setRestaurant] = useState<RestaurantDetail | null>(null);
   const [sections, setSections] = useState<MenuSection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -63,26 +65,36 @@ export default function RestaurantMenuScreen() {
   const totalItems = useCartStore(selectTotalItems);
   const totalPrice = useCartStore(selectTotalPrice);
 
+  const loadData = useCallback(async () => {
+    if (!id) return;
+    try {
+      const [detail, menu] = await Promise.all([
+        fetchRestaurantById(id),
+        fetchRestaurantMenu(id),
+      ]);
+      setRestaurant(detail);
+      setSections(menu);
+      setError(null);
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : 'Error cargando el restaurante',
+      );
+    }
+  }, [id]);
+
   useEffect(() => {
     if (!id) return;
+    setIsLoading(true);
+    loadData().finally(() => {
+      setIsLoading(false);
+    });
+  }, [id, loadData]);
 
-    (async () => {
-      try {
-        const [detail, menu] = await Promise.all([
-          fetchRestaurantById(id),
-          fetchRestaurantMenu(id),
-        ]);
-        setRestaurant(detail);
-        setSections(menu);
-      } catch (e) {
-        setError(
-          e instanceof Error ? e.message : 'Error cargando el restaurante',
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [id]);
+  const onRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await loadData();
+    setIsRefreshing(false);
+  }, [loadData]);
 
   if (!id) {
     return <Redirect href="/(client)/(tabs)" />;
@@ -137,12 +149,23 @@ export default function RestaurantMenuScreen() {
         <Text className="text-center text-sm text-[#8E98A8]">
           {error ?? 'No se encontró el restaurante.'}
         </Text>
-        <Pressable
-          onPress={() => router.back()}
-          className="rounded-full bg-primary px-6 py-3 active:opacity-70"
-        >
-          <Text className="font-semibold text-white">Volver</Text>
-        </Pressable>
+        <View className="flex-row items-center gap-3">
+          <Pressable
+            onPress={() => router.back()}
+            className="rounded-full bg-slate-200 px-6 py-3 active:opacity-70"
+          >
+            <Text className="font-semibold text-slate-700">Volver</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              setIsLoading(true);
+              loadData().finally(() => setIsLoading(false));
+            }}
+            className="rounded-full bg-primary px-6 py-3 active:opacity-70"
+          >
+            <Text className="font-semibold text-white">Reintentar</Text>
+          </Pressable>
+        </View>
       </SafeAreaView>
     );
   }
@@ -348,6 +371,15 @@ export default function RestaurantMenuScreen() {
         ListHeaderComponent={header}
         stickySectionHeadersEnabled={false}
         contentContainerStyle={{ paddingBottom: 136, backgroundColor: '#FFFFFF' }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            tintColor="#F29F30"
+            colors={['#F29F30']}
+            progressBackgroundColor="#FFFFFF"
+          />
+        }
         renderSectionHeader={({ section }) => (
           <View className="bg-white px-5 pb-1 pt-6">
             <Text className="text-lg font-semibold text-[#1C2433]">
