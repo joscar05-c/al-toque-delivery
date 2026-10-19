@@ -22,14 +22,18 @@ import {
   fetchRestaurantById,
   fetchRestaurantMenu,
   type MenuSection,
+  type MenuItemWithOptions,
   type RestaurantDetail,
 } from '@/lib/restaurants';
 import {
+  getItemQuantityInCart,
+  getCartLineKey,
   selectTotalItems,
   selectTotalPrice,
   useCartStore,
+  type SelectedOptionInfo,
 } from '@/store/cartStore';
-import type { Enums, MenuItem } from '@delivery/shared';
+import type { Enums } from '@delivery/shared';
 
 type DeliveryType = Enums<'restaurant_delivery_config_delivery_type_enum'>;
 
@@ -51,7 +55,7 @@ export default function RestaurantMenuScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItemWithOptions | null>(null);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [selectedDetailTab, setSelectedDetailTab] = useState<'delivery' | 'review'>(
     'delivery',
@@ -100,11 +104,24 @@ export default function RestaurantMenuScreen() {
     return <Redirect href="/(client)/(tabs)" />;
   }
 
-  const handleAdd = (item: MenuItem, quantity = 1) => {
+  const handleAdd = (
+    item: MenuItemWithOptions,
+    quantity = 1,
+    selectedOptions?: SelectedOptionInfo[],
+  ) => {
+    // Si el plato tiene opciones configuradas y se hizo tap directo en "+" (sin opciones),
+    // abrimos la ficha para que el cliente elija sus opciones.
+    if (
+      item.option_groups &&
+      item.option_groups.length > 0 &&
+      selectedOptions === undefined
+    ) {
+      openMenuItem(item);
+      return;
+    }
+
     const addQuantity = () => {
-      for (let index = 0; index < quantity; index += 1) {
-        addItem(id, item);
-      }
+      addItem(id, item, quantity, selectedOptions);
     };
 
     // Regla de negocio: un pedido pertenece a un solo restaurante.
@@ -129,7 +146,7 @@ export default function RestaurantMenuScreen() {
     addQuantity();
   };
 
-  const openMenuItem = (item: MenuItem) => {
+  const openMenuItem = (item: MenuItemWithOptions) => {
     setSelectedQuantity(1);
     setSelectedMenuItem(item);
   };
@@ -350,10 +367,16 @@ export default function RestaurantMenuScreen() {
             renderItem={({ item }) => (
               <PopularMenuItemCard
                 item={item}
-                quantity={lines[item.id]?.quantity ?? 0}
+                quantity={getItemQuantityInCart(lines, item.id)}
                 onSelect={() => openMenuItem(item)}
                 onAdd={() => handleAdd(item)}
-                onDecrement={() => decrementItem(item.id)}
+                onDecrement={() => {
+                  if (item.option_groups && item.option_groups.length > 0) {
+                    openMenuItem(item);
+                  } else {
+                    decrementItem(getCartLineKey(item.id));
+                  }
+                }}
               />
             )}
             keyExtractor={(item) => `popular-${item.id}`}
@@ -395,10 +418,16 @@ export default function RestaurantMenuScreen() {
         renderItem={({ item }) => (
           <MenuItemCard
             item={item}
-            quantity={lines[item.id]?.quantity ?? 0}
+            quantity={getItemQuantityInCart(lines, item.id)}
             onSelect={() => openMenuItem(item)}
             onAdd={() => handleAdd(item)}
-            onDecrement={() => decrementItem(item.id)}
+            onDecrement={() => {
+              if (item.option_groups && item.option_groups.length > 0) {
+                openMenuItem(item);
+              } else {
+                decrementItem(getCartLineKey(item.id));
+              }
+            }}
           />
         )}
         ListEmptyComponent={
@@ -457,9 +486,9 @@ export default function RestaurantMenuScreen() {
         onDecrease={() =>
           setSelectedQuantity((quantity) => Math.max(1, quantity - 1))
         }
-        onAddToOrder={(quantity) => {
+        onAddToOrder={(quantity, selectedOptions) => {
           if (selectedMenuItem) {
-            handleAdd(selectedMenuItem, quantity);
+            handleAdd(selectedMenuItem, quantity, selectedOptions);
             setSelectedMenuItem(null);
           }
         }}

@@ -119,7 +119,11 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
       order_id: order.id,
       menu_item_id: line.item.id,
       quantity: line.quantity,
-      unit_price: line.item.price,
+      unit_price: line.unitPrice,
+      options:
+        line.selectedOptions && line.selectedOptions.length > 0
+          ? (line.selectedOptions as unknown as TablesInsert<'order_items'>['options'])
+          : null,
     }));
 
     const { error: itemsError } = await supabase

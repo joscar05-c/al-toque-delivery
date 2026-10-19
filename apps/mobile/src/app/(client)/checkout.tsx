@@ -264,9 +264,9 @@ export default function CheckoutScreen() {
             </Text>
           </View>
 
-          {Object.values(lines).map((line) => (
+          {Object.entries(lines).map(([lineKey, line]) => (
             <View
-              key={line.item.id}
+              key={lineKey}
               className="flex-row items-center gap-3 border-b border-[#F0F1F3] px-5 py-4"
             >
               <View className="h-[72px] w-[72px] overflow-hidden rounded-2xl bg-[#F3F4F6]">
@@ -284,17 +284,24 @@ export default function CheckoutScreen() {
                 )}
               </View>
 
-              <View className="min-w-0 flex-1 gap-2">
+              <View className="min-w-0 flex-1 gap-1">
                 <Text
                   className="text-base font-medium text-[#1C2433]"
                   numberOfLines={1}
                 >
                   {line.item.name}
                 </Text>
-                <View className="flex-row flex-wrap items-center gap-2">
+
+                {line.selectedOptions && line.selectedOptions.length > 0 && (
+                  <Text className="text-xs text-[#8E98A8]">
+                    {line.selectedOptions.map((o) => o.optionName).join(', ')}
+                  </Text>
+                )}
+
+                <View className="flex-row flex-wrap items-center gap-2 mt-1">
                   <View className="flex-row items-center gap-2 rounded-full bg-[#F3F4F6] px-2 py-1">
                     <Pressable
-                      onPress={() => decrementItem(line.item.id)}
+                      onPress={() => decrementItem(lineKey)}
                       hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Quitar ${line.item.name}`}
@@ -309,7 +316,9 @@ export default function CheckoutScreen() {
                       {line.quantity}
                     </Text>
                     <Pressable
-                      onPress={() => addItem(restaurantId, line.item)}
+                      onPress={() =>
+                        addItem(restaurantId, line.item, 1, line.selectedOptions)
+                      }
                       hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Agregar otro ${line.item.name}`}
@@ -322,7 +331,7 @@ export default function CheckoutScreen() {
                     </Pressable>
                   </View>
                   <Text className="text-sm font-semibold text-primary">
-                    {formatPrice(line.item.price * line.quantity)}
+                    {formatPrice(line.unitPrice * line.quantity)}
                   </Text>
                 </View>
               </View>
