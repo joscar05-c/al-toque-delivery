@@ -82,22 +82,49 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
     });
   }
 
+  if (categories.length === 0) {
+    return (
+      <div
+        style={{
+          padding: '16px 20px',
+          borderRadius: '10px',
+          background: 'var(--brand-soft, rgba(242, 159, 48, 0.08))',
+          border: '1px solid rgba(242, 159, 48, 0.25)',
+          color: 'var(--ink)',
+          fontSize: '13px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+        }}
+      >
+        <span style={{ fontSize: '20px' }}>💡</span>
+        <div>
+          <p style={{ fontWeight: 600 }}>Crea una categoría primero</p>
+          <p style={{ color: 'var(--ink-secondary)', marginTop: '2px' }}>
+            Para agregar platos a tu catálogo, primero debes registrar al menos una categoría arriba (ej. Entradas, Platos de Fondo, Bebidas).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form action={handleSubmit} className="space-y-4 w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="panel-label">Nombre</label>
+          <label className="panel-label">Nombre del Plato *</label>
           <input
             name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            placeholder="Ej. Lomo Saltado, Pizza Margarita"
             className="panel-input"
             disabled={isPending}
           />
         </div>
         <div>
-          <label className="panel-label">Categoría</label>
+          <label className="panel-label">Categoría *</label>
           <select
             name="categoryId"
             value={categoryId}
@@ -113,12 +140,13 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           </select>
         </div>
         <div>
-          <label className="panel-label">Precio (S/.)</label>
+          <label className="panel-label">Precio (S/.) *</label>
           <input
             name="price"
             type="number"
             step="0.01"
             min="0"
+            placeholder="0.00"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
@@ -128,7 +156,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           />
         </div>
         <div>
-          <label className="panel-label">Imagen</label>
+          <label className="panel-label">Foto del Plato</label>
           <input
             name="image"
             type="file"
@@ -150,19 +178,23 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           className="panel-input"
           style={{ resize: 'vertical' }}
           disabled={isPending}
-          placeholder="Descripción opcional del plato"
+          placeholder="Descripción opcional: ingredientes, acompañamiento, etc."
         />
       </div>
 
       {preview && (
-        <div style={{
-          width: '128px',
-          height: '128px',
-          borderRadius: '10px',
-          overflow: 'hidden',
-          border: '1px solid var(--border)',
-        }}>
-          <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div>
+          <span className="panel-label">Vista Previa</span>
+          <div style={{
+            width: '110px',
+            height: '110px',
+            borderRadius: '10px',
+            overflow: 'hidden',
+            border: '1px solid var(--border)',
+            marginTop: '4px',
+          }}>
+            <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
         </div>
       )}
 
@@ -174,7 +206,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           disabled={isPending || !name.trim() || !price || !categoryId}
           className="panel-btn-primary"
         >
-          {isPending ? 'Creando...' : 'Agregar Plato'}
+          {isPending ? 'Guardando plato...' : 'Agregar Plato'}
         </button>
         {error && <span className="text-sm" style={{ color: 'var(--danger)' }}>{error}</span>}
       </div>

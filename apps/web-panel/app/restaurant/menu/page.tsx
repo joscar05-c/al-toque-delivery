@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation';
 import CategoryForm from './CategoryForm';
 import MenuItemForm from './MenuItemForm';
 import MenuGrid from './MenuGrid';
-
 import RestaurantSelector from '@/components/RestaurantSelector';
 
 interface PageProps {
@@ -45,9 +44,10 @@ export default async function RestaurantMenuPage({ searchParams }: PageProps) {
 
   const { data: categories, error: catError } = await supabase
     .from('menu_categories')
-    .select('id, name')
+    .select('id, name, description, sortOrder, isActive')
     .eq('restaurant_id', restaurant.id)
     .eq('isActive', true)
+    .order('sortOrder', { ascending: true })
     .order('name');
 
   if (catError) {
@@ -66,12 +66,28 @@ export default async function RestaurantMenuPage({ searchParams }: PageProps) {
     return <div style={{ color: 'var(--danger)' }}>Error al cargar platos: {itemsError.message}</div>;
   }
 
+  // Contar platos por categoría
+  const categoryCounts = new Map<string, number>();
+  (items ?? []).forEach((item) => {
+    if (item.menu_category_id) {
+      categoryCounts.set(
+        item.menu_category_id,
+        (categoryCounts.get(item.menu_category_id) || 0) + 1,
+      );
+    }
+  });
+
+  const categoriesWithCounts = (categories ?? []).map((cat) => ({
+    ...cat,
+    itemCount: categoryCounts.get(cat.id) || 0,
+  }));
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="page-title">Gestión de Menú</h1>
-          <p className="page-subtitle">Categorías y platos de tu restaurante</p>
+          <p className="page-subtitle">Categorías y platos de {restaurant.name}</p>
         </div>
         <RestaurantSelector restaurants={restaurants} currentId={restaurant.id} />
       </div>
@@ -80,7 +96,7 @@ export default async function RestaurantMenuPage({ searchParams }: PageProps) {
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
           Categorías de Menú
         </h2>
-        <CategoryForm restaurantId={restaurant.id} />
+        <CategoryForm restaurantId={restaurant.id} categories={categoriesWithCounts} />
       </section>
 
       <section className="section-card p-6">
@@ -92,9 +108,13 @@ export default async function RestaurantMenuPage({ searchParams }: PageProps) {
 
       <section className="section-card p-6">
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
-          Platos del Menú
+          Catálogo de Platos
         </h2>
-        <MenuGrid items={items ?? []} />
+        <MenuGrid
+          items={items ?? []}
+          categories={categories ?? []}
+          restaurantId={restaurant.id}
+        />
       </section>
     </div>
   );
