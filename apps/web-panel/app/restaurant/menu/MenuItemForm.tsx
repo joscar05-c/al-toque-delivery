@@ -7,13 +7,19 @@ import { createMenuItem, createMenuImageUploadUrl } from './actions';
 interface MenuItemFormProps {
   restaurantId: string;
   categories: { id: string; name: string }[];
+  optionGroups?: { id: string; name: string }[];
 }
 
-export default function MenuItemForm({ restaurantId, categories }: MenuItemFormProps) {
+export default function MenuItemForm({
+  restaurantId,
+  categories,
+  optionGroups = [],
+}: MenuItemFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -67,6 +73,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
       payload.append('description', (formData.get('description') as string) ?? '');
       payload.append('price', (formData.get('price') as string) ?? '');
       payload.append('categoryId', (formData.get('categoryId') as string) ?? '');
+      payload.append('optionGroupIds', JSON.stringify(selectedGroupIds));
 
       const result = await createMenuItem(payload, imageUrl);
       if (result.error) setError(result.error);
@@ -75,6 +82,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
         setDescription('');
         setPrice('');
         setCategoryId('');
+        setSelectedGroupIds([]);
         setImageFile(null);
         if (preview) URL.revokeObjectURL(preview);
         setPreview(null);
@@ -181,6 +189,60 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           placeholder="Descripción opcional: ingredientes, acompañamiento, etc."
         />
       </div>
+
+      {/* Selector de Grupos de Opciones */}
+      {optionGroups.length > 0 && (
+        <div>
+          <label className="panel-label">
+            Grupos de Opciones y Personalización (Opcional)
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">
+            {optionGroups.map((group) => {
+              const isChecked = selectedGroupIds.includes(group.id);
+              return (
+                <label
+                  key={group.id}
+                  className="flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer text-xs transition-colors"
+                  style={{
+                    borderColor: isChecked ? 'var(--brand)' : 'var(--border)',
+                    background: isChecked
+                      ? 'var(--brand-soft, rgba(242, 159, 48, 0.08))'
+                      : 'var(--surface-subtle, rgba(0,0,0,0.02))',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedGroupIds((prev) => [...prev, group.id]);
+                      } else {
+                        setSelectedGroupIds((prev) =>
+                          prev.filter((id) => id !== group.id),
+                        );
+                      }
+                    }}
+                    disabled={isPending}
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                      accentColor: 'var(--brand)',
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontWeight: isChecked ? 600 : 400,
+                      color: isChecked ? 'var(--brand)' : 'var(--ink)',
+                    }}
+                  >
+                    {group.name}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {preview && (
         <div>

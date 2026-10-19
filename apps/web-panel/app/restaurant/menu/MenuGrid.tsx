@@ -2,25 +2,21 @@
 
 import { useState, useMemo } from 'react';
 import { toggleMenuItem, deleteMenuItem } from './actions';
-import EditMenuItemModal from './EditMenuItemModal';
-
-interface MenuItemData {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  image_url: string | null;
-  is_active: boolean;
-  menu_category_id: string | null;
-}
+import EditMenuItemModal, { type MenuItemData } from './EditMenuItemModal';
 
 interface MenuGridProps {
   items: MenuItemData[];
   categories: { id: string; name: string }[];
+  optionGroups?: { id: string; name: string }[];
   restaurantId: string;
 }
 
-export default function MenuGrid({ items, categories, restaurantId }: MenuGridProps) {
+export default function MenuGrid({
+  items,
+  categories,
+  optionGroups = [],
+  restaurantId,
+}: MenuGridProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [pendingToggles, setPendingToggles] = useState<Set<string>>(new Set());
@@ -215,6 +211,8 @@ export default function MenuGrid({ items, categories, restaurantId }: MenuGridPr
               ? categoryMap.get(item.menu_category_id) || 'Categoría'
               : 'Sin categoría';
 
+            const optionGroupsCount = item.optionGroupIds?.length ?? 0;
+
             return (
               <div
                 key={item.id}
@@ -298,6 +296,26 @@ export default function MenuGrid({ items, categories, restaurantId }: MenuGridPr
                   >
                     {categoryName}
                   </span>
+
+                  {/* Option Groups Count Badge */}
+                  {optionGroupsCount > 0 && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        padding: '3px 7px',
+                        borderRadius: '6px',
+                        background: 'var(--brand)',
+                        color: '#fff',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      {optionGroupsCount} {optionGroupsCount === 1 ? 'grupo' : 'grupos'}
+                    </span>
+                  )}
 
                   {!item.is_active && (
                     <div
@@ -491,6 +509,7 @@ export default function MenuGrid({ items, categories, restaurantId }: MenuGridPr
         onClose={() => setEditingItem(null)}
         item={editingItem}
         categories={categories}
+        optionGroups={optionGroups}
         restaurantId={restaurantId}
       />
     </div>

@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { updateMenuItem, createMenuImageUploadUrl } from './actions';
 
-interface MenuItemData {
+export interface MenuItemData {
   id: string;
   name: string;
   description: string | null;
@@ -12,6 +12,7 @@ interface MenuItemData {
   image_url: string | null;
   menu_category_id: string | null;
   is_active: boolean;
+  optionGroupIds?: string[];
 }
 
 interface EditMenuItemModalProps {
@@ -19,6 +20,7 @@ interface EditMenuItemModalProps {
   onClose: () => void;
   item: MenuItemData | null;
   categories: { id: string; name: string }[];
+  optionGroups?: { id: string; name: string }[];
   restaurantId: string;
 }
 
@@ -27,12 +29,14 @@ export default function EditMenuItemModal({
   onClose,
   item,
   categories,
+  optionGroups = [],
   restaurantId,
 }: EditMenuItemModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -44,6 +48,7 @@ export default function EditMenuItemModal({
       setDescription(item.description || '');
       setPrice(item.price !== undefined ? item.price.toString() : '');
       setCategoryId(item.menu_category_id || '');
+      setSelectedGroupIds(item.optionGroupIds || []);
       setPreview(item.image_url || null);
       setImageFile(null);
       setError(null);
@@ -110,6 +115,7 @@ export default function EditMenuItemModal({
       payload.append('description', description);
       payload.append('price', price);
       payload.append('categoryId', categoryId);
+      payload.append('optionGroupIds', JSON.stringify(selectedGroupIds));
 
       const result = await updateMenuItem(payload, newImageUrl);
       if (result.error) {
@@ -140,7 +146,7 @@ export default function EditMenuItemModal({
           border: '1px solid var(--border)',
           borderRadius: '16px',
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '580px',
           maxHeight: '90vh',
           overflowY: 'auto',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -255,6 +261,60 @@ export default function EditMenuItemModal({
               placeholder="Ingredientes, detalles de preparación o guarnición"
             />
           </div>
+
+          {/* Grupos de opciones aplicables a este plato */}
+          {optionGroups.length > 0 && (
+            <div>
+              <label className="panel-label">
+                Grupos de Opciones / Personalización para este plato
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                {optionGroups.map((group) => {
+                  const isChecked = selectedGroupIds.includes(group.id);
+                  return (
+                    <label
+                      key={group.id}
+                      className="flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer text-xs transition-colors"
+                      style={{
+                        borderColor: isChecked ? 'var(--brand)' : 'var(--border)',
+                        background: isChecked
+                          ? 'var(--brand-soft, rgba(242, 159, 48, 0.08))'
+                          : 'var(--surface-subtle, rgba(0,0,0,0.02))',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedGroupIds((prev) => [...prev, group.id]);
+                          } else {
+                            setSelectedGroupIds((prev) =>
+                              prev.filter((id) => id !== group.id),
+                            );
+                          }
+                        }}
+                        disabled={isPending}
+                        style={{
+                          width: '15px',
+                          height: '15px',
+                          accentColor: 'var(--brand)',
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontWeight: isChecked ? 600 : 400,
+                          color: isChecked ? 'var(--brand)' : 'var(--ink)',
+                        }}
+                      >
+                        {group.name}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {preview && (
             <div>
