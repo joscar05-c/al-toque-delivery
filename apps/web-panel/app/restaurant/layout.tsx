@@ -69,7 +69,7 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
 
       {/* Sidebar - Desktop */}
       <aside
-        className="sidebar-desktop min-h-screen fixed top-0 left-0 z-10 hidden lg:flex flex-col"
+        className="sidebar-desktop min-h-screen fixed top-0 left-0 z-20 hidden lg:flex flex-col w-[260px]"
         style={{ background: 'var(--surface-sidebar)' }}
       >
         <div className="px-5 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid var(--border-on-dark)' }}>
@@ -134,7 +134,7 @@ export default function RestaurantLayout({ children }: { children: React.ReactNo
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 content-mobile p-4 md:p-6 lg:p-8 min-h-screen">
+      <main className="flex-1 content-mobile min-w-0 p-4 md:p-6 lg:p-8 min-h-screen lg:ml-[260px]">
         <div className="pt-16 lg:pt-0">
           {children}
         </div>

@@ -35,7 +35,7 @@ export function SignOutButton({ className = '' }: SignOutButtonProps) {
       className={`sidebar-signout ${className}`}
     >
       <LogOut className="w-4 h-4" />
-      {isSigningOut ? 'Cerrando sesión...' : 'Cerrar Sesión'}
+      <span className="sidebar-signout-text">{isSigningOut ? 'Cerrando sesión...' : 'Cerrar Sesión'}</span>
     </button>
   );
 }
