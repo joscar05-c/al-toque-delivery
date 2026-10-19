@@ -189,9 +189,9 @@ export default function RestaurantProfileForm({
           />
         </div>
 
-        {/* Tiempo promedio de preparación */}
+        {/* Tiempo promedio de cocina / preparación */}
         <div>
-          <label className="panel-label">Tiempo Promedio de Preparación (Minutos)</label>
+          <label className="panel-label">Tiempo Promedio de Cocina / Preparación (Minutos) *</label>
           <input
             name="averagePrepTime"
             type="number"
@@ -205,7 +205,7 @@ export default function RestaurantProfileForm({
             placeholder="20"
           />
           <p className="text-[11px] mt-1" style={{ color: 'var(--ink-muted)' }}>
-            Se muestra a los clientes antes de realizar su pedido.
+            Tiempo que tarda la cocina en tener listo el pedido. Se muestra al cliente en modo Solo Recojo y orienta a los motorizados.
           </p>
         </div>
 

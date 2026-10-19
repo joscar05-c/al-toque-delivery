@@ -361,7 +361,7 @@ export default function DeliveryConfigForm({
 
             {/* Tiempo Estimado de Entrega */}
             <div>
-              <label className="panel-label">Tiempo Total Estimado (Minutos) *</label>
+              <label className="panel-label">Tiempo Total de Entrega a Domicilio (Minutos) *</label>
               <input
                 name="estimatedDeliveryTime"
                 type="number"
@@ -374,10 +374,10 @@ export default function DeliveryConfigForm({
                 className="panel-input"
                 style={{ fontVariantNumeric: 'tabular-nums' }}
                 disabled={isPending}
-                placeholder="30"
+                placeholder="35"
               />
               <p className="text-[11px] mt-1 text-[var(--ink-muted)]">
-                Tiempo promedio de preparación + viaje del repartidor.
+                Tiempo total que ve el cliente en la app (preparación en cocina + viaje de tu motorizado).
               </p>
             </div>
 
@@ -405,7 +405,7 @@ export default function DeliveryConfigForm({
           </div>
         )}
 
-        {/* Caso 2: Red Al Toque -> Solo Pedido Mínimo y Tiempo de Preparación */}
+        {/* Caso 2: Red Al Toque -> Pedido Mínimo y Nota de Tiempo por GPS */}
         {effectiveType === 'platform' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -427,30 +427,16 @@ export default function DeliveryConfigForm({
               </p>
             </div>
 
-            <div>
-              <label className="panel-label">Tiempo Estimado de Preparación (Minutos) *</label>
-              <input
-                name="estimatedDeliveryTime"
-                type="number"
-                step="5"
-                min="5"
-                max="180"
-                value={estimatedTime}
-                onChange={(e) => setEstimatedTime(e.target.value)}
-                required
-                className="panel-input"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-                disabled={isPending}
-                placeholder="25"
-              />
-              <p className="text-[11px] mt-1 text-[var(--ink-muted)]">
-                Tiempo que necesita tu cocina antes de entregar el paquete al rider de Al Toque.
+            <div className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-inset)] flex flex-col justify-center">
+              <span className="text-xs font-semibold text-[var(--ink)]">⏱️ Tiempo estimado de entrega al cliente</span>
+              <p className="text-[11px] text-[var(--ink-secondary)] mt-1">
+                Se calcula automáticamente sumando el <strong>tiempo de cocina</strong> de tu local con el <strong>tiempo de ruta del motorizado Al Toque</strong> según el tráfico y distancia GPS.
               </p>
             </div>
           </div>
         )}
 
-        {/* Caso 3: Solo Recojo -> Pedido Mínimo y Tiempo de Preparación */}
+        {/* Caso 3: Solo Recojo -> Pedido Mínimo y Nota de Retiro */}
         {effectiveType === 'pickup_only' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -468,28 +454,14 @@ export default function DeliveryConfigForm({
                 placeholder="Ej. 10.00 (Opcional)"
               />
               <p className="text-[11px] mt-1 text-[var(--ink-muted)]">
-                Déjalo vacío si no exiges un mínimo de consumo.
+                Déjalo vacío si no exiges un mínimo de consumo para retiro en local.
               </p>
             </div>
 
-            <div>
-              <label className="panel-label">Tiempo Estimado de Preparación (Minutos) *</label>
-              <input
-                name="estimatedDeliveryTime"
-                type="number"
-                step="5"
-                min="5"
-                max="120"
-                value={estimatedTime}
-                onChange={(e) => setEstimatedTime(e.target.value)}
-                required
-                className="panel-input"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-                disabled={isPending}
-                placeholder="20"
-              />
-              <p className="text-[11px] mt-1 text-[var(--ink-muted)]">
-                Tiempo tras el cual el cliente puede acercarse a retirar su orden.
+            <div className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-inset)] flex flex-col justify-center">
+              <span className="text-xs font-semibold text-[var(--ink)]">🏪 Tiempo de espera en tienda</span>
+              <p className="text-[11px] text-[var(--ink-secondary)] mt-1">
+                El cliente verá el <strong>tiempo de preparación</strong> configurado en los datos de tu local para acercarse a retirar su orden.
               </p>
             </div>
           </div>

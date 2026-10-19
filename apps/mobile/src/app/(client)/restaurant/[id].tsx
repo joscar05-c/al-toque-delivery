@@ -253,7 +253,9 @@ export default function RestaurantMenuScreen() {
             <View className="flex-row items-center gap-1.5">
               <Ionicons name="time" size={17} color="#C4CAD3" />
               <Text className="text-sm font-medium text-[#1C2433]">
-                {formatMinutes(restaurant.average_prep_time)}
+                {deliveryEnabled
+                  ? `~${config?.estimated_delivery_time || (restaurant.average_prep_time + 15)} min entrega`
+                  : `${formatMinutes(restaurant.average_prep_time)} prep.`}
               </Text>
             </View>
             <Text className="text-sm text-[#C4CAD3]">·</Text>

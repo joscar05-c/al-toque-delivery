@@ -14,6 +14,10 @@ interface RestaurantCardProps {
 export function RestaurantCard({ restaurant }: RestaurantCardProps) {
   const categoryName = restaurant.restaurant_categories?.name;
   const deliveryConfig = restaurant.restaurant_delivery_config;
+  const isDeliveryActive =
+    deliveryConfig !== null &&
+    Boolean(deliveryConfig.is_delivery_enabled) &&
+    deliveryConfig.delivery_type !== 'pickup_only';
   const deliveryFee = deliveryConfig?.delivery_fee !== undefined ? Number(deliveryConfig.delivery_fee) : 2.0;
   const rating = restaurant.rating ? Number(restaurant.rating).toFixed(1) : '4.8';
   const reviewsCount = restaurant.total_reviews ?? 0;
@@ -83,32 +87,45 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
           ) : null}
         </View>
 
-        {/* Tiempo de entrega y costo de delivery */}
+        {/* Tiempo de entrega / preparación y costo de delivery */}
         <View className="flex-row items-center justify-between pt-1 border-t border-slate-50">
           <View className="flex-row items-center gap-1.5">
             <View className="flex-row items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1">
               <Ionicons name="time" size={12} color="#F29F30" />
               <Text className="text-xs font-semibold text-primary">
-                {formatMinutes(restaurant.average_prep_time)}
+                {isDeliveryActive
+                  ? formatMinutes(deliveryConfig?.estimated_delivery_time || (restaurant.average_prep_time + 15))
+                  : formatMinutes(restaurant.average_prep_time)}
               </Text>
             </View>
-            <Text className="text-xs text-[#8E98A8]">prep.</Text>
-          </View>
-
-          <View className="flex-row items-center gap-1.5">
-            <Ionicons
-              name="bicycle-outline"
-              size={15}
-              color={deliveryFee === 0 ? '#10B981' : '#8E98A8'}
-            />
-            <Text
-              className={`text-xs font-semibold ${
-                deliveryFee === 0 ? 'text-[#10B981]' : 'text-[#1C2433]'
-              }`}
-            >
-              {deliveryFee === 0 ? 'Envío gratis' : `S/ ${deliveryFee.toFixed(2)} envío`}
+            <Text className="text-xs text-[#8E98A8]">
+              {isDeliveryActive ? 'entrega' : 'prep.'}
             </Text>
           </View>
+
+          {isDeliveryActive ? (
+            <View className="flex-row items-center gap-1.5">
+              <Ionicons
+                name="bicycle-outline"
+                size={15}
+                color={deliveryFee === 0 ? '#10B981' : '#8E98A8'}
+              />
+              <Text
+                className={`text-xs font-semibold ${
+                  deliveryFee === 0 ? 'text-[#10B981]' : 'text-[#1C2433]'
+                }`}
+              >
+                {deliveryFee === 0 ? 'Envío gratis' : `S/ ${deliveryFee.toFixed(2)} envío`}
+              </Text>
+            </View>
+          ) : (
+            <View className="flex-row items-center gap-1.5">
+              <Ionicons name="storefront-outline" size={14} color="#8E98A8" />
+              <Text className="text-xs font-semibold text-[#8E98A8]">
+                Solo recojo
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </Pressable>
