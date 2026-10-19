@@ -51,4 +51,8 @@ declare module 'lucide-react' {
   export const Power: LucideIcon;
   export const Award: LucideIcon;
   export const MoreVertical: LucideIcon;
+  export const Utensils: LucideIcon;
+  export const CreditCard: LucideIcon;
+  export const Shield: LucideIcon;
+  export const Mail: LucideIcon;
 }
