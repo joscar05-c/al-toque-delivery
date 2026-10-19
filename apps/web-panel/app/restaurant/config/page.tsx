@@ -121,17 +121,24 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
         />
       </section>
 
-      {/* Sección 4: Flota de Repartidores Propios */}
-      <section className="section-card p-6">
-        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
-          Mi Flota de Repartidores Propios
-        </h2>
-        <p className="text-xs mb-4" style={{ color: 'var(--ink-secondary)' }}>
-          Aplica si seleccionaste la modalidad &quot;Flota Propia&quot;. Puedes vincular repartidores registrados en Al Toque mediante su correo o teléfono.
-        </p>
-        <DriverForm restaurantId={restaurant.id} />
-        <DriverList drivers={drivers ?? []} restaurantId={restaurant.id} />
-      </section>
+      {/* Sección 4: Flota de Repartidores Propios (Solo aplica para Flota Propia) */}
+      {config?.is_delivery_enabled && config?.delivery_type === 'restaurant_own' && (
+        <section className="section-card p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>
+              Mi Flota de Repartidores Propios
+            </h2>
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+              Modo Flota Propia
+            </span>
+          </div>
+          <p className="text-xs mb-4" style={{ color: 'var(--ink-secondary)' }}>
+            Vincula a los repartidores motorizados de tu negocio mediante su correo o teléfono registrado en Al Toque para despachar órdenes.
+          </p>
+          <DriverForm restaurantId={restaurant.id} />
+          <DriverList drivers={drivers ?? []} restaurantId={restaurant.id} />
+        </section>
+      )}
     </div>
   );
 }

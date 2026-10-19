@@ -81,16 +81,55 @@ export async function toggleRestaurantActive(restaurantId: string, currentStatus
  */
 export async function updateDeliveryConfig(formData: FormData) {
   const restaurantId = formData.get('restaurantId') as string;
-  const baseCost = parseFloat(formData.get('baseCost') as string);
-  const freeThreshold = formData.get('freeThreshold') as string;
-  const minOrderAmount = formData.get('minOrderAmount') as string;
-  const maxDistance = parseInt(formData.get('maxDistance') as string, 10);
-  const estimatedDeliveryTime = parseInt(formData.get('estimatedDeliveryTime') as string, 10);
   const isDeliveryEnabled = formData.get('isDeliveryEnabled') === 'true';
-  const deliveryType = (formData.get('deliveryType') as 'platform' | 'restaurant_own' | 'pickup_only') || 'platform';
+  let deliveryType = (formData.get('deliveryType') as 'platform' | 'restaurant_own' | 'pickup_only') || 'platform';
 
-  if (!restaurantId || isNaN(baseCost)) {
-    return { error: 'Costo base de delivery inválido' };
+  // Si el delivery a domicilio está desactivado, se fuerza la modalidad a 'pickup_only'
+  if (!isDeliveryEnabled) {
+    deliveryType = 'pickup_only';
+  }
+
+  const minOrderRaw = formData.get('minOrderAmount') as string;
+  const minOrderAmount = minOrderRaw && minOrderRaw.trim() !== '' ? parseFloat(minOrderRaw) : null;
+
+  let baseCost = 0;
+  let freeThreshold: number | null = null;
+  let maxDistance = 10;
+  let estimatedDeliveryTime = 30;
+
+  if (deliveryType === 'restaurant_own') {
+    const rawCost = formData.get('baseCost') as string;
+    baseCost = parseFloat(rawCost);
+    if (isNaN(baseCost) || baseCost < 0) {
+      return { error: 'El costo base de delivery para Flota Propia debe ser un número válido (≥ 0)' };
+    }
+
+    const rawFree = formData.get('freeThreshold') as string;
+    freeThreshold = rawFree && rawFree.trim() !== '' ? parseFloat(rawFree) : null;
+
+    const rawDist = parseInt(formData.get('maxDistance') as string, 10);
+    maxDistance = isNaN(rawDist) || rawDist < 1 ? 10 : rawDist;
+
+    const rawTime = parseInt(formData.get('estimatedDeliveryTime') as string, 10);
+    estimatedDeliveryTime = isNaN(rawTime) || rawTime < 5 ? 30 : rawTime;
+  } else if (deliveryType === 'platform') {
+    // En Red Al Toque, la tarifa y radio los calcula la plataforma por distancia GPS.
+    baseCost = 0;
+    freeThreshold = null;
+    maxDistance = 15; // Radio estándar de la plataforma
+    const rawTime = parseInt(formData.get('estimatedDeliveryTime') as string, 10);
+    estimatedDeliveryTime = isNaN(rawTime) || rawTime < 5 ? 30 : rawTime;
+  } else {
+    // Solo Recojo
+    baseCost = 0;
+    freeThreshold = null;
+    maxDistance = 0;
+    const rawTime = parseInt(formData.get('estimatedDeliveryTime') as string, 10);
+    estimatedDeliveryTime = isNaN(rawTime) || rawTime < 5 ? 20 : rawTime;
+  }
+
+  if (!restaurantId) {
+    return { error: 'ID de restaurante no proporcionado' };
   }
 
   const access = await authorizeRestaurantOwner(restaurantId);
@@ -103,10 +142,10 @@ export async function updateDeliveryConfig(formData: FormData) {
       {
         restaurant_id: access.restaurantId,
         delivery_fee: baseCost,
-        free_delivery_threshold: freeThreshold ? parseFloat(freeThreshold) : null,
-        min_order_amount: minOrderAmount ? parseFloat(minOrderAmount) : null,
-        max_delivery_distance: isNaN(maxDistance) ? 10 : maxDistance,
-        estimated_delivery_time: isNaN(estimatedDeliveryTime) ? 30 : estimatedDeliveryTime,
+        free_delivery_threshold: freeThreshold,
+        min_order_amount: minOrderAmount,
+        max_delivery_distance: maxDistance,
+        estimated_delivery_time: estimatedDeliveryTime,
         is_delivery_enabled: isDeliveryEnabled,
         delivery_type: deliveryType,
         updated_at: new Date().toISOString(),
