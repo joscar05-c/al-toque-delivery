@@ -7,6 +7,7 @@ import DeliveryConfigForm from './DeliveryConfigForm';
 import DriverForm from './DriverForm';
 import DriverList from './DriverList';
 import RestaurantCoverForm from './RestaurantCoverForm';
+import RestaurantProfileForm from './RestaurantProfileForm';
 import RestaurantSelector from '@/components/RestaurantSelector';
 
 interface PageProps {
@@ -24,9 +25,10 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
 
   const resolvedParams = await searchParams;
 
+  // 1. Obtener todos los restaurantes del dueño
   const { data: restaurants, error: restError } = await supabase
     .from('restaurants')
-    .select('id, name, image_url')
+    .select('id, name, phone, address, city, image_url, average_prep_time, is_active, restaurant_category_id')
     .eq('owner_id', user.id)
     .order('name');
 
@@ -38,21 +40,31 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
     );
   }
 
+  // 2. Determinar restaurante activo
   const restaurant =
     (resolvedParams?.restaurantId
       ? restaurants.find((r) => r.id === resolvedParams.restaurantId)
       : null) || restaurants[0];
 
+  // 3. Obtener categorías gastronómicas disponibles
+  const { data: categories } = await supabase
+    .from('restaurant_categories')
+    .select('id, name')
+    .eq('isActive', true)
+    .order('name');
+
+  // 4. Obtener configuración de delivery
   const { data: config, error: configError } = await supabase
     .from('restaurant_delivery_config')
-    .select('delivery_fee, free_delivery_threshold')
+    .select('delivery_fee, free_delivery_threshold, min_order_amount, max_delivery_distance, estimated_delivery_time, is_delivery_enabled, delivery_type')
     .eq('restaurant_id', restaurant.id)
-    .single();
+    .maybeSingle();
 
-  if (configError && configError.code !== 'PGRST116') {
+  if (configError) {
     console.error('Error fetching delivery config:', configError);
   }
 
+  // 5. Obtener repartidores propios vinculados
   const { data: drivers, error: driversError } = await supabase
     .from('restaurant_drivers')
     .select('driver_id, is_active, created_at, users:driver_id (id, email, phone, name)')
@@ -65,17 +77,32 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
 
   return (
     <div className="space-y-6">
+      {/* Cabecera y Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="page-title">Configuración del Restaurante</h1>
-          <p className="page-subtitle">Portada, tarifas de delivery y flota de repartidores</p>
+          <p className="page-subtitle">
+            Horarios, datos del negocio, cobertura de delivery y repartidores
+          </p>
         </div>
         <RestaurantSelector restaurants={restaurants} currentId={restaurant.id} />
       </div>
 
+      {/* Sección 1: Datos Operativos y Comerciales del Restaurante */}
       <section className="section-card p-6">
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
-          Portada del Restaurante
+          Operación y Datos del Local
+        </h2>
+        <RestaurantProfileForm
+          restaurant={restaurant}
+          categories={categories ?? []}
+        />
+      </section>
+
+      {/* Sección 2: Portada del Restaurante */}
+      <section className="section-card p-6">
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
+          Foto de Portada del Restaurante
         </h2>
         <RestaurantCoverForm
           restaurantId={restaurant.id}
@@ -83,21 +110,25 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
         />
       </section>
 
+      {/* Sección 3: Tarifas y Políticas de Delivery */}
       <section className="section-card p-6">
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
-          Tarifas de Delivery
+          Políticas y Cobertura de Delivery
         </h2>
         <DeliveryConfigForm
           restaurantId={restaurant.id}
-          initialBaseCost={config?.delivery_fee ?? 5}
-          initialFreeThreshold={config?.free_delivery_threshold ?? null}
+          config={config ?? null}
         />
       </section>
 
+      {/* Sección 4: Flota de Repartidores Propios */}
       <section className="section-card p-6">
         <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}>
-          Mi Flota de Repartidores
+          Mi Flota de Repartidores Propios
         </h2>
+        <p className="text-xs mb-4" style={{ color: 'var(--ink-secondary)' }}>
+          Aplica si seleccionaste la modalidad &quot;Flota Propia&quot;. Puedes vincular repartidores registrados en Al Toque mediante su correo o teléfono.
+        </p>
         <DriverForm restaurantId={restaurant.id} />
         <DriverList drivers={drivers ?? []} restaurantId={restaurant.id} />
       </section>

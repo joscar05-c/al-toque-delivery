@@ -121,3 +121,22 @@ export async function toggleMenuItem(itemId: string, currentStatus: boolean) {
   revalidatePath('/restaurant/menu');
   return { success: true };
 }
+
+export async function deleteMenuItem(itemId: string, restaurantId?: string) {
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado para este restaurante' };
+
+  const { error } = await access.supabase
+    .from('menu_items')
+    .delete()
+    .eq('id', itemId)
+    .eq('restaurant_id', access.restaurantId);
+
+  if (error) {
+    console.error('Error deleting menu item:', error);
+    return { error: 'Error al eliminar el plato' };
+  }
+
+  revalidatePath('/restaurant/menu');
+  return { success: true };
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { toggleMenuItem } from './actions';
+import { toggleMenuItem, deleteMenuItem } from './actions';
 
 interface MenuGridProps {
   items: {
@@ -21,6 +21,20 @@ export default function MenuGrid({ items }: MenuGridProps) {
   async function handleToggle(itemId: string, currentStatus: boolean) {
     setPendingToggles((prev) => new Set(prev).add(itemId));
     const result = await toggleMenuItem(itemId, currentStatus);
+    setPendingToggles((prev) => {
+      const next = new Set(prev);
+      next.delete(itemId);
+      return next;
+    });
+    if (result.error) {
+      alert(result.error);
+    }
+  }
+
+  async function handleDelete(itemId: string, name: string) {
+    if (!confirm(`¿Estás seguro de que deseas eliminar "${name}" del menú?`)) return;
+    setPendingToggles((prev) => new Set(prev).add(itemId));
+    const result = await deleteMenuItem(itemId);
     setPendingToggles((prev) => {
       const next = new Set(prev);
       next.delete(itemId);
@@ -150,33 +164,56 @@ export default function MenuGrid({ items }: MenuGridProps) {
               }}>
                 S/ {item.price.toFixed(2)}
               </span>
-              <button
-                onClick={() => handleToggle(item.id, item.is_active)}
-                disabled={pendingToggles.has(item.id)}
-                style={{
-                  padding: '5px 12px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'transform 100ms ease, opacity 150ms ease',
-                  background: item.is_active ? 'var(--danger-soft)' : 'var(--success-soft)',
-                  color: item.is_active ? 'var(--danger)' : 'var(--success)',
-                  opacity: pendingToggles.has(item.id) ? 0.5 : 1,
-                }}
-                onMouseDown={(e) => {
-                  if (!pendingToggles.has(item.id)) (e.currentTarget.style.transform = 'scale(0.97)');
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                {item.is_active ? 'Marcar Agotado' : 'Disponible'}
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  onClick={() => handleToggle(item.id, item.is_active)}
+                  disabled={pendingToggles.has(item.id)}
+                  style={{
+                    padding: '5px 12px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'transform 100ms ease, opacity 150ms ease',
+                    background: item.is_active ? 'var(--danger-soft)' : 'var(--success-soft)',
+                    color: item.is_active ? 'var(--danger)' : 'var(--success)',
+                    opacity: pendingToggles.has(item.id) ? 0.5 : 1,
+                  }}
+                  onMouseDown={(e) => {
+                    if (!pendingToggles.has(item.id)) (e.currentTarget.style.transform = 'scale(0.97)');
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  {item.is_active ? 'Agotado' : 'Disponible'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id, item.name)}
+                  disabled={pendingToggles.has(item.id)}
+                  title="Eliminar plato del menú"
+                  style={{
+                    padding: '6px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)',
+                    background: 'transparent',
+                    color: 'var(--ink-muted)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <svg className="w-3.5 h-3.5 text-gray-500 hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.75}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>

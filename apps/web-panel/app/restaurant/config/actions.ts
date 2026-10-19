@@ -5,33 +5,118 @@ import { revalidatePath } from 'next/cache';
 import { authorizeRestaurantOwner } from '@/utils/firebase/authorization';
 import { createServiceClient } from '@/utils/supabase/service';
 
-export async function updateDeliveryConfig(formData: FormData) {
+/**
+ * Actualiza los datos operativos y comerciales del restaurante (tabla `restaurants`).
+ */
+export async function updateRestaurantProfile(formData: FormData) {
   const restaurantId = formData.get('restaurantId') as string;
-  const baseCost = parseFloat(formData.get('baseCost') as string);
-  const freeThreshold = formData.get('freeThreshold') as string;
+  const name = (formData.get('name') as string)?.trim();
+  const phone = (formData.get('phone') as string)?.trim();
+  const address = (formData.get('address') as string)?.trim();
+  const city = formData.get('city') as string;
+  const categoryId = formData.get('categoryId') as string;
+  const averagePrepTime = parseInt(formData.get('averagePrepTime') as string, 10);
+  const isActive = formData.get('isActive') === 'true';
 
-  if (!restaurantId || isNaN(baseCost)) {
-    return { error: 'Datos incompletos' };
+  if (!restaurantId || !name || !phone || !address) {
+    return { error: 'Nombre, teléfono y dirección son obligatorios' };
   }
 
   const access = await authorizeRestaurantOwner(restaurantId);
   if (!access) return { error: 'No autorizado para este restaurante' };
 
-  const { error } = await access.supabase
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from('restaurants')
+    .update({
+      name,
+      phone,
+      address,
+      city: city ? (city as 'bagua' | 'jaen' | 'chachapoyas' | 'other') : null,
+      restaurant_category_id: categoryId || null,
+      average_prep_time: isNaN(averagePrepTime) ? 15 : averagePrepTime,
+      is_active: isActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', access.restaurantId);
+
+  if (error) {
+    console.error('Error updating restaurant profile:', error);
+    return { error: 'Error al actualizar los datos del restaurante' };
+  }
+
+  revalidatePath('/restaurant/config');
+  revalidatePath('/restaurant/orders');
+  return { success: true };
+}
+
+/**
+ * Alterna el estado operativo (abierto/cerrado) del restaurante con un solo clic.
+ */
+export async function toggleRestaurantActive(restaurantId: string, currentStatus: boolean) {
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado' };
+
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from('restaurants')
+    .update({
+      is_active: !currentStatus,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', access.restaurantId);
+
+  if (error) {
+    console.error('Error toggling restaurant active state:', error);
+    return { error: 'Error al cambiar estado del restaurante' };
+  }
+
+  revalidatePath('/restaurant/config');
+  revalidatePath('/restaurant/orders');
+  return { success: true, isActive: !currentStatus };
+}
+
+/**
+ * Actualiza la configuración completa de delivery (tabla `restaurant_delivery_config`).
+ */
+export async function updateDeliveryConfig(formData: FormData) {
+  const restaurantId = formData.get('restaurantId') as string;
+  const baseCost = parseFloat(formData.get('baseCost') as string);
+  const freeThreshold = formData.get('freeThreshold') as string;
+  const minOrderAmount = formData.get('minOrderAmount') as string;
+  const maxDistance = parseInt(formData.get('maxDistance') as string, 10);
+  const estimatedDeliveryTime = parseInt(formData.get('estimatedDeliveryTime') as string, 10);
+  const isDeliveryEnabled = formData.get('isDeliveryEnabled') === 'true';
+  const deliveryType = (formData.get('deliveryType') as 'platform' | 'restaurant_own' | 'pickup_only') || 'platform';
+
+  if (!restaurantId || isNaN(baseCost)) {
+    return { error: 'Costo base de delivery inválido' };
+  }
+
+  const access = await authorizeRestaurantOwner(restaurantId);
+  if (!access) return { error: 'No autorizado para este restaurante' };
+
+  const supabase = createServiceClient();
+  const { error } = await supabase
     .from('restaurant_delivery_config')
-    .upsert({
-      restaurant_id: access.restaurantId,
-      delivery_fee: baseCost,
-      free_delivery_threshold: freeThreshold ? parseFloat(freeThreshold) : null,
-      is_delivery_enabled: true,
-      delivery_type: 'platform',
-      max_delivery_distance: 10,
-      estimated_delivery_time: 30,
-    }, { onConflict: 'restaurant_id' });
+    .upsert(
+      {
+        restaurant_id: access.restaurantId,
+        delivery_fee: baseCost,
+        free_delivery_threshold: freeThreshold ? parseFloat(freeThreshold) : null,
+        min_order_amount: minOrderAmount ? parseFloat(minOrderAmount) : null,
+        max_delivery_distance: isNaN(maxDistance) ? 10 : maxDistance,
+        estimated_delivery_time: isNaN(estimatedDeliveryTime) ? 30 : estimatedDeliveryTime,
+        is_delivery_enabled: isDeliveryEnabled,
+        delivery_type: deliveryType,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'restaurant_id' },
+    );
 
   if (error) {
     console.error('Error updating delivery config:', error);
-    return { error: 'Error al guardar la configuración' };
+    return { error: 'Error al guardar la configuración de delivery' };
   }
 
   revalidatePath('/restaurant/config');
@@ -66,8 +151,6 @@ export async function createRestaurantImageUploadUrl(
 
 /**
  * Guarda la URL pública de la portada en `restaurants.image_url`.
- * Se usa service_role tras validar al owner, igual que las subidas de platos,
- * para no depender de las políticas RLS de `restaurants`.
  */
 export async function updateRestaurantImage(restaurantId: string, imageUrl: string) {
   if (!imageUrl) return { error: 'Imagen no válida' };
