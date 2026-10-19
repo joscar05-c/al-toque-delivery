@@ -1,11 +1,11 @@
-'use server';
-
 import { createClient } from '@/utils/supabase/server';
 import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import CategoryForm from './CategoryForm';
 import CategoryList from './CategoryList';
 import { CategoryItem } from './CategoryEditModal';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminCategoriesPage() {
   const user = await getSessionUser();

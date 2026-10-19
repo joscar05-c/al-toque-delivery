@@ -3,6 +3,8 @@ import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorizati
 import UsersManager from './UsersManager';
 import { UserItem } from './UserEditRoleModal';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsersPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');

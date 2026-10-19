@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
 import MenuAdminView, { MenuItemData } from './MenuAdminView';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminMenusPage({
   searchParams,
 }: {

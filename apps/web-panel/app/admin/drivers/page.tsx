@@ -3,6 +3,8 @@ import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorizati
 import DriversManager from './DriversManager';
 import { DriverItem } from './DriverRow';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDriversPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');

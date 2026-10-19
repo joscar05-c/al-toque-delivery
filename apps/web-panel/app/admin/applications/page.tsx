@@ -1,10 +1,10 @@
-'use server';
-
 import { createClient } from '@/utils/supabase/server';
 import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import ApplicationsList from './ApplicationsList';
 import { ApplicationItem } from './ApplicationRow';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminApplicationsPage() {
   const user = await getSessionUser();

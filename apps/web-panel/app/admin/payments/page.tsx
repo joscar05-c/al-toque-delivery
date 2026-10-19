@@ -3,6 +3,8 @@ import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorizati
 import PaymentsManager from './PaymentsManager';
 import { PaymentItem } from './PaymentRow';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPaymentsPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');

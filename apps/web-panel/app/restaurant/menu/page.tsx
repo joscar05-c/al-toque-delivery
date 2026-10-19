@@ -1,5 +1,3 @@
-'use server';
-
 import { createClient } from '@/utils/supabase/server';
 import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';

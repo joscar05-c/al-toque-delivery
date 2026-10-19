@@ -3,6 +3,8 @@ import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorizati
 import RestaurantsManager from './RestaurantsManager';
 import { RestaurantItem } from './RestaurantEditModal';
 
+export const dynamic = 'force-dynamic';
+
 const CITIES = [
   { value: 'bagua', label: 'Bagua' },
   { value: 'jaen', label: 'Jaén' },

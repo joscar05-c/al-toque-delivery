@@ -3,6 +3,8 @@ import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorizati
 import OrdersManager from './OrdersManager';
 import { OrderDetailItem } from './OrderDetailModal';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminOrdersPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');
