@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
-
 import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
-
-import RestaurantCreateForm from './RestaurantCreateForm';
+import RestaurantsManager from './RestaurantsManager';
+import { RestaurantItem } from './RestaurantEditModal';
 
 const CITIES = [
   { value: 'bagua', label: 'Bagua' },
@@ -15,7 +14,29 @@ export default async function AdminRestaurantsPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');
 
-  const [ownersResult, categoriesResult] = await Promise.all([
+  const [restaurantsResult, ownersResult, categoriesResult] = await Promise.all([
+    access.supabase
+      .from('restaurants')
+      .select(`
+        id,
+        name,
+        address,
+        phone,
+        city,
+        image_url,
+        average_prep_time,
+        is_active,
+        rating,
+        total_reviews,
+        is_partner,
+        sales_count,
+        created_at,
+        owner_id,
+        restaurant_category_id,
+        category:restaurant_categories(id, name),
+        owner:users!owner_id(id, name, phone, email)
+      `)
+      .order('created_at', { ascending: false }),
     access.supabase.rpc('admin_list_restaurant_owner_candidates', {}),
     access.supabase
       .from('restaurant_categories')
@@ -24,54 +45,35 @@ export default async function AdminRestaurantsPage() {
       .order('name'),
   ]);
 
-  const queryError = ownersResult.error ?? categoriesResult.error;
-  if (queryError) {
-    console.error('[AdminRestaurantsPage] Error cargando opciones:', queryError);
-    const detail =
-      queryError.code === 'PGRST202'
-        ? 'No se encuentra el RPC de candidatos. Ejecuta la migración 202610140002_admin_restaurant_owner_candidates.sql en Supabase y vuelve a cargar.'
-        : `${queryError.message} (${queryError.code})`;
-
+  if (restaurantsResult.error) {
+    console.error('[AdminRestaurantsPage] Error cargando restaurantes:', restaurantsResult.error);
     return (
       <div className="section-card p-5" style={{ color: 'var(--danger)' }}>
-        <p style={{ fontSize: '14px', fontWeight: 600 }}>
-          No se pudieron cargar los datos para crear el restaurante.
-        </p>
-        <p style={{ fontSize: '13px', marginTop: '4px', opacity: 0.8 }}>{detail}</p>
+        <p className="font-semibold text-sm">No se pudieron cargar los restaurantes</p>
+        <p className="text-xs mt-1 opacity-80">{restaurantsResult.error.message}</p>
       </div>
     );
   }
 
+  const restaurants = (restaurantsResult.data ?? []) as unknown as RestaurantItem[];
   const owners = ownersResult.data ?? [];
   const categories = categoriesResult.data ?? [];
 
   return (
-    <div className="max-w-3xl">
-      <div className="mb-6">
-        <h1 className="page-title">Crear restaurante</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="page-title">Restaurantes</h1>
         <p className="page-subtitle">
-          Asigna el restaurante a una cuenta existente. Al crearlo, esa cuenta
-          recibirá el rol de propietario.
+          Supervisa los comercios afiliados, gestiona su estado activo/pausado y edita sus perfiles.
         </p>
       </div>
 
-      {owners.length === 0 ? (
-        <div className="section-card p-4" style={{
-          background: 'var(--warning-soft)',
-          borderColor: 'rgba(217, 119, 6, 0.2)',
-          color: '#92400E',
-          fontSize: '14px',
-        }}>
-          No hay cuentas disponibles. El propietario debe iniciar sesión con su
-          teléfono al menos una vez para que Firebase cree su perfil.
-        </div>
-      ) : (
-        <RestaurantCreateForm
-          owners={owners}
-          categories={categories}
-          cities={CITIES}
-        />
-      )}
+      <RestaurantsManager
+        restaurants={restaurants}
+        owners={owners}
+        categories={categories}
+        cities={CITIES}
+      />
     </div>
   );
 }

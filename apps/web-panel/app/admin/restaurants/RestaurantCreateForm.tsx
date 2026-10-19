@@ -26,12 +26,14 @@ interface RestaurantCreateFormProps {
   owners: OwnerOption[];
   categories: CategoryOption[];
   cities: readonly CityOption[];
+  onSuccess?: () => void;
 }
 
 export default function RestaurantCreateForm({
   owners,
   categories,
   cities,
+  onSuccess,
 }: RestaurantCreateFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -51,6 +53,7 @@ export default function RestaurantCreateForm({
 
       setSuccess('Restaurante creado y rol de propietario asignado.');
       formRef.current?.reset();
+      onSuccess?.();
     });
   }
 
