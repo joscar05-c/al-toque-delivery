@@ -937,7 +937,7 @@ export type Database = {
           created_at: string;
           updated_at: string;
           restaurant_category_id: string | null;
-          owner_id: string;
+          owner_id: string | null;
         };
         Insert: {
           id?: string;
@@ -956,7 +956,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           restaurant_category_id?: string | null;
-          owner_id: string;
+          owner_id?: string | null;
         };
         Update: {
           id?: string;
@@ -975,7 +975,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           restaurant_category_id?: string | null;
-          owner_id?: string;
+          owner_id?: string | null;
         };
         Relationships: [
           {
@@ -1150,7 +1150,7 @@ export type Database = {
       };
       admin_create_restaurant: {
         Args: {
-          p_owner_id: string;
+          p_owner_id?: string | null;
           p_name: string;
           p_address: string;
           p_phone: string;

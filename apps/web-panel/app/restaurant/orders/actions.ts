@@ -29,5 +29,6 @@ export async function updateOrderStatus(orderId: string, status: string, restaur
   if (!data) return { error: 'Pedido no encontrado o no autorizado' };
 
   revalidatePath('/restaurant/orders');
+  revalidatePath('/admin/orders');
   return { success: true };
 }

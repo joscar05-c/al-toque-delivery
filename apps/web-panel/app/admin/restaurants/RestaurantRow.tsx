@@ -1,9 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { toggleRestaurantActive, toggleRestaurantPartner } from './actions';
 import { RestaurantItem } from './RestaurantEditModal';
-import { Edit2, Star, Clock, Store, Phone } from 'lucide-react';
+import { Edit2, Star, Clock, Store, Phone, Utensils, Settings } from 'lucide-react';
 
 interface RestaurantRowProps {
   restaurant: RestaurantItem;
@@ -87,12 +88,18 @@ export default function RestaurantRow({
       {/* Propietario */}
       <td>
         <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>
-          {restaurant.owner?.name || 'Sin nombre'}
+          {restaurant.owner?.name ? (
+            restaurant.owner.name
+          ) : (
+            <span style={{ color: 'var(--ink-muted)', fontStyle: 'italic', fontWeight: 400 }}>
+              Sin asignar
+            </span>
+          )}
         </div>
         <div className="text-xs mt-0.5 flex items-center gap-1" style={{ color: 'var(--ink-muted)' }}>
           <Phone style={{ width: '11px', height: '11px' }} />
           <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-            {restaurant.owner?.phone || restaurant.phone}
+            {restaurant.owner?.phone || restaurant.phone || '—'}
           </span>
         </div>
       </td>
@@ -158,16 +165,38 @@ export default function RestaurantRow({
 
       {/* Acciones */}
       <td style={{ textAlign: 'right' }}>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="panel-btn-secondary"
-          style={{ padding: '6px 12px', fontSize: '12px' }}
-          title="Editar restaurante"
-        >
-          <Edit2 style={{ width: '13px', height: '13px' }} />
-          <span>Editar</span>
-        </button>
+        <div className="flex items-center justify-end gap-1.5 flex-wrap">
+          <Link
+            href={`/restaurant/menu?restaurantId=${restaurant.id}`}
+            className="panel-btn-secondary"
+            style={{ padding: '6px 10px', fontSize: '12px', textDecoration: 'none' }}
+            title="Gestionar carta, categorías y platos como Admin"
+          >
+            <Utensils style={{ width: '13px', height: '13px', color: 'var(--brand)' }} />
+            <span>Carta</span>
+          </Link>
+
+          <Link
+            href={`/restaurant/config?restaurantId=${restaurant.id}`}
+            className="panel-btn-secondary"
+            style={{ padding: '6px 10px', fontSize: '12px', textDecoration: 'none' }}
+            title="Configurar delivery, fotos y datos de tienda como Admin"
+          >
+            <Settings style={{ width: '13px', height: '13px' }} />
+            <span>Ajustes</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={onEdit}
+            className="panel-btn-secondary"
+            style={{ padding: '6px 10px', fontSize: '12px' }}
+            title="Editar datos básicos y reasignar propietario"
+          >
+            <Edit2 style={{ width: '13px', height: '13px' }} />
+            <span>Editar</span>
+          </button>
+        </div>
 
         {error && (
           <div style={{ marginTop: '4px', color: 'var(--danger)', fontSize: '11px', textAlign: 'right' }}>

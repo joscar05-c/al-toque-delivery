@@ -23,17 +23,31 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
 
   const resolvedParams = await searchParams;
 
-  // 1. Obtener todos los restaurantes del dueño
-  const { data: restaurants, error: restError } = await supabase
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role_id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const isAdmin = profile?.role_id === 4;
+
+  // 1. Obtener restaurantes (todos si es admin, o solo del dueño)
+  let restQuery = supabase
     .from('restaurants')
-    .select('id, name, phone, address, city, image_url, average_prep_time, is_active, restaurant_category_id')
-    .eq('owner_id', user.id)
-    .order('name');
+    .select('id, name, phone, address, city, image_url, average_prep_time, is_active, restaurant_category_id');
+
+  if (!isAdmin) {
+    restQuery = restQuery.eq('owner_id', user.id);
+  }
+
+  const { data: restaurants, error: restError } = await restQuery.order('name');
 
   if (restError || !restaurants || restaurants.length === 0) {
     return (
       <div className="text-center py-12">
-        <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
+        <p style={{ color: 'var(--ink-secondary)' }}>
+          {isAdmin ? 'No hay restaurantes registrados en la plataforma.' : 'No se encontró un restaurante asociado a tu cuenta.'}
+        </p>
       </div>
     );
   }

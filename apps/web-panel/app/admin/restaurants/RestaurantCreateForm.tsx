@@ -51,7 +51,7 @@ export default function RestaurantCreateForm({
         return;
       }
 
-      setSuccess('Restaurante creado y rol de propietario asignado.');
+      setSuccess('Restaurante creado con éxito.');
       formRef.current?.reset();
       onSuccess?.();
     });
@@ -65,26 +65,27 @@ export default function RestaurantCreateForm({
     >
       <div>
         <label htmlFor="ownerId" className="panel-label">
-          Propietario (cuenta registrada)
+          Propietario del restaurante <span className="text-gray-400 font-normal">(Opcional)</span>
         </label>
         <select
           id="ownerId"
           name="ownerId"
           className="panel-input"
-          required
           disabled={isPending}
           defaultValue=""
         >
-          <option value="" disabled>
-            Selecciona una cuenta
+          <option value="">
+            -- Sin propietario asignado (Vincular más tarde) --
           </option>
           {owners.map((owner) => (
             <option key={owner.id} value={owner.id}>
-              {owner.name} · {owner.phone || owner.email || owner.id} ·{' '}
-              {owner.role_id === 3 ? 'Propietario' : 'Cliente'}
+              {owner.name} · {owner.phone || owner.email || owner.id} ({owner.role_id === 3 ? 'Dueño Actual' : 'Cliente'})
             </option>
           ))}
         </select>
+        <p className="text-[11px] text-gray-500 mt-1">
+          Puedes seleccionar un dueño existente (tendrá un nuevo restaurante) o un cliente (se le asignará rol de dueño automáticamente). Si lo dejas en blanco, podrás asignarlo luego.
+        </p>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">

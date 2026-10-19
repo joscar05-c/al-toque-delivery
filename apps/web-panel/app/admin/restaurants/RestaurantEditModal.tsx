@@ -4,6 +4,14 @@ import { useState, useTransition } from 'react';
 import { updateRestaurant } from './actions';
 import { X, Store, AlertCircle } from 'lucide-react';
 
+interface OwnerOption {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  role_id: number | null;
+}
+
 interface CategoryOption {
   id: string;
   name: string;
@@ -28,7 +36,7 @@ export interface RestaurantItem {
   is_partner: boolean | null;
   sales_count: number | null;
   created_at: string;
-  owner_id: string;
+  owner_id: string | null;
   restaurant_category_id: string | null;
   category?: { id: string; name: string } | null;
   owner?: { id: string; name: string | null; phone: string | null; email: string | null } | null;
@@ -36,6 +44,7 @@ export interface RestaurantItem {
 
 interface RestaurantEditModalProps {
   restaurant: RestaurantItem;
+  owners: OwnerOption[];
   categories: CategoryOption[];
   cities: readonly CityOption[];
   onClose: () => void;
@@ -43,6 +52,7 @@ interface RestaurantEditModalProps {
 
 export default function RestaurantEditModal({
   restaurant,
+  owners,
   categories,
   cities,
   onClose,
@@ -82,7 +92,7 @@ export default function RestaurantEditModal({
                 Editar Restaurante
               </h3>
               <p className="text-xs" style={{ color: 'var(--ink-muted)' }}>
-                Propietario: {restaurant.owner?.name || restaurant.owner?.phone || 'Sin asignar'}
+                Propietario actual: {restaurant.owner?.name || restaurant.owner?.phone || 'Sin asignar'}
               </p>
             </div>
           </div>
@@ -97,6 +107,35 @@ export default function RestaurantEditModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="py-4 space-y-4 max-h-[75vh] overflow-y-auto">
+          {/* Propietario */}
+          <div>
+            <label htmlFor="edit-ownerId" className="panel-label">
+              Propietario del restaurante
+            </label>
+            <select
+              id="edit-ownerId"
+              name="ownerId"
+              className="panel-input"
+              disabled={isPending}
+              defaultValue={restaurant.owner_id || ''}
+            >
+              <option value="">-- Sin propietario asignado --</option>
+              {restaurant.owner_id && !owners.some((o) => o.id === restaurant.owner_id) && restaurant.owner && (
+                <option value={restaurant.owner_id}>
+                  {restaurant.owner.name || 'Propietario actual'} · {restaurant.owner.phone || restaurant.owner.email || restaurant.owner_id} (Asignado)
+                </option>
+              )}
+              {owners.map((owner) => (
+                <option key={owner.id} value={owner.id}>
+                  {owner.name} · {owner.phone || owner.email || owner.id} ({owner.role_id === 3 ? 'Dueño Actual' : 'Cliente'})
+                </option>
+              ))}
+            </select>
+            <p className="text-[11px] text-gray-500 mt-1">
+              Puedes reasignar a un dueño existente o a un cliente (se le promoverá a propietario automáticamente).
+            </p>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label htmlFor="edit-name" className="panel-label">

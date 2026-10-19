@@ -26,8 +26,8 @@ export async function createRestaurant(formData: FormData) {
   const categoryId = String(formData.get('categoryId') ?? '').trim();
   const averagePrepTime = Number(formData.get('averagePrepTime'));
 
-  if (!ownerId || !name || !address || !phone || !city) {
-    return { error: 'Completa propietario, nombre, dirección, teléfono y ciudad.' };
+  if (!name || !address || !phone || !city) {
+    return { error: 'Completa nombre, dirección, teléfono y ciudad.' };
   }
 
   if (!RESTAURANT_CITIES.has(city)) {
@@ -41,7 +41,7 @@ export async function createRestaurant(formData: FormData) {
   const { data: restaurantId, error } = await access.supabase.rpc(
     'admin_create_restaurant',
     {
-      p_owner_id: ownerId,
+      p_owner_id: ownerId || null,
       p_name: name,
       p_address: address,
       p_phone: phone,
@@ -129,23 +129,58 @@ export async function updateRestaurant(restaurantId: string, formData: FormData)
     return { error: 'El tiempo promedio de preparación debe ser un entero positivo.' };
   }
 
+  const rawOwnerId = formData.get('ownerId');
+  const ownerId = rawOwnerId !== null && rawOwnerId !== undefined ? String(rawOwnerId).trim() : undefined;
+
+  const updatePayload: {
+    name: string;
+    address: string;
+    phone: string;
+    city: 'other' | 'bagua' | 'jaen' | 'chachapoyas';
+    restaurant_category_id: string | null;
+    average_prep_time: number;
+    image_url: string | null;
+    updated_at: string;
+    owner_id?: string | null;
+  } = {
+    name,
+    address,
+    phone,
+    city: city as 'other' | 'bagua' | 'jaen' | 'chachapoyas',
+    restaurant_category_id: categoryId || null,
+    average_prep_time: averagePrepTime,
+    image_url: imageUrl || null,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (ownerId !== undefined) {
+    updatePayload.owner_id = ownerId || null;
+  }
+
   const { error } = await access.supabase
     .from('restaurants')
-    .update({
-      name,
-      address,
-      phone,
-      city: city as any,
-      restaurant_category_id: categoryId || null,
-      average_prep_time: averagePrepTime,
-      image_url: imageUrl || null,
-      updated_at: new Date().toISOString(),
-    })
+    .update(updatePayload)
     .eq('id', restaurantId);
 
   if (error) {
     console.error('[updateRestaurant] Error al actualizar:', error);
     return { error: error.message || 'No se pudo actualizar el restaurante.' };
+  }
+
+  // Si se vinculó un usuario con rol cliente (role_id 1), promoverlo a propietario (role_id 3)
+  if (ownerId) {
+    const { data: userProfile } = await access.supabase
+      .from('users')
+      .select('id, role_id')
+      .eq('id', ownerId)
+      .maybeSingle();
+
+    if (userProfile && userProfile.role_id === 1) {
+      await access.supabase
+        .from('users')
+        .update({ role_id: 3, updated_at: new Date().toISOString() })
+        .eq('id', ownerId);
+    }
   }
 
   revalidatePath('/admin/restaurants');

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toggleMenuItemActive } from './actions';
 import { Search, ChefHat, Store, Utensils, Inbox, AlertCircle } from 'lucide-react';
 
@@ -96,17 +97,31 @@ export default function MenuAdminView({
           </span>
         </div>
 
-        <select
-          value={selectedRestaurantId}
-          onChange={(e) => handleSelectRestaurant(e.target.value)}
-          className="panel-input font-medium text-sm sm:max-w-xs"
-        >
-          {restaurants.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name} {r.city ? `(${r.city})` : ''}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <select
+            value={selectedRestaurantId}
+            onChange={(e) => handleSelectRestaurant(e.target.value)}
+            className="panel-input font-medium text-sm sm:max-w-xs"
+          >
+            {restaurants.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name} {r.city ? `(${r.city})` : ''}
+              </option>
+            ))}
+          </select>
+
+          {selectedRestaurantId && (
+            <Link
+              href={`/restaurant/menu?restaurantId=${selectedRestaurantId}`}
+              className="panel-btn-primary text-xs whitespace-nowrap"
+              style={{ padding: '8px 14px', textDecoration: 'none' }}
+              title="Crear platos, categorías, fotos y extras para este restaurante"
+            >
+              <Utensils style={{ width: '13px', height: '13px' }} />
+              <span>Gestionar Carta y Extras</span>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Metrics Row */}

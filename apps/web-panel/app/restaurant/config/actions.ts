@@ -47,6 +47,7 @@ export async function updateRestaurantProfile(formData: FormData) {
 
   revalidatePath('/restaurant/config');
   revalidatePath('/restaurant/orders');
+  revalidatePath('/admin/restaurants');
   return { success: true };
 }
 
@@ -73,6 +74,7 @@ export async function toggleRestaurantActive(restaurantId: string, currentStatus
 
   revalidatePath('/restaurant/config');
   revalidatePath('/restaurant/orders');
+  revalidatePath('/admin/restaurants');
   return { success: true, isActive: !currentStatus };
 }
 

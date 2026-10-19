@@ -46,6 +46,7 @@ export async function createMenuCategory(
   }
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 
@@ -78,6 +79,7 @@ export async function updateMenuCategory(
   }
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 
@@ -118,6 +120,7 @@ export async function deleteMenuCategory(
   }
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 
@@ -210,6 +213,7 @@ export async function createMenuItem(formData: FormData, imageUrl?: string | nul
   }
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 
@@ -295,6 +299,7 @@ export async function updateMenuItem(
   }
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 
@@ -321,6 +326,7 @@ export async function toggleMenuItem(
   if (!data) return { error: 'Plato no encontrado o no autorizado' };
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 
@@ -346,6 +352,7 @@ export async function deleteMenuItem(itemId: string, restaurantId?: string) {
   }
 
   revalidatePath('/restaurant/menu');
+  revalidatePath('/admin/menus');
   return { success: true };
 }
 

@@ -228,6 +228,7 @@ export default function RestaurantsManager({
       {editingRestaurant && (
         <RestaurantEditModal
           restaurant={editingRestaurant}
+          owners={owners}
           categories={categories}
           cities={cities}
           onClose={() => setEditingRestaurant(null)}
@@ -244,7 +245,7 @@ export default function RestaurantsManager({
                   Dar de Alta Nuevo Restaurante
                 </h3>
                 <p className="text-xs" style={{ color: 'var(--ink-muted)' }}>
-                  Asigna el restaurante a una cuenta de usuario existente.
+                  Asigna el restaurante a un cliente/propietario o créalo sin asignar para vincularlo después.
                 </p>
               </div>
               <button
@@ -256,28 +257,27 @@ export default function RestaurantsManager({
               </button>
             </div>
 
-            {owners.length === 0 ? (
+            {owners.length === 0 && (
               <div
-                className="p-4 rounded-lg mb-4 text-xs"
+                className="p-3 rounded-lg mb-4 text-xs"
                 style={{
                   background: 'var(--warning-soft)',
                   color: '#92400E',
                   border: '1px solid rgba(217, 119, 6, 0.2)',
                 }}
               >
-                No hay cuentas disponibles para asignar. El propietario debe haber iniciado sesión con su teléfono
-                al menos una vez en la aplicación para crear su registro inicial.
+                Aviso: No hay usuarios registrados actualmente en la lista. Puedes dar de alta el restaurante sin propietario y vincularlo más adelante cuando el usuario inicie sesión en la app.
               </div>
-            ) : (
-              <RestaurantCreateForm
-                owners={owners}
-                categories={categories}
-                cities={cities}
-                onSuccess={() => {
-                  setTimeout(() => setShowCreateModal(false), 1200);
-                }}
-              />
             )}
+
+            <RestaurantCreateForm
+              owners={owners}
+              categories={categories}
+              cities={cities}
+              onSuccess={() => {
+                setTimeout(() => setShowCreateModal(false), 1200);
+              }}
+            />
           </div>
         </div>
       )}

@@ -22,16 +22,30 @@ export default async function RestaurantMenuPage({ searchParams }: PageProps) {
 
   const resolvedParams = await searchParams;
 
-  const { data: restaurants, error: restError } = await supabase
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role_id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const isAdmin = profile?.role_id === 4;
+
+  let restQuery = supabase
     .from('restaurants')
-    .select('id, name, image_url')
-    .eq('owner_id', user.id)
-    .order('name');
+    .select('id, name, image_url');
+
+  if (!isAdmin) {
+    restQuery = restQuery.eq('owner_id', user.id);
+  }
+
+  const { data: restaurants, error: restError } = await restQuery.order('name');
 
   if (restError || !restaurants || restaurants.length === 0) {
     return (
       <div className="text-center py-12">
-        <p style={{ color: 'var(--ink-secondary)' }}>No se encontró un restaurante asociado a tu cuenta.</p>
+        <p style={{ color: 'var(--ink-secondary)' }}>
+          {isAdmin ? 'No hay restaurantes registrados en la plataforma.' : 'No se encontró un restaurante asociado a tu cuenta.'}
+        </p>
       </div>
     );
   }
