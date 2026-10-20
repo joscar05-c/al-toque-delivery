@@ -23,7 +23,7 @@ import {
 } from '@/lib/restaurants';
 import type { RestaurantCategory } from '@delivery/shared';
 
-type CategoryOption = { id: string | null; name: string };
+type CategoryOption = { id: string | null; name: string; icon?: string | null };
 type FilterTab = 'Cercanos' | 'Ventas' | 'Calificación' | 'Rápido';
 
 const FILTER_TABS: FilterTab[] = ['Cercanos', 'Ventas', 'Calificación', 'Rápido'];
@@ -180,8 +180,8 @@ export default function PublicHomeScreen() {
   ]);
 
   const categoryOptions: CategoryOption[] = [
-    { id: null, name: 'Todas' },
-    ...categories,
+    { id: null, name: 'Todas', icon: 'grid-outline' },
+    ...categories.map((c) => ({ id: c.id, name: c.name, icon: c.icon })),
   ];
 
   const partnersList = useMemo(() => {
@@ -309,6 +309,7 @@ export default function PublicHomeScreen() {
                   renderItem={({ item }) => (
                     <CategoryChip
                       label={item.name}
+                      icon={item.icon}
                       selected={
                         item.id === null
                           ? selectedCategory === null
