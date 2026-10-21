@@ -50,20 +50,25 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-poppins), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono);
+  --color-brand-purple: #3f0aa9;
+  --color-brand-purple-dark: #3f0791;
+  --color-brand-blue: #0404fc;
+  --color-brand-yellow: #f4e687;
+  --color-brand-mint: #44BE70;
+  --color-brand-lilac: #ceadd1;
 }
 
 /* NOTA: Los paneles (admin / restaurante) están diseñados solo para tema claro
    (tarjetas bg-white, textos text-gray--*, sin variantes dark:). El modo oscuro
    automático del sistema volvía el color del body claro y dejaba ilegibles los
    textos/inputs/botones que heredan ese color sobre fondos claros. Por eso se
-   fuerza tema claro en el body. La landing (app/page.tsx) usa variantes dark:
-   propias y sigue funcionando en modo oscuro. */
+   fuerza tema claro en el body. */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

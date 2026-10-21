@@ -1160,6 +1160,37 @@ export type Database = {
         };
         Returns: string;
       };
+      submit_public_restaurant_application: {
+        Args: {
+          p_business_name: string;
+          p_business_phone: string;
+          p_business_email: string | null;
+          p_address: string;
+          p_category_id: string;
+          p_city: string;
+          p_owner_name: string;
+          p_owner_dni: string;
+          p_additional_comments: string | null;
+        };
+        Returns: string;
+      };
+      submit_public_driver_application: {
+        Args: {
+          p_full_name: string;
+          p_dni: string;
+          p_birth_date: string;
+          p_phone: string;
+          p_email: string | null;
+          p_vehicle_type: string;
+          p_vehicle_plate: string | null;
+          p_vehicle_brand: string | null;
+          p_vehicle_model: string | null;
+          p_license_number: string | null;
+          p_emergency_contact_name: string | null;
+          p_emergency_contact_phone: string | null;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       roles_name_enum: 'client' | 'driver' | 'restaurant_owner' | 'admin';
