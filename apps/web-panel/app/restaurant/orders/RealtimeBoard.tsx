@@ -5,6 +5,16 @@ import { createClient } from '@/utils/supabase/client';
 import { updateOrderStatus } from './actions';
 import { Truck, ChefHat, Clock, CheckCircle, XCircle } from 'lucide-react';
 
+interface OrderPaymentInfo {
+  id: string;
+  payment_method_code: string;
+  amount: number;
+  payment_status: string;
+  cash_amount?: number | null;
+  change_amount?: number | null;
+  transaction_reference?: string | null;
+}
+
 interface Order {
   id: string;
   status: 'pending' | 'accepted' | 'preparing' | 'ready' | 'picked_up' | 'delivered' | 'cancelled';
@@ -14,6 +24,7 @@ interface Order {
   estimated_prep_time: number | null;
   created_at: string;
   client_id: string | null;
+  order_payments?: OrderPaymentInfo | null;
 }
 
 const STATUS_FLOW: Record<string, string | null> = {
@@ -448,21 +459,64 @@ function OrderCard({
         </div>
       </div>
 
-      {/* Address */}
+      {/* Modalidad de Entrega / Dirección */}
       {order.deliveryAddress && (
         <div style={{
-          marginBottom: '10px',
+          marginBottom: '8px',
           padding: '8px 10px',
-          background: 'var(--surface-inset)',
+          background: order.deliveryAddress.startsWith('Recojo en Tienda') ? 'rgba(242, 159, 48, 0.1)' : 'var(--surface-inset)',
           borderRadius: '8px',
-          fontSize: isMobile ? '14px' : '13px',
+          fontSize: isMobile ? '13px' : '12px',
           color: 'var(--ink-secondary)',
           lineHeight: 1.4,
         }}>
-          <span style={{ marginRight: '6px' }}>📍</span>
-          {order.deliveryAddress}
+          {order.deliveryAddress.startsWith('Recojo en Tienda') ? (
+            <span className="font-bold flex items-center gap-1.5" style={{ color: 'var(--brand)' }}>
+              <span>🛍️</span>
+              <span>Recojo en Tienda</span>
+            </span>
+          ) : (
+            <>
+              <span style={{ marginRight: '6px' }}>📍</span>
+              {order.deliveryAddress}
+            </>
+          )}
         </div>
       )}
+
+      {/* Información de Pago */}
+      {order.order_payments && (() => {
+        const payment = order.order_payments;
+        const isApproved = payment.payment_status === 'approved';
+        return (
+          <div style={{
+            marginBottom: '8px',
+            padding: '8px 10px',
+            background: isApproved ? 'var(--success-soft)' : 'var(--surface-inset)',
+            borderRadius: '8px',
+            fontSize: isMobile ? '13px' : '12px',
+          }}>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-gray-800 capitalize">
+                💳 {payment.payment_method_code}
+              </span>
+              <span className={`badge text-[10px] ${isApproved ? 'badge-success' : 'badge-warning'}`}>
+                {isApproved ? 'Pagado' : 'Por cobrar'}
+              </span>
+            </div>
+            {payment.payment_method_code === 'cash' && payment.change_amount && Number(payment.change_amount) > 0 && (
+              <p className="text-[11px] text-gray-600 mt-1">
+                Paga con S/ {Number(payment.cash_amount).toFixed(2)} · Llevar vuelto: S/ {Number(payment.change_amount).toFixed(2)}
+              </p>
+            )}
+            {payment.transaction_reference && (
+              <p className="text-[11px] font-mono text-gray-500 mt-0.5">
+                Ref: {payment.transaction_reference}
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Notes */}
       {order.notes && (

@@ -40,6 +40,8 @@ export interface OrderDetailItem {
     payment_status: string;
     payment_proof_url: string | null;
     transaction_reference: string | null;
+    cash_amount?: number | null;
+    change_amount?: number | null;
   }> | null;
   order_items?: Array<{
     id: string;
@@ -178,9 +180,15 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                 {order.client?.name || 'Cliente'}
               </p>
               <p className="text-xs text-gray-500 mt-0.5">{order.client?.phone || 'Sin teléfono'}</p>
-              <p className="text-[11px] text-gray-400 truncate mt-0.5" title={order.deliveryAddress || ''}>
-                {order.deliveryAddress || 'Sin dirección'}
-              </p>
+              {order.deliveryAddress?.startsWith('Recojo en Tienda') ? (
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md mt-1">
+                  🛍️ Recojo en Tienda
+                </span>
+              ) : (
+                <p className="text-[11px] text-gray-400 truncate mt-0.5" title={order.deliveryAddress || ''}>
+                  📍 {order.deliveryAddress || 'Sin dirección'}
+                </p>
+              )}
             </div>
 
             {/* Driver */}
@@ -240,9 +248,16 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
               <div className="p-3 rounded-lg border bg-gray-50">
                 <span className="font-bold text-gray-700 block mb-1">Método de Pago</span>
                 <div className="flex items-center justify-between">
-                  <span className="capitalize">{payment.payment_method_code}</span>
-                  <span className="badge badge-info">{payment.payment_status}</span>
+                  <span className="capitalize font-semibold text-gray-800">{payment.payment_method_code}</span>
+                  <span className={`badge ${payment.payment_status === 'approved' ? 'badge-success' : 'badge-warning'}`}>
+                    {payment.payment_status}
+                  </span>
                 </div>
+                {payment.payment_method_code === 'cash' && payment.change_amount && Number(payment.change_amount) > 0 && (
+                  <p className="text-[11px] text-gray-600 mt-1 font-mono">
+                    Paga con S/ {Number(payment.cash_amount).toFixed(2)} (Vuelto: S/ {Number(payment.change_amount).toFixed(2)})
+                  </p>
+                )}
                 {payment.transaction_reference && (
                   <p className="text-[11px] font-mono text-gray-500 mt-1">
                     Ref: {payment.transaction_reference}

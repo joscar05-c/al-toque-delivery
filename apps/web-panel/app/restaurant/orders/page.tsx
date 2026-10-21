@@ -55,7 +55,25 @@ export default async function RestaurantOrdersPage({ searchParams }: PageProps) 
 
   const { data: orders, error } = await supabase
     .from('orders')
-    .select('id, status, total, notes, deliveryAddress, estimated_prep_time, created_at, client_id')
+    .select(`
+      id,
+      status,
+      total,
+      notes,
+      deliveryAddress,
+      estimated_prep_time,
+      created_at,
+      client_id,
+      order_payments (
+        id,
+        payment_method_code,
+        amount,
+        payment_status,
+        cash_amount,
+        change_amount,
+        transaction_reference
+      )
+    `)
     .eq('restaurant_id', restaurant.id)
     .in('status', ['pending', 'accepted', 'preparing', 'ready'])
     .order('created_at', { ascending: true });

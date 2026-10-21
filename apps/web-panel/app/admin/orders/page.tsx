@@ -24,7 +24,7 @@ export default async function AdminOrdersPage() {
       driver_id,
       restaurant_id,
       restaurant:restaurants(id, name, city, phone, address),
-      order_payments(id, payment_method_code, amount, payment_status, payment_proof_url, transaction_reference),
+      order_payments(id, payment_method_code, amount, payment_status, payment_proof_url, transaction_reference, cash_amount, change_amount),
       order_items(id, quantity, unit_price, comment, options, menu_items(name))
     `)
     .order('created_at', { ascending: false });
