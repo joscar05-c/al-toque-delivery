@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   submitPublicRestaurantApplication,
   submitPublicDriverApplication,
@@ -371,8 +372,15 @@ export default function HomePage() {
             className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3f0aa9] rounded-xl px-1"
             aria-label="Al Toque Delivery - Inicio"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#3f0aa9] text-[#f4e687] flex items-center justify-center shadow-md shadow-[#3f0aa9]/25 group-hover:scale-105 transition-transform duration-200">
-              <IconZap className="w-6 h-6 fill-[#f4e687]" />
+            <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-md shadow-[#3f0aa9]/20 group-hover:scale-105 transition-transform duration-200 flex-shrink-0 bg-white">
+              <Image
+                src="/logo.png"
+                alt="Al Toque Delivery"
+                fill
+                sizes="48px"
+                className="object-contain"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl tracking-tight leading-none text-[#3f0791]">
@@ -1673,8 +1681,14 @@ export default function HomePage() {
             {/* Col 1: Brand */}
             <div className="space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-[#3f0aa9] text-[#f4e687] flex items-center justify-center font-bold">
-                  <IconZap className="w-5 h-5 fill-current" />
+                <div className="relative w-11 h-11 rounded-full overflow-hidden bg-white p-0.5 shadow-sm flex-shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="Al Toque Delivery"
+                    fill
+                    sizes="44px"
+                    className="object-contain"
+                  />
                 </div>
                 <span className="font-black text-2xl tracking-tight text-white">
                   Al Toque

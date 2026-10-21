@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { SignOutButton } from '@/components/SignOutButton';
@@ -117,13 +118,14 @@ export default function RestaurantLayoutClient({
         style={{ background: 'var(--surface-sidebar)' }}
       >
         <div className="px-5 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid var(--border-on-dark)' }}>
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: 'var(--brand)' }}
-          >
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white shadow-sm flex-shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Al Toque"
+              fill
+              sizes="32px"
+              className="object-contain"
+            />
           </div>
           <div className="sidebar-brand-text">
             <h1 className="text-sm font-semibold" style={{ color: 'var(--ink-on-dark)' }}>Al Toque</h1>
@@ -157,13 +159,14 @@ export default function RestaurantLayoutClient({
         style={{ background: 'var(--surface-sidebar)' }}
       >
         <div className="px-5 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid var(--border-on-dark)' }}>
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'var(--brand)' }}
-          >
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white shadow-sm flex-shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Al Toque"
+              fill
+              sizes="32px"
+              className="object-contain"
+            />
           </div>
           <div>
             <h1 className="text-sm font-semibold" style={{ color: 'var(--ink-on-dark)' }}>Al Toque</h1>

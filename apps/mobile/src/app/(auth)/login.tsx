@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -75,8 +76,12 @@ export default function LoginScreen() {
             {/* Encabezado y marca */}
             <View style={styles.header}>
               <View style={styles.logo} accessibilityLabel="Al Toque Delivery">
-                <Ionicons name="restaurant-outline" size={42} color="#F29F30" />
-                <Text style={styles.logoText}>AL TOQUE</Text>
+                <Image
+                  source={require('../../../assets/images/logo.png')}
+                  style={{ width: 140, height: 140, borderRadius: 70 }}
+                  contentFit="contain"
+                  transition={200}
+                />
               </View>
 
               <View style={styles.heading}>
@@ -208,13 +213,11 @@ const styles = StyleSheet.create({
     gap: 28,
   },
   logo: {
-    width: 156,
-    height: 156,
-    borderRadius: 78,
-    backgroundColor: 'rgba(242, 159, 48, 0.16)',
+    width: 140,
+    height: 140,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    backgroundColor: 'transparent',
   },
   logoText: {
     color: '#F29F30',

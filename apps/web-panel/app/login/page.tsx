@@ -3,6 +3,7 @@
 import type { ConfirmationResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
+import Image from 'next/image';
 
 import {
   confirmPhoneCode,
@@ -229,13 +230,15 @@ export default function LoginPage() {
         aria-hidden="true"
       >
         <div className="flex items-center gap-3">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-lg"
-            style={{ background: 'var(--brand)' }}
-          >
-            <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white shadow-sm flex-shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Al Toque"
+              fill
+              sizes="40px"
+              className="object-contain"
+              priority
+            />
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: 'var(--ink-on-dark)' }}>Al Toque</p>

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -106,9 +107,11 @@ export default function CompleteProfileScreen() {
         >
           {/* Encabezado con logotipo e ilustración */}
           <View className="items-center gap-3 pt-4 pb-6">
-            <View className="h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 shadow-xs">
-              <Ionicons name="person-add" size={38} color="#F29F30" />
-            </View>
+            <Image
+              source={require('../../../assets/images/logo.png')}
+              style={{ width: 84, height: 84, borderRadius: 42 }}
+              contentFit="contain"
+            />
             <Text className="text-2xl font-bold text-[#1C2433] text-center">
               ¡Casi listo para pedir!
             </Text>

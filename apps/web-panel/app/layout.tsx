@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     "restaurantes",
     "Al Toque",
   ],
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

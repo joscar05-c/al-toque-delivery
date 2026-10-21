@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -332,9 +333,16 @@ export function ProfileScreen() {
         )}
       </Pressable>
 
-      <Text className="mt-4 text-center text-[11px] text-[#8E98A8]">
-        Al Toque Delivery • v1.0.0
-      </Text>
+      <View className="mt-5 items-center gap-1.5 pb-2">
+        <Image
+          source={require('../../assets/images/logo.png')}
+          style={{ width: 34, height: 34, borderRadius: 17 }}
+          contentFit="contain"
+        />
+        <Text className="text-center text-[11px] text-[#8E98A8]">
+          Al Toque Delivery • v1.0.0
+        </Text>
+      </View>
 
       {/* Modales Bottom-Sheet */}
       {userId && (

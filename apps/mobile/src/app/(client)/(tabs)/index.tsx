@@ -277,6 +277,13 @@ export default function ClientHomeScreen() {
                     <Text className="text-sm font-medium text-[#8E98A8]">Hola de nuevo,</Text>
                     <Text className="text-2xl font-bold text-[#1C2433]">{firstName} 👋</Text>
                   </View>
+                  <View className="h-12 w-12 rounded-full bg-white p-0.5 shadow-sm border border-slate-100 items-center justify-center">
+                    <Image
+                      source={require('../../../../assets/images/logo.png')}
+                      style={{ width: 42, height: 42, borderRadius: 21 }}
+                      contentFit="contain"
+                    />
+                  </View>
                 </View>
 
                 {/* Selector de dirección de entrega */}
