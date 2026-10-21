@@ -15,7 +15,7 @@ export default function AuthLayout() {
     const incomplete = isProfileIncomplete(profile);
     if (incomplete) {
       if (!pathname.includes('complete-profile')) {
-        return <Redirect href="/(auth)/complete-profile" />;
+        return <Redirect href={'/complete-profile' as any} />;
       }
     } else {
       return <Redirect href="/(client)/(tabs)" />;

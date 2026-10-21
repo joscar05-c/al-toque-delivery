@@ -18,7 +18,7 @@ export default function ClientLayout() {
     return <Redirect href="/" />;
   }
   if (isProfileIncomplete(profile)) {
-    return <Redirect href="/(auth)/complete-profile" />;
+    return <Redirect href={'/complete-profile' as any} />;
   }
 
   return (

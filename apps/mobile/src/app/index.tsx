@@ -27,7 +27,7 @@ export default function Index() {
   // Con sesión -> sección según rol.
   if (role === 'client') {
     if (isProfileIncomplete(profile)) {
-      return <Redirect href="/(auth)/complete-profile" />;
+      return <Redirect href={'/complete-profile' as any} />;
     }
     return <Redirect href="/(client)/(tabs)" />;
   }

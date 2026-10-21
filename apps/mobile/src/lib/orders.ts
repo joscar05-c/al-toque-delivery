@@ -82,29 +82,38 @@ export async function fetchOrderDetail(
 export interface CreateOrderInput {
   clientId: string;
   restaurantId: string;
-  address: Address;
+  address?: Address | null;
+  deliveryType?: 'platform' | 'restaurant_own' | 'pickup_only';
+  restaurantAddress?: string | null;
   paymentMethod: PaymentMethod;
   lines: CartLine[];
   subtotal: number;
   deliveryFee: number;
   total: number;
+  cashAmount?: number | null;
+  changeAmount?: number | null;
+  transactionReference?: string | null;
+  paymentProofUrl?: string | null;
 }
 
 /**
  * Crea el pedido completo: orders -> order_items -> order_payments.
- * Supabase JS no tiene transacciones multi-tabla: si falla un paso
- * posterior, se intenta borrar la cabecera (best-effort según RLS).
+ * Soporta entrega a domicilio o recojo en local, y detalles de efectivo o transferencia.
  */
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
-  // 1. Cabecera del pedido (deliveryAddress = texto plano de la dirección).
+  const isPickup = input.deliveryType === 'pickup_only' || !input.address;
+  const deliveryAddress = isPickup
+    ? `Recojo en Tienda${input.restaurantAddress ? ` · ${input.restaurantAddress}` : ''}`
+    : `${input.address?.street}, ${input.address?.city}` +
+      (input.address?.reference ? ` · ${input.address?.reference}` : '');
+
+  // 1. Cabecera del pedido (deliveryAddress = texto plano de la dirección o Recojo en Tienda).
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
       client_id: input.clientId,
       restaurant_id: input.restaurantId,
-      deliveryAddress:
-        `${input.address.street}, ${input.address.city}` +
-        (input.address.reference ? ` · ${input.address.reference}` : ''),
+      deliveryAddress,
       total: input.total,
       status: 'pending',
     } satisfies TablesInsert<'orders'>)
@@ -140,6 +149,10 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
         amount: input.total,
         delivery_fee: input.deliveryFee,
         subtotal: input.subtotal,
+        cash_amount: input.cashAmount ?? null,
+        change_amount: input.changeAmount ?? null,
+        transaction_reference: input.transactionReference ?? null,
+        payment_proof_url: input.paymentProofUrl ?? null,
         payment_status: 'pending',
       } satisfies TablesInsert<'order_payments'>);
     if (paymentError) throw paymentError;
