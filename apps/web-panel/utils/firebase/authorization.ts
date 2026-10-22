@@ -32,29 +32,80 @@ export async function authorizePanelRole(roleId: number): Promise<{
   return { user, supabase };
 }
 
-/** Verifica rol de restaurante y que el recurso pertenezca al UID autenticado. */
+/** 
+ * Verifica que el usuario tenga rol de restaurante (y sea su dueño)
+ * o que sea Super Admin (con acceso completo de gestión a cualquier restaurante).
+ */
 export async function authorizeRestaurantOwner(restaurantId?: string): Promise<{
   user: SessionUser;
   supabase: Awaited<ReturnType<typeof createClient>>;
   restaurantId: string;
 } | null> {
-  const access = await authorizePanelRole(PANEL_ROLE_IDS.restaurantOwner);
-  if (!access) return null;
+  const user = await getSessionUser();
+  if (!user) return null;
 
-  let query = access.supabase
-    .from('restaurants')
-    .select('id')
-    .eq('owner_id', access.user.id);
+  const supabase = await createClient();
+  const { data: profile, error: profileError } = await supabase
+    .from('users')
+    .select('role_id')
+    .eq('id', user.id)
+    .maybeSingle();
 
-  if (restaurantId) query = query.eq('id', restaurantId);
-
-  const { data: restaurant, error } = await query.maybeSingle();
-  if (error) {
-    console.error('[authorization] No se pudo verificar el restaurante:', error.message);
+  if (profileError || !profile) {
+    console.error('[authorization] No se pudo verificar el rol:', profileError?.message);
     return null;
   }
 
-  if (!restaurant) return null;
+  // 1. Super Admin (role_id === 4): permiso total sobre cualquier restaurante
+  if (profile.role_id === PANEL_ROLE_IDS.admin) {
+    if (restaurantId) {
+      const { data: rest, error: restError } = await supabase
+        .from('restaurants')
+        .select('id')
+        .eq('id', restaurantId)
+        .maybeSingle();
 
-  return { ...access, restaurantId: restaurant.id };
+      if (restError || !rest) {
+        console.error('[authorization] Restaurante no encontrado:', restError?.message);
+        return null;
+      }
+      return { user, supabase, restaurantId: rest.id };
+    }
+
+    // Si no se proporcionó ID, seleccionar el primer restaurante del sistema
+    const { data: restaurants, error: listError } = await supabase
+      .from('restaurants')
+      .select('id')
+      .order('name')
+      .limit(1);
+
+    const firstRest = restaurants?.[0];
+    if (listError || !firstRest) return null;
+    return { user, supabase, restaurantId: firstRest.id };
+  }
+
+  // 2. Dueño de restaurante (role_id === 3): acceso restringido a sus propios locales
+  if (profile.role_id === PANEL_ROLE_IDS.restaurantOwner) {
+    let query = supabase
+      .from('restaurants')
+      .select('id')
+      .eq('owner_id', user.id);
+
+    if (restaurantId) {
+      query = query.eq('id', restaurantId);
+    }
+
+    const { data: restaurants, error } = await query.limit(1);
+    if (error) {
+      console.error('[authorization] No se pudo verificar el restaurante:', error.message);
+      return null;
+    }
+
+    const restaurant = restaurants?.[0];
+    if (!restaurant) return null;
+
+    return { user, supabase, restaurantId: restaurant.id };
+  }
+
+  return null;
 }

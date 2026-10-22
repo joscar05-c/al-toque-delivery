@@ -9,8 +9,18 @@ export default function ClientTabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#208AEF',
-        tabBarInactiveTintColor: '#64748B',
+        tabBarActiveTintColor: '#F29F30',
+        tabBarInactiveTintColor: '#8E98A8',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#F3F4F6',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: -2 },
+        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}
     >
       <Tabs.Screen

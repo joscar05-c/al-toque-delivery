@@ -7,13 +7,19 @@ import { createMenuItem, createMenuImageUploadUrl } from './actions';
 interface MenuItemFormProps {
   restaurantId: string;
   categories: { id: string; name: string }[];
+  optionGroups?: { id: string; name: string }[];
 }
 
-export default function MenuItemForm({ restaurantId, categories }: MenuItemFormProps) {
+export default function MenuItemForm({
+  restaurantId,
+  categories,
+  optionGroups = [],
+}: MenuItemFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -28,9 +34,6 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
   async function handleSubmit(formData: FormData) {
     setError(null);
     startTransition(async () => {
-      // Generar una URL de subida firmada en el servidor (service_role, bypass
-      // RLS) y subir el archivo directo a esa URL. Así no dependemos del token
-      // de Firebase en el cliente ni del límite de body del Server Action.
       let imageUrl: string | null = null;
       if (imageFile && imageFile.size > 0) {
         const fileExt = imageFile.name.split('.').pop();
@@ -42,10 +45,6 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           return;
         }
 
-        // Hacemos el PUT directo a la URL firmada con fetch. No usamos
-        // supabase-js uploadToSignedUrl porque éste re-valida el JWT de la URL
-        // en el cliente y falla con "Invalid Compact JWS" (incompatibilidad de
-        // versiones). La URL firmada ya viene autorizada por el servidor.
         const uploadRes = await fetch(signed.signedUrl, {
           method: 'PUT',
           headers: {
@@ -68,13 +67,13 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
         imageUrl = urlData.publicUrl;
       }
 
-      // Armamos un FormData limpio (sin el File) y pasamos la URL aparte.
       const payload = new FormData();
       payload.append('restaurantId', restaurantId);
       payload.append('name', (formData.get('name') as string) ?? '');
       payload.append('description', (formData.get('description') as string) ?? '');
       payload.append('price', (formData.get('price') as string) ?? '');
       payload.append('categoryId', (formData.get('categoryId') as string) ?? '');
+      payload.append('optionGroupIds', JSON.stringify(selectedGroupIds));
 
       const result = await createMenuItem(payload, imageUrl);
       if (result.error) setError(result.error);
@@ -83,6 +82,7 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
         setDescription('');
         setPrice('');
         setCategoryId('');
+        setSelectedGroupIds([]);
         setImageFile(null);
         if (preview) URL.revokeObjectURL(preview);
         setPreview(null);
@@ -90,28 +90,55 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
     });
   }
 
+  if (categories.length === 0) {
+    return (
+      <div
+        style={{
+          padding: '16px 20px',
+          borderRadius: '10px',
+          background: 'var(--brand-soft, rgba(242, 159, 48, 0.08))',
+          border: '1px solid rgba(242, 159, 48, 0.25)',
+          color: 'var(--ink)',
+          fontSize: '13px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+        }}
+      >
+        <span style={{ fontSize: '20px' }}>💡</span>
+        <div>
+          <p style={{ fontWeight: 600 }}>Crea una categoría primero</p>
+          <p style={{ color: 'var(--ink-secondary)', marginTop: '2px' }}>
+            Para agregar platos a tu catálogo, primero debes registrar al menos una categoría arriba (ej. Entradas, Platos de Fondo, Bebidas).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form action={handleSubmit} className="space-y-4 max-w-2xl">
+    <form action={handleSubmit} className="space-y-4 w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+          <label className="panel-label">Nombre del Plato *</label>
           <input
             name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Ej. Lomo Saltado, Pizza Margarita"
+            className="panel-input"
             disabled={isPending}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+          <label className="panel-label">Categoría *</label>
           <select
             name="categoryId"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="panel-input"
             disabled={isPending}
           >
             <option value="">Selecciona una categoría</option>
@@ -121,48 +148,115 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Precio (S/.)</label>
+          <label className="panel-label">Precio (S/.) *</label>
           <input
             name="price"
             type="number"
             step="0.01"
             min="0"
+            placeholder="0.00"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="panel-input"
+            style={{ fontVariantNumeric: 'tabular-nums' }}
             disabled={isPending}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
+          <label className="panel-label">Foto del Plato</label>
           <input
             name="image"
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="panel-input"
             disabled={isPending}
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+        <label className="panel-label">Descripción</label>
         <textarea
           name="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="panel-input"
+          style={{ resize: 'vertical' }}
           disabled={isPending}
-          placeholder="Descripción opcional del plato"
+          placeholder="Descripción opcional: ingredientes, acompañamiento, etc."
         />
       </div>
 
+      {/* Selector de Grupos de Opciones */}
+      {optionGroups.length > 0 && (
+        <div>
+          <label className="panel-label">
+            Grupos de Opciones y Personalización (Opcional)
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">
+            {optionGroups.map((group) => {
+              const isChecked = selectedGroupIds.includes(group.id);
+              return (
+                <label
+                  key={group.id}
+                  className="flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer text-xs transition-colors"
+                  style={{
+                    borderColor: isChecked ? 'var(--brand)' : 'var(--border)',
+                    background: isChecked
+                      ? 'var(--brand-soft, rgba(242, 159, 48, 0.08))'
+                      : 'var(--surface-subtle, rgba(0,0,0,0.02))',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedGroupIds((prev) => [...prev, group.id]);
+                      } else {
+                        setSelectedGroupIds((prev) =>
+                          prev.filter((id) => id !== group.id),
+                        );
+                      }
+                    }}
+                    disabled={isPending}
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                      accentColor: 'var(--brand)',
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontWeight: isChecked ? 600 : 400,
+                      color: isChecked ? 'var(--brand)' : 'var(--ink)',
+                    }}
+                  >
+                    {group.name}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {preview && (
-        <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-200">
-          <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+        <div>
+          <span className="panel-label">Vista Previa</span>
+          <div style={{
+            width: '110px',
+            height: '110px',
+            borderRadius: '10px',
+            overflow: 'hidden',
+            border: '1px solid var(--border)',
+            marginTop: '4px',
+          }}>
+            <img src={preview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
         </div>
       )}
 
@@ -172,11 +266,11 @@ export default function MenuItemForm({ restaurantId, categories }: MenuItemFormP
         <button
           type="submit"
           disabled={isPending || !name.trim() || !price || !categoryId}
-          className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="panel-btn-primary"
         >
-          {isPending ? 'Creando...' : 'Agregar Plato'}
+          {isPending ? 'Guardando plato...' : 'Agregar Plato'}
         </button>
-        {error && <span className="text-red-600 text-sm">{error}</span>}
+        {error && <span className="text-sm" style={{ color: 'var(--danger)' }}>{error}</span>}
       </div>
     </form>
   );

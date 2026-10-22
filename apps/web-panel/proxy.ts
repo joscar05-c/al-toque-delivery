@@ -10,7 +10,16 @@ import { SESSION_COOKIE } from '@/utils/firebase/constants';
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
 
+  // Si el usuario está autenticado y visita /login, redirigir al dashboard
+  if (pathname === '/login' && hasSession) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard-redirect';
+    return NextResponse.redirect(url);
+  }
+
+  // Rutas protegidas que requieren autenticación
   const isProtectedRoute =
     pathname.startsWith('/admin') ||
     pathname.startsWith('/restaurant') ||
@@ -20,7 +29,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!request.cookies.get(SESSION_COOKIE)?.value) {
+  // Si no hay sesión, redirigir a login
+  if (!hasSession) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
@@ -31,6 +41,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/login',
     '/admin/:path*',
     '/restaurant/:path*',
     '/dashboard-redirect',

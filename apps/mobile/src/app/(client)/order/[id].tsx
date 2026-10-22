@@ -383,12 +383,19 @@ export default function OrderDetailScreen() {
                 <Text className="w-8 text-sm font-bold text-primary">
                   {item.quantity}x
                 </Text>
-                <Text
-                  className="flex-1 text-sm text-slate-700"
-                  numberOfLines={2}
-                >
-                  {item.menu_items?.name ?? 'Plato'}
-                </Text>
+                <View className="flex-1">
+                  <Text
+                    className="text-sm text-slate-700"
+                    numberOfLines={2}
+                  >
+                    {item.menu_items?.name ?? 'Plato'}
+                  </Text>
+                  {Array.isArray(item.options) && item.options.length > 0 && (
+                    <Text className="text-xs text-slate-400 mt-0.5">
+                      {(item.options as Array<{ optionName: string }>).map((o) => o.optionName).join(', ')}
+                    </Text>
+                  )}
+                </View>
                 <Text className="text-sm font-medium text-slate-900">
                   {formatPrice(item.unit_price * item.quantity)}
                 </Text>

@@ -21,3 +21,32 @@ export async function approveRestaurant(applicationId: string) {
   revalidatePath('/admin/restaurants');
   return { success: true, restaurantId };
 }
+
+export async function rejectRestaurant(applicationId: string, rejectionReason: string) {
+  const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
+  if (!access) return { error: 'No autorizado' };
+
+  const reason = rejectionReason?.trim();
+  if (!reason) {
+    return { error: 'Debes indicar el motivo del rechazo para informar al solicitante.' };
+  }
+
+  const { error } = await access.supabase
+    .from('restaurant_applications')
+    .update({
+      status: 'rejected',
+      admin_notes: reason,
+      reviewed_by: access.user.id,
+      reviewed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', applicationId);
+
+  if (error) {
+    console.error('[rejectRestaurant] Error al rechazar solicitud:', error);
+    return { error: error.message || 'No se pudo rechazar la solicitud.' };
+  }
+
+  revalidatePath('/admin/applications');
+  return { success: true };
+}

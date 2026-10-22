@@ -46,6 +46,17 @@ async function fetchProfileWithRetry(
   return null;
 }
 
+/** Determina si el perfil del usuario aún no ha sido completado con su nombre real. */
+export function isProfileIncomplete(profile: UserProfile | null): boolean {
+  if (!profile) return true;
+  const name = profile.name?.trim();
+  if (!name) return true;
+  if (name.startsWith('Usuario +')) return true;
+  if (name === 'Usuario Nuevo') return true;
+  if (name.toLowerCase() === 'usuario') return true;
+  return false;
+}
+
 /** Forma mínima compatible con el antiguo `session.user.id` de Supabase. */
 interface CompatSession {
   user: { id: string };
@@ -106,14 +117,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           console.warn('[authStore] syncRealtimeAuth falló:', error);
         });
 
-        const profile = await fetchProfileWithRetry(user.uid);
+        let profile = await fetchProfileWithRetry(user.uid);
+        if (!profile) {
+          const fallbackName =
+            user.displayName ||
+            (user.phoneNumber ? `Usuario ${user.phoneNumber}` : 'Usuario Nuevo');
+          try {
+            await supabase.from('users').upsert({
+              id: user.uid,
+              phone: user.phoneNumber ?? null,
+              name: fallbackName,
+              role_id: 1, // client por defecto
+              is_active: true,
+              phone_verified: true,
+            });
+            profile = await fetchProfile(user.uid);
+          } catch (e) {
+            console.warn('[authStore] Fallback upsert de perfil falló:', e);
+          }
+        }
 
         set({
           user,
           userId: user.uid,
           session: { user: { id: user.uid } },
           profile,
-          role: profile?.roles?.name ?? null,
+          role: profile?.roles?.name ?? 'client',
           isLoading: false,
         });
       }, 0);

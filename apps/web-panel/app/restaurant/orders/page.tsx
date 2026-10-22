@@ -1,11 +1,15 @@
-'use server';
-
 import { createClient } from '@/utils/supabase/server';
 import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import RealtimeBoard from './RealtimeBoard';
 
-export default async function RestaurantOrdersPage() {
+import RestaurantSelector from '@/components/RestaurantSelector';
+
+interface PageProps {
+  searchParams: Promise<{ restaurantId?: string }>;
+}
+
+export default async function RestaurantOrdersPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
   const user = await getSessionUser();
@@ -14,37 +18,79 @@ export default async function RestaurantOrdersPage() {
     redirect('/login');
   }
 
-  const { data: restaurant, error: restError } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('owner_id', user.id)
-    .single();
+  const resolvedParams = await searchParams;
 
-  if (restError || !restaurant) {
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role_id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const isAdmin = profile?.role_id === 4;
+
+  let restQuery = supabase
+    .from('restaurants')
+    .select('id, name, image_url');
+
+  if (!isAdmin) {
+    restQuery = restQuery.eq('owner_id', user.id);
+  }
+
+  const { data: restaurants, error: restError } = await restQuery.order('name');
+
+  if (restError || !restaurants || restaurants.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">No se encontró un restaurante asociado a tu cuenta.</p>
+        <p style={{ color: 'var(--ink-secondary)' }}>
+          {isAdmin ? 'No hay restaurantes registrados en la plataforma.' : 'No se encontró un restaurante asociado a tu cuenta.'}
+        </p>
       </div>
     );
   }
 
+  const restaurant =
+    (resolvedParams?.restaurantId
+      ? restaurants.find((r) => r.id === resolvedParams.restaurantId)
+      : null) || restaurants[0];
+
   const { data: orders, error } = await supabase
     .from('orders')
-    .select('id, status, total, notes, deliveryAddress, estimated_prep_time, created_at, client_id')
+    .select(`
+      id,
+      status,
+      total,
+      notes,
+      deliveryAddress,
+      estimated_prep_time,
+      created_at,
+      client_id,
+      order_payments (
+        id,
+        payment_method_code,
+        amount,
+        payment_status,
+        cash_amount,
+        change_amount,
+        transaction_reference
+      )
+    `)
     .eq('restaurant_id', restaurant.id)
     .in('status', ['pending', 'accepted', 'preparing', 'ready'])
     .order('created_at', { ascending: true });
 
   if (error) {
     console.error('Error fetching orders:', error);
-    return <div className="text-red-600">Error al cargar pedidos: {error.message}</div>;
+    return <div style={{ color: 'var(--danger)' }}>Error al cargar pedidos: {error.message}</div>;
   }
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Pedidos en Vivo</h1>
-        <p className="mt-1 text-gray-600">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="page-title">Pedidos en Vivo</h1>
+          <p className="page-subtitle">Cocina en tiempo real — nuevos pedidos aparecen automáticamente</p>
+        </div>
+        <RestaurantSelector restaurants={restaurants} currentId={restaurant.id} />
       </div>
 
       <RealtimeBoard initialOrders={orders ?? []} restaurantId={restaurant.id} />

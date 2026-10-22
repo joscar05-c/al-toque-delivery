@@ -9,7 +9,7 @@ export default function PublicTabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#208AEF',
+        tabBarActiveTintColor: '#F29F30',
         tabBarInactiveTintColor: colorScheme === 'dark' ? '#94A3B8' : '#64748B',
         tabBarStyle: {
           backgroundColor: colorScheme === 'dark' ? '#1e293b' : '#ffffff',

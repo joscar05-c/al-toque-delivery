@@ -929,11 +929,15 @@ export type Database = {
           image_url: string | null;
           average_prep_time: number;
           is_active: boolean;
+          rating: number | null;
+          total_reviews: number;
+          is_partner: boolean;
+          sales_count: number;
           location: string | null;
           created_at: string;
           updated_at: string;
           restaurant_category_id: string | null;
-          owner_id: string;
+          owner_id: string | null;
         };
         Insert: {
           id?: string;
@@ -945,10 +949,14 @@ export type Database = {
           average_prep_time?: number;
           is_active?: boolean;
           location?: string | null;
+          rating?: number | null;
+          total_reviews?: number;
+          is_partner?: boolean;
+          sales_count?: number;
           created_at?: string;
           updated_at?: string;
           restaurant_category_id?: string | null;
-          owner_id: string;
+          owner_id?: string | null;
         };
         Update: {
           id?: string;
@@ -960,10 +968,14 @@ export type Database = {
           average_prep_time?: number;
           is_active?: boolean;
           location?: string | null;
+          rating?: number | null;
+          total_reviews?: number;
+          is_partner?: boolean;
+          sales_count?: number;
           created_at?: string;
           updated_at?: string;
           restaurant_category_id?: string | null;
-          owner_id?: string;
+          owner_id?: string | null;
         };
         Relationships: [
           {
@@ -1138,13 +1150,44 @@ export type Database = {
       };
       admin_create_restaurant: {
         Args: {
-          p_owner_id: string;
+          p_owner_id?: string | null;
           p_name: string;
           p_address: string;
           p_phone: string;
           p_city: string;
           p_category_id?: string | null;
           p_average_prep_time?: number;
+        };
+        Returns: string;
+      };
+      submit_public_restaurant_application: {
+        Args: {
+          p_business_name: string;
+          p_business_phone: string;
+          p_business_email: string | null;
+          p_address: string;
+          p_category_id: string;
+          p_city: string;
+          p_owner_name: string;
+          p_owner_dni: string;
+          p_additional_comments: string | null;
+        };
+        Returns: string;
+      };
+      submit_public_driver_application: {
+        Args: {
+          p_full_name: string;
+          p_dni: string;
+          p_birth_date: string;
+          p_phone: string;
+          p_email: string | null;
+          p_vehicle_type: string;
+          p_vehicle_plate: string | null;
+          p_vehicle_brand: string | null;
+          p_vehicle_model: string | null;
+          p_license_number: string | null;
+          p_emergency_contact_name: string | null;
+          p_emergency_contact_phone: string | null;
         };
         Returns: string;
       };

@@ -24,7 +24,12 @@ export default function DriverList({ drivers, restaurantId }: DriverListProps) {
 
   if (drivers.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-8">
+      <div style={{
+        textAlign: 'center',
+        color: 'var(--ink-muted)',
+        padding: '32px 0',
+        fontSize: '14px',
+      }}>
         No hay repartidores vinculados. Agrega uno arriba.
       </div>
     );
@@ -33,44 +38,46 @@ export default function DriverList({ drivers, restaurantId }: DriverListProps) {
   return (
     <>
       {error && (
-        <div className="mb-4 text-red-600 text-sm bg-red-50 p-3 rounded">
+        <div style={{
+          marginBottom: '16px',
+          padding: '12px',
+          borderRadius: '8px',
+          background: 'var(--danger-soft)',
+          color: 'var(--danger)',
+          fontSize: '14px',
+        }}>
           {error}
         </div>
       )}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Repartidor
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contacto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Vinculado
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+      <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+        <div className="overflow-x-auto">
+          <table className="panel-table w-full">
+            <thead>
+              <tr>
+                <th>Repartidor</th>
+                <th>Contacto</th>
+                <th>Vinculado</th>
+                <th style={{ textAlign: 'right' }}>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
             {drivers.map((d) => (
               <tr key={d.driver_id} className={pendingRemoves.has(d.driver_id) ? 'opacity-50' : ''}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
+                <td>
+                  <div style={{ fontWeight: 500, color: 'var(--ink)', fontSize: '14px' }}>
                     {d.users?.name ?? 'Sin nombre'}
                   </div>
-                  <div className="text-sm text-gray-500">{d.users?.email}</div>
+                  <div style={{ fontSize: '13px', color: 'var(--ink-muted)', marginTop: '1px' }}>
+                    {d.users?.email}
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{d.users?.phone ?? '—'}</div>
+                <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--ink-secondary)', fontSize: '14px' }}>
+                  {d.users?.phone ?? '—'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--ink-secondary)', fontSize: '14px' }}>
                   {new Date(d.created_at).toLocaleDateString('es-ES')}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td style={{ textAlign: 'right' }}>
                   <form action={async (formData) => {
                     const driverId = formData.get('driverId') as string;
                     if (!confirm('¿Desvincular a este repartidor?')) return;
@@ -93,7 +100,12 @@ export default function DriverList({ drivers, restaurantId }: DriverListProps) {
                     <button
                       type="submit"
                       disabled={pendingRemoves.has(d.driver_id)}
-                      className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="panel-btn-secondary"
+                      style={{
+                        color: 'var(--danger)',
+                        borderColor: 'rgba(220, 38, 38, 0.2)',
+                        opacity: pendingRemoves.has(d.driver_id) ? 0.5 : 1,
+                      }}
                     >
                       {pendingRemoves.has(d.driver_id) ? '...' : 'Desvincular'}
                     </button>
@@ -103,6 +115,7 @@ export default function DriverList({ drivers, restaurantId }: DriverListProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );

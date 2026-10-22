@@ -1,14 +1,14 @@
 import { Redirect, Stack } from 'expo-router';
 
-import { useAuthStore } from '@/store/authStore';
+import { isProfileIncomplete, useAuthStore } from '@/store/authStore';
 
 /**
  * Guard de la sección de cliente: solo usuarios autenticados
- * cuyo rol en public.users sea 'client'.
+ * cuyo rol en public.users sea 'client' y tengan su perfil completo.
  * Dentro, un Stack: los tabs abajo y las pantallas de detalle apiladas encima.
  */
 export default function ClientLayout() {
-  const { session, role } = useAuthStore();
+  const { session, role, profile } = useAuthStore();
 
   if (!session) {
     return <Redirect href="/(auth)/login" />;
@@ -16,6 +16,9 @@ export default function ClientLayout() {
   if (role !== 'client') {
     // El index raíz lo enviará a su sección correspondiente.
     return <Redirect href="/" />;
+  }
+  if (isProfileIncomplete(profile)) {
+    return <Redirect href={'/complete-profile' as any} />;
   }
 
   return (

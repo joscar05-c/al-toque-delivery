@@ -13,9 +13,17 @@ import type { Database } from '@delivery/shared';
  * entorno SUPABASE_SERVICE_ROLE_KEY en apps/web-panel/.env.local.
  */
 export function createServiceClient() {
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!key) {
+    throw new Error('Ni SUPABASE_SERVICE_ROLE_KEY ni NEXT_PUBLIC_SUPABASE_ANON_KEY están configuradas.');
+  }
+
   return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    key,
     {
       auth: { autoRefreshToken: false, persistSession: false },
     },

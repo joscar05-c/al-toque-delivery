@@ -27,3 +27,6 @@ yarn-error.*
 *.tsbuildinfo
 sesion_altoque.json
 sesion_error_de_compilacion.json
+opencode.json
+.env
+session-*.json
