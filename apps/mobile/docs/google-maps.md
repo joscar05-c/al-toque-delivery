@@ -55,7 +55,7 @@ La clave actual es ``. Para que funcione correctamente en Google Cloud Console:
 1. Ve a [APIs y servicios](https://console.cloud.google.com/apis) → tu proyecto → **Habilitar el "Maps SDK for Android"**.
 2. Ve a [Credenciales](https://console.cloud.google.com/apis/credentials) → tu clave → **Restricciones de aplicación**:
    - Tipo: **Aplicaciones de Android**
-   - Nombre del paquete: `com.joscar.al_toque_delivery` (el de `app.json`)
+   - Nombre del paquete: `com.deliverygofast1.app` (el de `app.json`)
    - SHA-1: el fingerprint del keystore con el que firmas el build (ver abajo).
 3. Restringe las API a **Maps SDK for Android**.
 
