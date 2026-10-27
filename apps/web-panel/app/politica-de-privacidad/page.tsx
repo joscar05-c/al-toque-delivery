@@ -150,12 +150,15 @@ export default function PoliticaPrivacidadPage() {
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
               <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-[#0404fc] text-xs font-black">4</span>
-              ID de Publicidad y Declaración de Publicidad
+              Identificador de Publicidad (AD_ID) y Fines de Uso
             </h2>
-            <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200/80 text-amber-900">
-              <p className="font-semibold mb-1">Declaración explícita sobre el Identificador de Publicidad (AD_ID):</p>
+            <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200/80 text-blue-950 space-y-2">
+              <p className="font-semibold text-xs sm:text-sm">Declaración de uso del Identificador de Publicidad (AD_ID):</p>
               <p className="text-xs leading-relaxed">
-                <strong>Al Toque Delivery NO utiliza el Identificador de Publicidad de Google (AD_ID)</strong> ni rastrea a los usuarios con fines de publicidad segmentada de terceros o redes de anuncios externas (como AdMob o Facebook Ads). El identificador del dispositivo no es compartido con redes publicitarias.
+                De conformidad con las políticas de Google Play, informamos que <strong>Al Toque Delivery NO utiliza el Identificador de Publicidad con fines de anuncios de terceros, marketing invasivo ni comercialización de datos</strong>.
+              </p>
+              <p className="text-xs leading-relaxed text-slate-700">
+                En caso de ser accedido por las librerías técnicas oficiales de Google Play Services o Firebase (tales como Play Integrity, reCAPTCHA o Firebase Authentication), dicho identificador se emplea exclusivamente con fines de <strong>prevención de fraudes, seguridad, autenticación y análisis funcional del servicio</strong>.
               </p>
             </div>
           </section>
