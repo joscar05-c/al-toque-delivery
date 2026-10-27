@@ -48,28 +48,23 @@ module.exports = ({ config }) => ({
 
 ⚠️ **Cada vez que cambies una clave debes regenerar el build nativo** (`npx expo run:android` / `run:ios`). Recargar Metro no aplica cambios del manifiesto.
 
-## Android (ya configurado)
+## Android (Configurado)
 
-La clave actual es ``. Para que funcione correctamente en Google Cloud Console:
+La clave configurada en `.env` es `AIzaSyB3xurYrIbP0ii-h9udnY8iEbF46J4UMuI`.
 
-1. Ve a [APIs y servicios](https://console.cloud.google.com/apis) → tu proyecto → **Habilitar el "Maps SDK for Android"**.
-2. Ve a [Credenciales](https://console.cloud.google.com/apis/credentials) → tu clave → **Restricciones de aplicación**:
+Para que Google Maps funcione tanto en desarrollo local como en la app descargada desde Play Store, la clave en Google Cloud Console debe tener registradas **ambas huellas SHA-1**:
+
+1. Ve a [APIs y servicios](https://console.cloud.google.com/apis) → Proyecto `al-toque-delivery` → Asegúrate de tener habilitado **Maps SDK for Android**.
+2. Ve a [Credenciales](https://console.cloud.google.com/apis/credentials) → Tu clave de Android → **Restricciones de aplicación**:
    - Tipo: **Aplicaciones de Android**
-   - Nombre del paquete: `com.deliverygofast1.app` (el de `app.json`)
-   - SHA-1: el fingerprint del keystore con el que firmas el build (ver abajo).
-3. Restringe las API a **Maps SDK for Android**.
-
-### Obtener tu SHA-1 (build de desarrollo local)
-
-Los dev builds locales se firman con el keystore de debug. En Windows PowerShell:
-
-```powershell
-keytool -list -v -keystore "$env:USERPROFILE\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
-```
-
-Copia el valor **SHA1** y agrégalo a la restricción de la clave en Google Cloud.
-
-Si en algún momento ves el mapa con marca de agua *"For development purposes only"*, significa que la clave es válida pero las restricciones (paquete/SHA-1) no coinciden o el Maps SDK for Android no está habilitado.
+   - Agrega dos elementos con el paquete `com.deliverygofast1.app`:
+     - **Elemento 1 (Build Local / Subida):**
+       - Paquete: `com.deliverygofast1.app`
+       - SHA-1: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`
+     - **Elemento 2 (Producción Google Play Store):**
+       - Paquete: `com.deliverygofast1.app`
+       - SHA-1: `82:36:62:05:7F:ED:21:87:71:7D:18:E7:36:92:8A:46:91:6F:4C:02`
+3. En **Restricciones de API**, selecciona **Restringir clave** y marca únicamente **Maps SDK for Android**.
 
 ### Reconstruir
 
