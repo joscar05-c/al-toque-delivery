@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:455073791965:android:f3f2d47a66f650b2498034",
+        "android_client_info": {
+          "package_name": "com.deliverygofast1.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANXmdSw7eQKI9Z-CUhQsdIBmVpDCQN1yA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:455073791965:android:a41d4516128bb549498034",
         "android_client_info": {
           "package_name": "com.joscar.al_toque_delivery"

@@ -2,7 +2,7 @@
   "expo": {
     "name": "al-toque-delivery",
     "slug": "al-toque-delivery",
-    "version": "1.0.0",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "altoquedelivery",
@@ -14,7 +14,8 @@
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "com.joscar.al_toque_delivery",
+      "package": "com.deliverygofast1.app",
+      "versionCode": 15,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
