@@ -16,6 +16,9 @@
       "googleServicesFile": "./google-services.json",
       "package": "com.deliverygofast1.app",
       "versionCode": 15,
+      "permissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
