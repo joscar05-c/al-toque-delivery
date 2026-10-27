@@ -3,12 +3,24 @@ import { Tabs } from 'expo-router';
 import * as Location from 'expo-location';
 import { useEffect } from 'react';
 
-import { saveDriverLocation } from '@/lib/driverLocations';
+import { getDriverActiveStatus, saveDriverLocation } from '@/lib/driverLocations';
 import { useAuthStore } from '@/store/authStore';
+import { useDriverStore } from '@/store/driverStore';
 
 /** Tabs del repartidor. El guard de sesión/rol vive en (driver)/_layout.tsx. */
 export default function DriverTabsLayout() {
   const driverId = useAuthStore((state) => state.session?.user.id);
+  const isOnline = useDriverStore((state) => state.isOnline);
+  const setIsOnline = useDriverStore((state) => state.setIsOnline);
+  const setCoords = useDriverStore((state) => state.setCoords);
+
+  // Carga inicial del estado online del repartidor
+  useEffect(() => {
+    if (!driverId) return;
+    getDriverActiveStatus(driverId)
+      .then((active) => setIsOnline(active))
+      .catch((err) => console.warn('[driver-status] Error obteniendo estado:', err));
+  }, [driverId, setIsOnline]);
 
   useEffect(() => {
     if (!driverId) return;
@@ -24,25 +36,39 @@ export default function DriverTabsLayout() {
       subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Balanced,
-          timeInterval: 10_000,
-          distanceInterval: 10,
+          timeInterval: 8_000,
+          distanceInterval: 8,
         },
         ({ coords }) => {
-          writeQueue = writeQueue
-            .then(async () => {
-              if (disposed) return;
-              await saveDriverLocation({
-                driverId,
-                latitude: coords.latitude,
-                longitude: coords.longitude,
-                heading: coords.heading,
-                speed: coords.speed,
-                accuracy: coords.accuracy,
+          if (disposed) return;
+          // Actualiza coordenadas en memoria para la UI del mapa
+          setCoords({
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            heading: coords.heading,
+            speed: coords.speed,
+            accuracy: coords.accuracy,
+          });
+
+          // Solo sincroniza con base de datos si el repartidor está en línea
+          if (useDriverStore.getState().isOnline) {
+            writeQueue = writeQueue
+              .then(async () => {
+                if (disposed) return;
+                await saveDriverLocation({
+                  driverId,
+                  latitude: coords.latitude,
+                  longitude: coords.longitude,
+                  heading: coords.heading,
+                  speed: coords.speed,
+                  accuracy: coords.accuracy,
+                  isActive: true,
+                });
+              })
+              .catch((error: unknown) => {
+                console.warn('[driver-location] No se pudo guardar:', error);
               });
-            })
-            .catch((error: unknown) => {
-              console.warn('[driver-location] No se pudo guardar:', error);
-            });
+          }
         },
       );
 
@@ -57,7 +83,8 @@ export default function DriverTabsLayout() {
       disposed = true;
       subscription?.remove();
     };
-  }, [driverId]);
+  }, [driverId, setCoords]);
+
 
   return (
     <Tabs

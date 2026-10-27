@@ -1,8 +1,9 @@
 import { supabase } from '@/lib/supabase';
-import type { Order, User } from '@delivery/shared';
+import type { Order, Restaurant, User } from '@delivery/shared';
 
 export type DriverOrder = Order & {
-  client: Pick<User, 'name'> | null;
+  client: Pick<User, 'name' | 'phone'> | null;
+  restaurant: Pick<Restaurant, 'id' | 'name' | 'address' | 'phone' | 'city'> | null;
 };
 
 export interface DriverOrdersResult {
@@ -28,7 +29,9 @@ export async function fetchDriverOrders(
   const { data, error } = await supabase
     .from('orders')
     // deliveryAddress is an order-time snapshot; orders has no address FK.
-    .select('*, client:users!FK_505ba3689ef2763acd6c4fc93a4(name)')
+    .select(
+      '*, client:users!FK_505ba3689ef2763acd6c4fc93a4(name, phone), restaurant:restaurants!FK_85fdda5fcce2f397ef8f117a2c6(id, name, address, phone, city)',
+    )
     .in('restaurant_id', restaurantIds)
     .neq('status', 'delivered')
     .neq('status', 'cancelled')
@@ -41,3 +44,4 @@ export async function fetchDriverOrders(
     orders: (data ?? []) as DriverOrder[],
   };
 }
+
