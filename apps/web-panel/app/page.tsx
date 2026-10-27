@@ -1765,9 +1765,21 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3">
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-3">
             <p>© {new Date().getFullYear()} Al Toque Delivery. Todos los derechos reservados.</p>
-            <p>Hecho con ❤️ para la gastronomía de Jaén, Bagua y Chachapoyas.</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/politica-de-privacidad" className="hover:text-white transition-colors">
+                Política de Privacidad
+              </Link>
+              <span>•</span>
+              <Link href="/politicas" className="hover:text-white transition-colors">
+                Términos y Condiciones
+              </Link>
+              <span>•</span>
+              <Link href="/eliminar-cuenta" className="hover:text-red-400 transition-colors">
+                Eliminar Cuenta
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
