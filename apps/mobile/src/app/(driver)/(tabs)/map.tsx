@@ -36,7 +36,7 @@ const DEFAULT_CENTER = {
   longitudeDelta: 0.015,
 };
 
-// Coordenadas aproximadas para restaurantes de Bagua Grande
+// Coordenadas aproximadas para restaurantes de Bagua Grande (fallback si no tienen coordenadas en BD)
 const RESTAURANT_LOCATIONS: Record<string, { latitude: number; longitude: number }> = {
   'Brasas y Leñas': { latitude: -5.758, longitude: -78.4435 },
   'Polleria Punta Sal': { latitude: -5.755, longitude: -78.4405 },
@@ -44,6 +44,33 @@ const RESTAURANT_LOCATIONS: Record<string, { latitude: number; longitude: number
   'Pizzería La Nona': { latitude: -5.7575, longitude: -78.4412 },
   'Burger Bros': { latitude: -5.7545, longitude: -78.444 },
 };
+
+function getOrderCoordinates(order: DriverOrder, index: number) {
+  const restName = order.restaurant?.name ?? '';
+  const restCoord =
+    order.restaurant?.latitude != null && order.restaurant?.longitude != null
+      ? {
+          latitude: order.restaurant.latitude,
+          longitude: order.restaurant.longitude,
+        }
+      : (RESTAURANT_LOCATIONS[restName] ?? {
+          latitude: DEFAULT_CENTER.latitude + (index + 1) * 0.002,
+          longitude: DEFAULT_CENTER.longitude + (index + 1) * 0.002,
+        });
+
+  const clientCoord =
+    order.delivery_latitude != null && order.delivery_longitude != null
+      ? {
+          latitude: order.delivery_latitude,
+          longitude: order.delivery_longitude,
+        }
+      : {
+          latitude: restCoord.latitude + 0.0035 + index * 0.001,
+          longitude: restCoord.longitude + 0.004 - index * 0.001,
+        };
+
+  return { restCoord, clientCoord };
+}
 
 export default function DriverMapScreen() {
   const insets = useSafeAreaInsets();
@@ -190,19 +217,8 @@ export default function DriverMapScreen() {
     }
 
     orders.forEach((order, idx) => {
-      const restName = order.restaurant?.name ?? '';
-      const restCoord =
-        RESTAURANT_LOCATIONS[restName] ?? {
-          latitude: DEFAULT_CENTER.latitude + (idx + 1) * 0.002,
-          longitude: DEFAULT_CENTER.longitude + (idx + 1) * 0.002,
-        };
-      points.push(restCoord);
-
-      // Coordenada destino aproximada (offset visual)
-      points.push({
-        latitude: restCoord.latitude + 0.003 + idx * 0.001,
-        longitude: restCoord.longitude + 0.004 - idx * 0.001,
-      });
+      const { restCoord, clientCoord } = getOrderCoordinates(order, idx);
+      points.push(restCoord, clientCoord);
     });
 
     if (points.length === 0) {
@@ -224,10 +240,14 @@ export default function DriverMapScreen() {
     // Si el pedido está en camino ('picked_up'), navegar al cliente; si no, al restaurante
     const isHeadingToClient = order.status === 'picked_up';
     const destinationQuery = isHeadingToClient
-      ? (order.deliveryAddress || 'Bagua Grande, Amazonas')
-      : (order.restaurant
+      ? order.delivery_latitude != null && order.delivery_longitude != null
+        ? `${order.delivery_latitude},${order.delivery_longitude}`
+        : order.deliveryAddress || 'Bagua Grande, Amazonas'
+      : order.restaurant?.latitude != null && order.restaurant?.longitude != null
+        ? `${order.restaurant.latitude},${order.restaurant.longitude}`
+        : order.restaurant
           ? `${order.restaurant.name}, ${order.restaurant.address || 'Bagua'}`
-          : order.deliveryAddress || 'Bagua Grande, Amazonas');
+          : order.deliveryAddress || 'Bagua Grande, Amazonas';
 
     const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinationQuery)}`;
     void Linking.openURL(url);
@@ -334,16 +354,7 @@ export default function DriverMapScreen() {
         {/* MARCADORES DE PEDIDOS ACTIVOS */}
         {orders.map((order, index) => {
           const restName = order.restaurant?.name ?? '';
-          const restCoord =
-            RESTAURANT_LOCATIONS[restName] ?? {
-              latitude: DEFAULT_CENTER.latitude + (index + 1) * 0.002,
-              longitude: DEFAULT_CENTER.longitude + (index + 1) * 0.002,
-            };
-
-          const clientCoord = {
-            latitude: restCoord.latitude + 0.0035 + index * 0.001,
-            longitude: restCoord.longitude + 0.004 - index * 0.001,
-          };
+          const { restCoord, clientCoord } = getOrderCoordinates(order, index);
 
           const isSelected = selectedOrderIndex === index;
 

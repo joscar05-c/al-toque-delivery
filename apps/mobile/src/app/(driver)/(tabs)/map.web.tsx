@@ -84,10 +84,14 @@ export default function DriverMapWebScreen() {
   const handleOpenNavigation = (order: DriverOrder) => {
     const isHeadingToClient = order.status === 'picked_up';
     const query = isHeadingToClient
-      ? (order.deliveryAddress || 'Bagua Grande, Amazonas')
-      : (order.restaurant
+      ? order.delivery_latitude != null && order.delivery_longitude != null
+        ? `${order.delivery_latitude},${order.delivery_longitude}`
+        : order.deliveryAddress || 'Bagua Grande, Amazonas'
+      : order.restaurant?.latitude != null && order.restaurant?.longitude != null
+        ? `${order.restaurant.latitude},${order.restaurant.longitude}`
+        : order.restaurant
           ? `${order.restaurant.name}, ${order.restaurant.address || 'Bagua'}`
-          : order.deliveryAddress || 'Bagua Grande, Amazonas');
+          : order.deliveryAddress || 'Bagua Grande, Amazonas';
 
     window.open(
       `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`,

@@ -105,15 +105,18 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   const deliveryAddress = isPickup
     ? `Recojo en Tienda${input.restaurantAddress ? ` · ${input.restaurantAddress}` : ''}`
     : `${input.address?.street}, ${input.address?.city}` +
-      (input.address?.reference ? ` · ${input.address?.reference}` : '');
+    (input.address?.reference ? ` · ${input.address?.reference}` : '');
 
-  // 1. Cabecera del pedido (deliveryAddress = texto plano de la dirección o Recojo en Tienda).
+  // 1. Cabecera del pedido (deliveryAddress = texto plano + coordenadas reales de entrega).
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
       client_id: input.clientId,
       restaurant_id: input.restaurantId,
       deliveryAddress,
+      delivery_latitude: isPickup ? null : (input.address?.latitude ?? null),
+      delivery_longitude: isPickup ? null : (input.address?.longitude ?? null),
+      fulfillment_type: isPickup ? 'pickup' : 'delivery',
       total: input.total,
       status: 'pending',
     } satisfies TablesInsert<'orders'>)

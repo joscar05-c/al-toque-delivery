@@ -13,30 +13,27 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
+import {
+  claimDriverOrder,
+  fetchDriverOrderById,
+  type DriverOrder,
+} from '@/lib/driverOrders';
 import { formatPrice } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 import type {
-  Address,
   MenuItem,
-  Order,
   OrderItem,
   OrderStatus,
-  User,
 } from '@delivery/shared';
-
-type DriverOrderDetail = Order & {
-  client: Pick<User, 'name' | 'phone'> | null;
-};
 
 type DriverOrderItem = OrderItem & {
   menu_items: Pick<MenuItem, 'name' | 'image_url'> | null;
 };
 
 interface DriverOrderData {
-  order: DriverOrderDetail;
+  order: DriverOrder;
   items: DriverOrderItem[];
-  address: Pick<Address, 'street' | 'city' | 'reference'> | null;
 }
 
 /** Pedido detalle, dirección de entrega y acciones del repartidor. */
@@ -52,40 +49,21 @@ export default function DriverOrderDetailScreen() {
   const loadOrder = useCallback(async (): Promise<DriverOrderData> => {
     if (!id) throw new Error('Pedido inválido');
 
-    const { data: orderData, error: orderError } = await supabase
-      .from('orders')
-      .select('*, client:users!FK_505ba3689ef2763acd6c4fc93a4(name, phone)')
-      .eq('id', id)
-      .single();
-
-    if (orderError) throw orderError;
-
-    const order = orderData as DriverOrderDetail;
-    const [itemsResult, addressResult] = await Promise.all([
+    const [order, itemsResult] = await Promise.all([
+      fetchDriverOrderById(id),
       supabase
         .from('order_items')
         .select('*, menu_items(name, image_url)')
         .eq('order_id', id)
         .order('created_at', { ascending: true }),
-      order.client_id
-        ? supabase
-            .from('addresses')
-            .select('street, city, reference')
-            .eq('user_id', order.client_id)
-            .order('is_default', { ascending: false })
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle()
-        : Promise.resolve({ data: null, error: null }),
     ]);
 
+    if (!order) throw new Error('Pedido no encontrado o ya asignado a otro repartidor.');
     if (itemsResult.error) throw itemsResult.error;
 
     return {
       order,
       items: (itemsResult.data ?? []) as DriverOrderItem[],
-      // deliveryAddress es la dirección guardada al crear el pedido; addresses es fallback.
-      address: addressResult.error ? null : addressResult.data,
     };
   }, [id]);
 
@@ -111,39 +89,18 @@ export default function DriverOrderDetailScreen() {
     };
   }, [loadOrder]);
 
-  const updateStatus = async (status: OrderStatus) => {
+  const handleAction = async (actionType: 'claim' | OrderStatus) => {
     if (!data || !driverId || isUpdating) return;
 
     setIsUpdating(true);
     try {
-      if (data.order.status === 'pending' && status === 'accepted') {
-        // Solo puede aceptar pedidos del restaurante que lo tiene asignado.
-        const { data: assignment, error: assignmentError } = await supabase
-          .from('restaurant_drivers')
-          .select('id')
-          .eq('driver_id', driverId)
-          .eq('restaurant_id', data.order.restaurant_id ?? '')
-          .eq('is_active', true)
-          .maybeSingle();
-
-        if (assignmentError) throw assignmentError;
-        if (!assignment) throw new Error('No estás asignado a este restaurante.');
-
-        const { data: updated, error: updateError } = await supabase
-          .from('orders')
-          .update({ status: 'accepted', driver_id: driverId })
-          .eq('id', data.order.id)
-          .eq('status', 'pending')
-          .select('id')
-          .maybeSingle();
-
-        if (updateError) throw updateError;
-        if (!updated) throw new Error('El pedido ya fue actualizado.');
+      if (actionType === 'claim') {
+        await claimDriverOrder(data.order.id);
       } else {
         // Recogida/entrega solo para el pedido asignado a este repartidor.
         const { data: updated, error: updateError } = await supabase
           .from('orders')
-          .update({ status })
+          .update({ status: actionType, updated_at: new Date().toISOString() })
           .eq('id', data.order.id)
           .eq('driver_id', driverId)
           .eq('status', data.order.status)
@@ -192,21 +149,26 @@ export default function DriverOrderDetailScreen() {
     );
   }
 
-  const { order, items, address } = data;
-  const deliveryAddress =
-    order.deliveryAddress ??
-    [address?.street, address?.city, address?.reference]
-      .filter(Boolean)
-      .join(', ');
+  const { order, items } = data;
+  const deliveryAddress = order.deliveryAddress ?? '';
 
-  const action =
-    order.status === 'pending'
-      ? { label: 'Aceptar Pedido', nextStatus: 'accepted' as const }
-      : order.status === 'ready'
-        ? { label: 'Recogí el pedido', nextStatus: 'picked_up' as const }
-        : order.status === 'picked_up'
-          ? { label: 'Entregado al cliente', nextStatus: 'delivered' as const }
-          : null;
+  const isUnclaimed =
+    !order.driver_id &&
+    (order.status === 'pending' ||
+      order.status === 'accepted' ||
+      order.status === 'preparing' ||
+      order.status === 'ready');
+
+  const action: { label: string; actionType: 'claim' | OrderStatus } | null = isUnclaimed
+    ? {
+      label: order.status === 'pending' ? 'Aceptar Pedido' : 'Tomar este Pedido',
+      actionType: 'claim',
+    }
+    : order.driver_id === driverId && order.status === 'ready'
+      ? { label: 'Recogí el pedido', actionType: 'picked_up' }
+      : order.driver_id === driverId && order.status === 'picked_up'
+        ? { label: 'Entregado al cliente', actionType: 'delivered' }
+        : null;
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-slate-50">
@@ -304,11 +266,10 @@ export default function DriverOrderDetailScreen() {
       {action && (
         <View className="bg-white p-4">
           <Pressable
-            onPress={() => updateStatus(action.nextStatus)}
+            onPress={() => handleAction(action.actionType)}
             disabled={isUpdating}
-            className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${
-              isUpdating ? 'bg-primary/60' : 'bg-primary active:opacity-80'
-            }`}
+            className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${isUpdating ? 'bg-primary/60' : 'bg-primary active:opacity-80'
+              }`}
           >
             {isUpdating ? (
               <ActivityIndicator color="#fff" />

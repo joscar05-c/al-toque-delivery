@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { createServiceClient } from '@/utils/supabase/service';
 import { getSessionUser } from '@/utils/firebase/session';
 import { redirect } from 'next/navigation';
 import DeliveryConfigForm from './DeliveryConfigForm';
@@ -76,8 +77,9 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
     console.error('Error fetching delivery config:', configError);
   }
 
-  // 5. Obtener repartidores propios vinculados
-  const { data: drivers, error: driversError } = await supabase
+  // 5. Obtener repartidores propios vinculados (service client para leer datos de contacto tras validar dueño/admin)
+  const serviceSupabase = createServiceClient();
+  const { data: drivers, error: driversError } = await serviceSupabase
     .from('restaurant_drivers')
     .select('driver_id, is_active, created_at, users:driver_id (id, email, phone, name)')
     .eq('restaurant_id', restaurant.id)

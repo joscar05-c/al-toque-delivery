@@ -33,6 +33,8 @@ export type Database = {
           reference: string | null;
           type: Database['public']['Enums']['addresses_type_enum'];
           is_default: boolean;
+          latitude: number | null;
+          longitude: number | null;
           location: string | null;
           created_at: string;
           updated_at: string;
@@ -46,6 +48,8 @@ export type Database = {
           reference?: string | null;
           type?: Database['public']['Enums']['addresses_type_enum'];
           is_default?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
           location?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -59,6 +63,8 @@ export type Database = {
           reference?: string | null;
           type?: Database['public']['Enums']['addresses_type_enum'];
           is_default?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
           location?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -619,6 +625,9 @@ export type Database = {
           total: number;
           notes: string | null;
           deliveryAddress: string | null;
+          delivery_latitude: number | null;
+          delivery_longitude: number | null;
+          fulfillment_type: 'delivery' | 'pickup';
           estimated_prep_time: number | null;
           estimated_ready_time: string | null;
           confirmed_at: string | null;
@@ -634,6 +643,9 @@ export type Database = {
           total: number;
           notes?: string | null;
           deliveryAddress?: string | null;
+          delivery_latitude?: number | null;
+          delivery_longitude?: number | null;
+          fulfillment_type?: 'delivery' | 'pickup';
           estimated_prep_time?: number | null;
           estimated_ready_time?: string | null;
           confirmed_at?: string | null;
@@ -649,6 +661,9 @@ export type Database = {
           total?: number;
           notes?: string | null;
           deliveryAddress?: string | null;
+          delivery_latitude?: number | null;
+          delivery_longitude?: number | null;
+          fulfillment_type?: 'delivery' | 'pickup';
           estimated_prep_time?: number | null;
           estimated_ready_time?: string | null;
           confirmed_at?: string | null;
@@ -933,6 +948,8 @@ export type Database = {
           total_reviews: number;
           is_partner: boolean;
           sales_count: number;
+          latitude: number | null;
+          longitude: number | null;
           location: string | null;
           created_at: string;
           updated_at: string;
@@ -948,6 +965,8 @@ export type Database = {
           image_url?: string | null;
           average_prep_time?: number;
           is_active?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
           location?: string | null;
           rating?: number | null;
           total_reviews?: number;
@@ -967,6 +986,8 @@ export type Database = {
           image_url?: string | null;
           average_prep_time?: number;
           is_active?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
           location?: string | null;
           rating?: number | null;
           total_reviews?: number;
@@ -1191,6 +1212,18 @@ export type Database = {
         };
         Returns: string;
       };
+      get_driver_orders: {
+        Args: { p_include_history?: boolean };
+        Returns: DriverOrderRpcRow[];
+      };
+      get_driver_order_detail: {
+        Args: { p_order_id: string };
+        Returns: DriverOrderRpcRow[];
+      };
+      driver_claim_order: {
+        Args: { p_order_id: string };
+        Returns: Database['public']['Tables']['orders']['Row'];
+      };
     };
     Enums: {
       roles_name_enum: 'client' | 'driver' | 'restaurant_owner' | 'admin';
@@ -1244,6 +1277,34 @@ export type RoleName = Enums<'roles_name_enum'>;
 
 export type User = Tables<'users'>;
 export type Address = Tables<'addresses'>;
+
+export interface DriverOrderRpcRow {
+  id: string;
+  status: Database['public']['Enums']['orders_status_enum'];
+  total: number;
+  notes: string | null;
+  deliveryAddress: string | null;
+  delivery_latitude: number | null;
+  delivery_longitude: number | null;
+  fulfillment_type: 'delivery' | 'pickup';
+  estimated_prep_time: number | null;
+  estimated_ready_time: string | null;
+  confirmed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  client_id: string | null;
+  driver_id: string | null;
+  restaurant_id: string | null;
+  client_name: string | null;
+  client_phone: string | null;
+  restaurant_name: string | null;
+  restaurant_address: string | null;
+  restaurant_phone: string | null;
+  restaurant_city: string | null;
+  restaurant_latitude: number | null;
+  restaurant_longitude: number | null;
+  delivery_type: string | null;
+}
 
 export type Restaurant = Tables<'restaurants'>;
 export type RestaurantCategory = Tables<'restaurant_categories'>;

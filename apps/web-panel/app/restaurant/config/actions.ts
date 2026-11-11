@@ -225,18 +225,20 @@ export async function addDriver(formData: FormData) {
   const access = await authorizeRestaurantOwner(restaurantId);
   if (!access) return { error: 'No autorizado para este restaurante' };
 
-  const { data: user, error: userError } = await access.supabase
+  const supabase = createServiceClient();
+  const normalized = contact.trim();
+  const { data: user, error: userError } = await supabase
     .from('users')
     .select('id, email, phone')
-    .or(`email.eq.${contact.trim()},phone.eq.${contact.trim()}`)
+    .or(`email.eq.${normalized},phone.eq.${normalized}`)
     .eq('role_id', 2)
-    .single();
+    .maybeSingle();
 
   if (userError || !user) {
-    return { error: 'No se encontró un repartidor con ese email/teléfono' };
+    return { error: 'No se encontró un repartidor activo con ese email o teléfono' };
   }
 
-  const { error } = await access.supabase
+  const { error } = await supabase
     .from('restaurant_drivers')
     .insert({ restaurant_id: access.restaurantId, driver_id: user.id, is_active: true });
 
