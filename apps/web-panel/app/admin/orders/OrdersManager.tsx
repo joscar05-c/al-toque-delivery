@@ -2,14 +2,18 @@
 
 import { useState, useMemo } from 'react';
 import OrderRow from './OrderRow';
-import OrderDetailModal, { OrderDetailItem } from './OrderDetailModal';
-import { Search, ShoppingBag, Inbox, Clock, CheckCircle, XCircle } from 'lucide-react';
+import OrderDetailModal, {
+  type AdminDriverOption,
+  OrderDetailItem,
+} from './OrderDetailModal';
+import { Search, ShoppingBag } from 'lucide-react';
 
 interface OrdersManagerProps {
   orders: OrderDetailItem[];
+  availableDrivers: AdminDriverOption[];
 }
 
-export default function OrdersManager({ orders }: OrdersManagerProps) {
+export default function OrdersManager({ orders, availableDrivers }: OrdersManagerProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusTab, setStatusTab] = useState<'all' | 'active' | 'delivered' | 'cancelled'>('all');
   const [cityFilter, setCityFilter] = useState('all');
@@ -228,6 +232,7 @@ export default function OrdersManager({ orders }: OrdersManagerProps) {
       {selectedOrder && (
         <OrderDetailModal
           order={selectedOrder}
+          availableDrivers={availableDrivers}
           onClose={() => setSelectedOrder(null)}
         />
       )}

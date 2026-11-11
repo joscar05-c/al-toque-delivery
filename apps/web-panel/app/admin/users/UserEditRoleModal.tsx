@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { updateUserRole } from './actions';
-import { X, User, AlertCircle, Shield } from 'lucide-react';
+import { X, AlertCircle, Shield } from 'lucide-react';
 
 export interface UserItem {
   id: string;
@@ -30,6 +30,7 @@ const ROLES = [
 
 export default function UserEditRoleModal({ user, onClose }: UserEditRoleModalProps) {
   const [selectedRoleId, setSelectedRoleId] = useState<number>(user.role_id || 1);
+  const [driverType, setDriverType] = useState<'platform' | 'restaurant_own'>('platform');
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +39,7 @@ export default function UserEditRoleModal({ user, onClose }: UserEditRoleModalPr
     setError(null);
 
     startTransition(async () => {
-      const result = await updateUserRole(user.id, selectedRoleId);
+      const result = await updateUserRole(user.id, selectedRoleId, driverType);
       if (result.error) {
         setError(result.error);
       } else {
@@ -108,6 +109,59 @@ export default function UserEditRoleModal({ user, onClose }: UserEditRoleModalPr
               </label>
             ))}
           </div>
+
+          {selectedRoleId === 2 && (
+            <div className="p-3 rounded-lg border border-blue-200 bg-blue-50/50 space-y-2">
+              <p className="text-xs font-semibold text-blue-900">
+                Modalidad del Repartidor
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label
+                  className={`flex items-start gap-2 p-2.5 rounded-lg border cursor-pointer text-xs ${
+                    driverType === 'platform'
+                      ? 'border-blue-500 bg-white shadow-xs'
+                      : 'border-blue-100 bg-white/60'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="driverType"
+                    value="platform"
+                    checked={driverType === 'platform'}
+                    onChange={() => setDriverType('platform')}
+                    disabled={isPending}
+                    className="mt-0.5"
+                  />
+                  <div>
+                    <div className="font-bold text-gray-900">⚡ Red Al Toque</div>
+                    <div className="text-[11px] text-gray-500">Solo pedidos de plataforma.</div>
+                  </div>
+                </label>
+
+                <label
+                  className={`flex items-start gap-2 p-2.5 rounded-lg border cursor-pointer text-xs ${
+                    driverType === 'restaurant_own'
+                      ? 'border-amber-500 bg-white shadow-xs'
+                      : 'border-blue-100 bg-white/60'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="driverType"
+                    value="restaurant_own"
+                    checked={driverType === 'restaurant_own'}
+                    onChange={() => setDriverType('restaurant_own')}
+                    disabled={isPending}
+                    className="mt-0.5"
+                  />
+                  <div>
+                    <div className="font-bold text-gray-900">🛵 Flota Propia</div>
+                    <div className="text-[11px] text-gray-500">Vinculable por restaurantes.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div

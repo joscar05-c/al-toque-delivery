@@ -1,8 +1,16 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { cancelOrder, updateOrderStatus } from './actions';
+import { assignOrderDriver, cancelOrder, updateOrderStatus } from './actions';
 import { X, ShoppingBag, Store, User, Truck, AlertCircle, ExternalLink } from 'lucide-react';
+
+export interface AdminDriverOption {
+  id: string;
+  name: string;
+  phone: string | null;
+  driver_type_code: 'platform' | 'restaurant_own';
+  linked_restaurant_ids: string[];
+}
 
 export interface OrderDetailItem {
   id: string;
@@ -10,6 +18,8 @@ export interface OrderDetailItem {
   total: number;
   notes: string | null;
   deliveryAddress: string | null;
+  fulfillment_type?: 'delivery' | 'pickup';
+  delivery_type?: 'platform' | 'restaurant_own' | 'pickup_only';
   created_at: string;
   updated_at: string;
   client_id: string | null;
@@ -18,7 +28,7 @@ export interface OrderDetailItem {
   restaurant?: {
     id: string;
     name: string;
-    city: string;
+    city: string | null;
     phone: string;
     address: string;
   } | null;
@@ -48,7 +58,7 @@ export interface OrderDetailItem {
     quantity: number;
     unit_price: number;
     comment: string | null;
-    options: any;
+    options: unknown;
     menu_items?: {
       name: string;
     } | null;
@@ -57,6 +67,7 @@ export interface OrderDetailItem {
 
 interface OrderDetailModalProps {
   order: OrderDetailItem;
+  availableDrivers: AdminDriverOption[];
   onClose: () => void;
 }
 
@@ -70,7 +81,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
   cancelled: { label: 'Cancelado', color: '#DC2626', bg: 'rgba(220, 38, 38, 0.1)' },
 };
 
-export default function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
+export default function OrderDetailModal({ order, availableDrivers, onClose }: OrderDetailModalProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [showCancelPrompt, setShowCancelPrompt] = useState(false);
@@ -78,6 +89,17 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
 
   const statusConfig = STATUS_LABELS[order.status] || STATUS_LABELS.pending;
   const payment = order.order_payments?.[0];
+  const isDeliveryOrder =
+    order.fulfillment_type !== 'pickup' && !order.deliveryAddress?.startsWith('Recojo en Tienda');
+  const compatibleDrivers = availableDrivers.filter((d) => {
+    if (order.delivery_type === 'restaurant_own') {
+      return (
+        d.driver_type_code === 'restaurant_own' &&
+        Boolean(order.restaurant_id && d.linked_restaurant_ids.includes(order.restaurant_id))
+      );
+    }
+    return d.driver_type_code === 'platform';
+  });
 
   function handleCancelSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -104,6 +126,18 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
     setError(null);
     startTransition(async () => {
       const result = await updateOrderStatus(order.id, newStatus);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        onClose();
+      }
+    });
+  }
+
+  function handleDriverAssign(nextDriverId: string) {
+    setError(null);
+    startTransition(async () => {
+      const result = await assignOrderDriver(order.id, nextDriverId || null);
       if (result.error) {
         setError(result.error);
       } else {
@@ -193,9 +227,18 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
 
             {/* Driver */}
             <div className="p-3 rounded-lg border bg-gray-50/50">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 mb-1">
-                <Truck style={{ width: '13px', height: '13px', color: '#059669' }} />
-                <span>Repartidor</span>
+              <div className="flex items-center justify-between gap-1 text-xs font-semibold text-gray-700 mb-1">
+                <span className="flex items-center gap-1.5">
+                  <Truck style={{ width: '13px', height: '13px', color: '#059669' }} />
+                  <span>Repartidor</span>
+                </span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+                  {order.delivery_type === 'restaurant_own'
+                    ? 'Flota Propia'
+                    : order.delivery_type === 'pickup_only'
+                      ? 'Recojo'
+                      : 'Red Al Toque'}
+                </span>
               </div>
               {order.driver ? (
                 <>
@@ -204,6 +247,24 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                 </>
               ) : (
                 <p className="text-xs text-gray-400 mt-1 italic">Sin repartidor asignado</p>
+              )}
+
+              {isDeliveryOrder && order.status !== 'delivered' && order.status !== 'cancelled' && (
+                <div className="mt-2">
+                  <select
+                    value={order.driver_id ?? ''}
+                    onChange={(e) => handleDriverAssign(e.target.value)}
+                    disabled={isPending}
+                    className="panel-input text-[11px] py-1"
+                  >
+                    <option value="">-- Sin asignar --</option>
+                    {compatibleDrivers.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} {d.phone ? `(${d.phone})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
             </div>
           </div>

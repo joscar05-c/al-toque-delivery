@@ -3,59 +3,31 @@
 import { revalidatePath } from 'next/cache';
 import { authorizePanelRole, PANEL_ROLE_IDS } from '@/utils/firebase/authorization';
 
-export async function approveDriverApplication(applicationId: string) {
+export async function approveDriverApplication(
+  applicationId: string,
+  driverType: 'platform' | 'restaurant_own' = 'platform',
+) {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) return { error: 'No autorizado' };
 
-  // Fetch application to get user_id
-  const { data: application, error: fetchError } = await access.supabase
-    .from('driver_applications')
-    .select('id, user_id, status')
-    .eq('id', applicationId)
-    .single();
-
-  if (fetchError || !application) {
-    return { error: 'Solicitud no encontrada.' };
+  if (driverType !== 'platform' && driverType !== 'restaurant_own') {
+    return { error: 'Tipo de repartidor no válido.' };
   }
 
-  if (application.status === 'approved') {
-    return { error: 'La solicitud ya fue aprobada previamente.' };
-  }
+  const { error } = await access.supabase.rpc('admin_approve_driver_application', {
+    p_application_id: applicationId,
+    p_driver_type_code: driverType,
+  });
 
-  // Update application status
-  const { error: updateAppError } = await access.supabase
-    .from('driver_applications')
-    .update({
-      status: 'approved',
-      reviewed_by: access.user.id,
-      reviewed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', applicationId);
-
-  if (updateAppError) {
-    console.error('[approveDriverApplication] Error actualizando solicitud:', updateAppError);
-    return { error: updateAppError.message || 'Error al aprobar solicitud.' };
-  }
-
-  // Promote user to Driver role (role_id = 2)
-  const { error: updateUserError } = await access.supabase
-    .from('users')
-    .update({
-      role_id: 2, // Driver
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', application.user_id);
-
-  if (updateUserError) {
-    console.error('[approveDriverApplication] Error promoviendo rol de usuario:', updateUserError);
-    // Notice: Application is marked approved, but role failed to update. Inform admin.
-    return { error: 'Solicitud aprobada, pero hubo un error al asignar el rol de repartidor al usuario.' };
+  if (error) {
+    console.error('[approveDriverApplication] Error en RPC:', error);
+    return { error: error.message || 'Error al aprobar solicitud de repartidor.' };
   }
 
   revalidatePath('/admin/drivers/applications');
   revalidatePath('/admin/drivers');
   revalidatePath('/admin/users');
+  revalidatePath('/restaurant/config');
   return { success: true };
 }
 

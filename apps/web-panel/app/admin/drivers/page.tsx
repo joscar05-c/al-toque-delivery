@@ -9,13 +9,20 @@ export default async function AdminDriversPage() {
   const access = await authorizePanelRole(PANEL_ROLE_IDS.admin);
   if (!access) redirect('/dashboard-redirect');
 
-  // Query drivers (users with role_id = 2) and count of pending applications in parallel
-  const [driversResult, locationsResult, applicationsCountResult] = await Promise.all([
+  // Query drivers (users with role_id = 2), profiles, restaurant links, locations and pending count
+  const [driversResult, profilesResult, linksResult, locationsResult, applicationsCountResult] = await Promise.all([
     access.supabase
       .from('users')
       .select('id, name, email, phone, phone_verified, is_active, created_at')
       .eq('role_id', 2)
       .order('created_at', { ascending: false }),
+    access.supabase
+      .from('driver_profiles')
+      .select('user_id, driver_type_code, vehicle_type, vehicle_plate'),
+    access.supabase
+      .from('restaurant_drivers')
+      .select('driver_id, is_active, restaurant:restaurants(id, name)')
+      .eq('is_active', true),
     access.supabase
       .from('driver_locations')
       .select('driver_id, latitude, longitude, speed, heading, isActive, updated_at')
@@ -36,8 +43,22 @@ export default async function AdminDriversPage() {
     );
   }
 
-  // Map locations by driver_id (taking the latest location)
-  const locationMap = new Map<string, any>();
+  // Map profiles, restaurant links and locations by driver_id
+  const profileMap = new Map(
+    (profilesResult.data ?? []).map((p) => [p.user_id, p]),
+  );
+
+  const linkedRestMap = new Map<string, string[]>();
+  for (const link of linksResult.data ?? []) {
+    const restObj = Array.isArray(link.restaurant) ? link.restaurant[0] : link.restaurant;
+    const restName = (restObj as { name?: string } | null)?.name;
+    if (!restName) continue;
+    const list = linkedRestMap.get(link.driver_id) ?? [];
+    list.push(restName);
+    linkedRestMap.set(link.driver_id, list);
+  }
+
+  const locationMap = new Map<string, DriverItem['location']>();
   if (locationsResult.data) {
     for (const loc of locationsResult.data) {
       if (!locationMap.has(loc.driver_id)) {
@@ -47,10 +68,18 @@ export default async function AdminDriversPage() {
   }
 
   const rawDrivers = driversResult.data ?? [];
-  const drivers: DriverItem[] = rawDrivers.map((u) => ({
-    ...u,
-    location: locationMap.get(u.id) || null,
-  }));
+  const drivers: DriverItem[] = rawDrivers.map((u) => {
+    const profile = profileMap.get(u.id);
+    return {
+      ...u,
+      driver_type_code:
+        profile?.driver_type_code === 'restaurant_own' ? 'restaurant_own' : 'platform',
+      vehicle_type: profile?.vehicle_type ?? null,
+      vehicle_plate: profile?.vehicle_plate ?? null,
+      linked_restaurants: linkedRestMap.get(u.id) ?? [],
+      location: locationMap.get(u.id) || null,
+    };
+  });
 
   const pendingCount = applicationsCountResult.count ?? 0;
 

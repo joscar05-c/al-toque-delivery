@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import type {
   DriverOrderRpcRow,
+  DriverTypeCode,
   Order,
   Restaurant,
   User,
@@ -17,6 +18,8 @@ export type DriverOrder = Order & {
 
 export interface DriverOrdersResult {
   assigned: boolean;
+  driverType: DriverTypeCode;
+  linkedRestaurantsCount: number;
   orders: DriverOrder[];
 }
 
@@ -59,14 +62,20 @@ function mapDriverOrderRow(row: DriverOrderRpcRow): DriverOrder {
 
 /**
  * Pedidos activos (o historial) visibles para el repartidor vía RPC segura:
- * incluye locales vinculados en `restaurant_drivers` y locales con `delivery_type = 'platform'`.
+ * - Si `driverType === 'platform'`: locales con `delivery_type = 'platform'` activos.
+ * - Si `driverType === 'restaurant_own'`: locales vinculados en `restaurant_drivers` con `delivery_type = 'restaurant_own'`.
  */
 export async function fetchDriverOrders(
   driverId: string,
   includeHistory = false,
 ): Promise<DriverOrdersResult> {
-  const [rpcRes, assignmentsRes, platformRes] = await Promise.all([
+  const [rpcRes, profileRes, assignmentsRes, platformRes] = await Promise.all([
     supabase.rpc('get_driver_orders', { p_include_history: includeHistory }),
+    supabase
+      .from('driver_profiles')
+      .select('driver_type_code')
+      .eq('user_id', driverId)
+      .maybeSingle(),
     supabase
       .from('restaurant_drivers')
       .select('restaurant_id')
@@ -82,12 +91,21 @@ export async function fetchDriverOrders(
 
   if (rpcRes.error) throw rpcRes.error;
 
+  const driverType: DriverTypeCode =
+    profileRes.data?.driver_type_code === 'restaurant_own'
+      ? 'restaurant_own'
+      : 'platform';
+  const linkedRestaurantsCount = assignmentsRes.data?.length ?? 0;
+
   const hasPoolAccess =
-    (assignmentsRes.data?.length ?? 0) > 0 ||
-    (platformRes.data?.length ?? 0) > 0;
+    driverType === 'platform'
+      ? (platformRes.data?.length ?? 0) > 0
+      : linkedRestaurantsCount > 0;
 
   return {
     assigned: hasPoolAccess || (rpcRes.data?.length ?? 0) > 0,
+    driverType,
+    linkedRestaurantsCount,
     orders: (rpcRes.data ?? []).map(mapDriverOrderRow),
   };
 }

@@ -229,28 +229,67 @@ export async function addDriver(formData: FormData) {
   const normalized = contact.trim();
   const { data: user, error: userError } = await supabase
     .from('users')
-    .select('id, email, phone')
+    .select('id, email, phone, role_id, is_active')
     .or(`email.eq.${normalized},phone.eq.${normalized}`)
-    .eq('role_id', 2)
     .maybeSingle();
 
   if (userError || !user) {
-    return { error: 'No se encontró un repartidor activo con ese email o teléfono' };
+    return { error: 'No se encontró una cuenta registrada con ese email o teléfono' };
   }
 
-  const { error } = await supabase
-    .from('restaurant_drivers')
-    .insert({ restaurant_id: access.restaurantId, driver_id: user.id, is_active: true });
+  if (user.role_id !== 2 || !user.is_active) {
+    return { error: 'El usuario debe ser aprobado y estar activo como repartidor por Administración antes de vincularlo' };
+  }
 
-  if (error) {
-    console.error('Error adding driver:', error);
-    if (error.code === '23505') {
+  const { data: driverProfile } = await supabase
+    .from('driver_profiles')
+    .select('driver_type_code')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (!driverProfile || driverProfile.driver_type_code !== 'restaurant_own') {
+    return {
+      error:
+        'Este repartidor pertenece a Red Al Toque (Plataforma). Administración debe aprobarlo con modalidad Flota Propia para poder vincularlo.',
+    };
+  }
+
+  const { data: existingLink } = await supabase
+    .from('restaurant_drivers')
+    .select('id, is_active')
+    .eq('restaurant_id', access.restaurantId)
+    .eq('driver_id', user.id)
+    .maybeSingle();
+
+  if (existingLink) {
+    if (existingLink.is_active) {
       return { error: 'Este repartidor ya está vinculado a tu restaurante' };
     }
-    return { error: 'Error al vincular el repartidor' };
+    const { error: reactivateError } = await supabase
+      .from('restaurant_drivers')
+      .update({ is_active: true, updated_at: new Date().toISOString() })
+      .eq('id', existingLink.id);
+    if (reactivateError) {
+      console.error('Error reactivating driver:', reactivateError);
+      return { error: reactivateError.message || 'Error al reactivar el repartidor' };
+    }
+  } else {
+    const { error } = await supabase
+      .from('restaurant_drivers')
+      .insert({ restaurant_id: access.restaurantId, driver_id: user.id, is_active: true });
+
+    if (error) {
+      console.error('Error adding driver:', error);
+      if (error.code === '23505') {
+        return { error: 'Este repartidor ya está vinculado a tu restaurante' };
+      }
+      return { error: error.message || 'Error al vincular el repartidor' };
+    }
   }
 
   revalidatePath('/restaurant/config');
+  revalidatePath('/restaurant/orders');
+  revalidatePath('/admin/drivers');
   return { success: true };
 }
 

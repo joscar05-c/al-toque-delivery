@@ -165,6 +165,7 @@ export type Database = {
           license_back_photo: string | null;
           vehicle_photo: string | null;
           status: Database['public']['Enums']['driver_applications_status_enum'];
+          requested_driver_type: 'platform' | 'restaurant_own';
           rejection_reason: string | null;
           reviewed_by: string | null;
           reviewed_at: string | null;
@@ -193,6 +194,7 @@ export type Database = {
           license_back_photo?: string | null;
           vehicle_photo?: string | null;
           status?: Database['public']['Enums']['driver_applications_status_enum'];
+          requested_driver_type?: 'platform' | 'restaurant_own';
           rejection_reason?: string | null;
           reviewed_by?: string | null;
           reviewed_at?: string | null;
@@ -221,6 +223,7 @@ export type Database = {
           license_back_photo?: string | null;
           vehicle_photo?: string | null;
           status?: Database['public']['Enums']['driver_applications_status_enum'];
+          requested_driver_type?: 'platform' | 'restaurant_own';
           rejection_reason?: string | null;
           reviewed_by?: string | null;
           reviewed_at?: string | null;
@@ -241,6 +244,87 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'users';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      driver_types: {
+        Row: {
+          code: 'platform' | 'restaurant_own';
+          name: string;
+          description: string | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          code: 'platform' | 'restaurant_own';
+          name: string;
+          description?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          code?: 'platform' | 'restaurant_own';
+          name?: string;
+          description?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      driver_profiles: {
+        Row: {
+          user_id: string;
+          driver_type_code: 'platform' | 'restaurant_own';
+          vehicle_type: Database['public']['Enums']['driver_applications_vehicle_type_enum'] | null;
+          vehicle_plate: string | null;
+          vehicle_brand: string | null;
+          vehicle_model: string | null;
+          license_number: string | null;
+          approved_by: string | null;
+          approved_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          driver_type_code?: 'platform' | 'restaurant_own';
+          vehicle_type?: Database['public']['Enums']['driver_applications_vehicle_type_enum'] | null;
+          vehicle_plate?: string | null;
+          vehicle_brand?: string | null;
+          vehicle_model?: string | null;
+          license_number?: string | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          driver_type_code?: 'platform' | 'restaurant_own';
+          vehicle_type?: Database['public']['Enums']['driver_applications_vehicle_type_enum'] | null;
+          vehicle_plate?: string | null;
+          vehicle_brand?: string | null;
+          vehicle_model?: string | null;
+          license_number?: string | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'driver_profiles_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'driver_profiles_driver_type_code_fkey';
+            columns: ['driver_type_code'];
+            isOneToOne: false;
+            referencedRelation: 'driver_types';
+            referencedColumns: ['code'];
           },
         ];
       };
@@ -1224,6 +1308,17 @@ export type Database = {
         Args: { p_order_id: string };
         Returns: Database['public']['Tables']['orders']['Row'];
       };
+      auto_assign_restaurant_driver: {
+        Args: { p_order_id: string };
+        Returns: string | null;
+      };
+      admin_approve_driver_application: {
+        Args: {
+          p_application_id: string;
+          p_driver_type_code?: string | null;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       roles_name_enum: 'client' | 'driver' | 'restaurant_owner' | 'admin';
@@ -1321,6 +1416,9 @@ export type OrderItem = Tables<'order_items'>;
 export type OrderPayment = Tables<'order_payments'>;
 export type OrderStatus = Enums<'orders_status_enum'>;
 
+export type DriverTypeCode = 'platform' | 'restaurant_own';
+export type DriverType = Tables<'driver_types'>;
+export type DriverProfile = Tables<'driver_profiles'>;
 export type DriverLocation = Tables<'driver_locations'>;
 export type DriverApplication = Tables<'driver_applications'>;
 

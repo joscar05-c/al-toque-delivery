@@ -161,7 +161,7 @@ export default function DriverOrderDetailScreen() {
 
   const action: { label: string; actionType: 'claim' | OrderStatus } | null = isUnclaimed
     ? {
-      label: order.status === 'pending' ? 'Aceptar Pedido' : 'Tomar este Pedido',
+      label: 'Tomar este Pedido',
       actionType: 'claim',
     }
     : order.driver_id === driverId && order.status === 'ready'
@@ -243,7 +243,7 @@ export default function DriverOrderDetailScreen() {
                 </Text>
                 {Array.isArray(item.options) && item.options.length > 0 && (
                   <Text className="text-xs text-slate-400 mt-0.5">
-                    {(item.options as Array<{ optionName: string }>).map((o) => o.optionName).join(', ')}
+                    {(item.options as { optionName: string }[]).map((o) => o.optionName).join(', ')}
                   </Text>
                 )}
               </View>

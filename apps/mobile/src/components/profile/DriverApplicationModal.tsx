@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -40,53 +40,63 @@ const VEHICLE_OPTIONS: { type: VehicleType; label: string; icon: string }[] = [
 export function DriverApplicationModal({
   visible,
   onClose,
+  application,
+  ...rest
+}: DriverApplicationModalProps) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      {visible ? (
+        <DriverApplicationModalBody
+          key={`${application?.id ?? 'new'}-${application?.updated_at ?? ''}`}
+          onClose={onClose}
+          application={application}
+          {...rest}
+        />
+      ) : null}
+    </Modal>
+  );
+}
+
+function DriverApplicationModalBody({
+  onClose,
   userId,
   initialFullName,
   initialPhone,
   initialEmail,
   application,
   onApplicationUpdated,
-}: DriverApplicationModalProps) {
-  const [isEditing, setIsEditing] = useState(false);
+}: Omit<DriverApplicationModalProps, 'visible'>) {
+  const [isEditing, setIsEditing] = useState(!application);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Campos del formulario
-  const [fullName, setFullName] = useState(initialFullName);
-  const [phone, setPhone] = useState(initialPhone);
-  const [email, setEmail] = useState(initialEmail ?? '');
-  const [dni, setDni] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [vehicleType, setVehicleType] = useState<VehicleType>('motorcycle');
-  const [licenseNumber, setLicenseNumber] = useState('');
-  const [vehiclePlate, setVehiclePlate] = useState('');
-  const [vehicleBrand, setVehicleBrand] = useState('');
-  const [emergencyName, setEmergencyName] = useState('');
-  const [emergencyPhone, setEmergencyPhone] = useState('');
-
-  // Sincronizar con solicitud previa si existe
-  useEffect(() => {
-    if (application) {
-      setFullName(application.full_name || initialFullName);
-      setPhone(application.phone || initialPhone);
-      setEmail(application.email || initialEmail || '');
-      setDni(application.dni || '');
-      setBirthDate(application.birth_date || '');
-      setVehicleType(application.vehicle_type || 'motorcycle');
-      setLicenseNumber(application.license_number || '');
-      setVehiclePlate(application.vehicle_plate || '');
-      setVehicleBrand(application.vehicle_brand || '');
-      setEmergencyName(application.emergency_contact_name || '');
-      setEmergencyPhone(application.emergency_contact_phone || '');
-      setIsEditing(false);
-    } else {
-      setFullName(initialFullName);
-      setPhone(initialPhone);
-      setEmail(initialEmail ?? '');
-      setIsEditing(true);
-    }
-    setError(null);
-  }, [application, initialFullName, initialPhone, initialEmail, visible]);
+  // Campos del formulario inicializados desde la solicitud existente (si existe)
+  const [fullName, setFullName] = useState(application?.full_name || initialFullName);
+  const [phone, setPhone] = useState(application?.phone || initialPhone);
+  const [email, setEmail] = useState(application?.email || initialEmail || '');
+  const [dni, setDni] = useState(application?.dni || '');
+  const [birthDate, setBirthDate] = useState(application?.birth_date || '');
+  const [vehicleType, setVehicleType] = useState<VehicleType>(
+    application?.vehicle_type || 'motorcycle',
+  );
+  const [requestedDriverType, setRequestedDriverType] = useState<'platform' | 'restaurant_own'>(
+    application?.requested_driver_type === 'restaurant_own' ? 'restaurant_own' : 'platform',
+  );
+  const [licenseNumber, setLicenseNumber] = useState(application?.license_number || '');
+  const [vehiclePlate, setVehiclePlate] = useState(application?.vehicle_plate || '');
+  const [vehicleBrand, setVehicleBrand] = useState(application?.vehicle_brand || '');
+  const [emergencyName, setEmergencyName] = useState(
+    application?.emergency_contact_name || '',
+  );
+  const [emergencyPhone, setEmergencyPhone] = useState(
+    application?.emergency_contact_phone || '',
+  );
 
   const handleSubmit = async () => {
     setError(null);
@@ -119,6 +129,7 @@ export function DriverApplicationModal({
         dni: dni.trim(),
         birthDate: birthDate.trim(),
         vehicleType,
+        requestedDriverType,
         fullName: fullName.trim(),
         phone: phone.trim(),
         email: email.trim() || null,
@@ -263,13 +274,6 @@ export function DriverApplicationModal({
   const bottomInset = useKeyboardBottomInset();
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={onClose}
-    >
       <View
         style={{
           flex: 1,
@@ -399,6 +403,53 @@ export function DriverApplicationModal({
                       autoCapitalize="none"
                       className="rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-[#1C2433]"
                     />
+                  </View>
+                </View>
+
+                {/* Selector de Modalidad */}
+                <View className="gap-1.5 pt-1">
+                  <Text className="text-xs font-semibold text-[#1C2433]">
+                    Modalidad de Repartidor *
+                  </Text>
+                  <View className="flex-row gap-2">
+                    <Pressable
+                      onPress={() => setRequestedDriverType('platform')}
+                      className={`flex-1 rounded-2xl p-3 border ${
+                        requestedDriverType === 'platform'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-slate-200 bg-slate-50'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-bold ${
+                          requestedDriverType === 'platform' ? 'text-primary' : 'text-[#1C2433]'
+                        }`}
+                      >
+                        ⚡ Red Al Toque
+                      </Text>
+                      <Text className="text-[11px] text-slate-500 mt-0.5">
+                        Repartidor de plataforma
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setRequestedDriverType('restaurant_own')}
+                      className={`flex-1 rounded-2xl p-3 border ${
+                        requestedDriverType === 'restaurant_own'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-slate-200 bg-slate-50'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-bold ${
+                          requestedDriverType === 'restaurant_own' ? 'text-primary' : 'text-[#1C2433]'
+                        }`}
+                      >
+                        🛵 Flota Propia
+                      </Text>
+                      <Text className="text-[11px] text-slate-500 mt-0.5">
+                        Para local específico
+                      </Text>
+                    </Pressable>
                   </View>
                 </View>
 
@@ -540,6 +591,5 @@ export function DriverApplicationModal({
           </ScrollView>
         </View>
       </View>
-    </Modal>
   );
 }

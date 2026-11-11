@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { approveDriverApplication } from './actions';
-import { Check, X, Eye, Phone, Truck } from 'lucide-react';
+import { Check, X, Eye, Phone } from 'lucide-react';
 
 export interface DriverApplicationItem {
   id: string;
@@ -26,6 +26,7 @@ export interface DriverApplicationItem {
   license_back_photo: string | null;
   vehicle_photo: string | null;
   status: 'draft' | 'pending' | 'approved' | 'rejected';
+  requested_driver_type?: 'platform' | 'restaurant_own';
   rejection_reason: string | null;
   reviewed_by: string | null;
   reviewed_at: string | null;
@@ -44,22 +45,34 @@ export default function DriverApplicationRow({
   onReject,
 }: DriverApplicationRowProps) {
   const [isPending, startTransition] = useTransition();
+  const [selectedDriverType, setSelectedDriverType] = useState<'platform' | 'restaurant_own'>(
+    application.requested_driver_type === 'restaurant_own' ? 'restaurant_own' : 'platform',
+  );
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   function handleApprove() {
-    if (!confirm(`¿Aprobar al postulante "${application.full_name || application.dni}" como Repartidor Oficial?`)) {
+    const typeLabel =
+      selectedDriverType === 'platform'
+        ? 'Red Al Toque (Plataforma)'
+        : 'Flota Propia de Restaurante';
+
+    if (
+      !confirm(
+        `¿Aprobar a "${application.full_name || application.dni}" como repartidor en modalidad "${typeLabel}"?`,
+      )
+    ) {
       return;
     }
 
     setError(null);
     setSuccess(null);
     startTransition(async () => {
-      const result = await approveDriverApplication(application.id);
+      const result = await approveDriverApplication(application.id, selectedDriverType);
       if (result.error) {
         setError(result.error);
       } else {
-        setSuccess('¡Postulante aprobado y rol de repartidor asignado!');
+        setSuccess(`¡Postulante aprobado como ${typeLabel}!`);
       }
     });
   }
@@ -183,13 +196,27 @@ export default function DriverApplicationRow({
 
           {application.status === 'pending' && (
             <>
+              <select
+                value={selectedDriverType}
+                onChange={(e) =>
+                  setSelectedDriverType(e.target.value as 'platform' | 'restaurant_own')
+                }
+                disabled={isPending}
+                className="panel-input text-xs py-1"
+                style={{ width: 'auto' }}
+                title="Modalidad del repartidor al aprobar"
+              >
+                <option value="platform">⚡ Red Al Toque</option>
+                <option value="restaurant_own">🛵 Flota Propia</option>
+              </select>
+
               <button
                 type="button"
                 onClick={handleApprove}
                 disabled={isPending}
                 className="panel-btn-primary"
                 style={{ background: 'var(--success)', padding: '6px 12px', fontSize: '12px' }}
-                title="Aprobar y asignar rol Driver"
+                title="Aprobar y crear perfil de repartidor"
               >
                 <Check style={{ width: '13px', height: '13px' }} />
                 <span>Aprobar</span>

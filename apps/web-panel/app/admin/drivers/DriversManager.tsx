@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import DriverRow, { DriverItem } from './DriverRow';
-import { Search, Truck, MapPin, FileText, Inbox } from 'lucide-react';
+import { Search, Truck, FileText } from 'lucide-react';
 
 interface DriversManagerProps {
   drivers: DriverItem[];
@@ -15,12 +15,14 @@ export default function DriversManager({
   pendingApplicationsCount,
 }: DriversManagerProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState<'all' | 'active' | 'suspended' | 'online'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'suspended' | 'online' | 'platform' | 'restaurant_own'>('all');
 
   const counts = useMemo(() => {
     return {
       total: drivers.length,
       active: drivers.filter((d) => d.is_active).length,
+      platform: drivers.filter((d) => d.driver_type_code === 'platform').length,
+      restaurantOwn: drivers.filter((d) => d.driver_type_code === 'restaurant_own').length,
       suspended: drivers.filter((d) => !d.is_active).length,
       online: drivers.filter((d) => d.location && d.location.latitude && d.location.longitude).length,
     };
@@ -31,6 +33,8 @@ export default function DriversManager({
       if (filter === 'active' && !d.is_active) return false;
       if (filter === 'suspended' && d.is_active) return false;
       if (filter === 'online' && (!d.location || !d.location.latitude)) return false;
+      if (filter === 'platform' && d.driver_type_code !== 'platform') return false;
+      if (filter === 'restaurant_own' && d.driver_type_code !== 'restaurant_own') return false;
 
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
@@ -140,11 +144,13 @@ export default function DriversManager({
         <div className="flex items-center gap-2">
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
+            onChange={(e) => setFilter(e.target.value as typeof filter)}
             className="panel-input text-xs"
             style={{ width: 'auto' }}
           >
-            <option value="all">Todos los repartidores</option>
+            <option value="all">Todos ({counts.total})</option>
+            <option value="platform">⚡ Red Al Toque ({counts.platform})</option>
+            <option value="restaurant_own">🛵 Flota Propia ({counts.restaurantOwn})</option>
             <option value="active">Solo Habilitados</option>
             <option value="online">Solo con GPS Activo</option>
             <option value="suspended">Solo Suspendidos</option>
@@ -169,6 +175,7 @@ export default function DriversManager({
               <tr>
                 <th>Repartidor</th>
                 <th>Contacto</th>
+                <th>Modalidad</th>
                 <th>Ubicación GPS</th>
                 <th>Estado</th>
                 <th style={{ textAlign: 'right' }}>Acciones</th>
@@ -177,7 +184,7 @@ export default function DriversManager({
             <tbody>
               {filteredDrivers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: '64px 16px', textAlign: 'center', color: 'var(--ink-muted)' }}>
+                  <td colSpan={6} style={{ padding: '64px 16px', textAlign: 'center', color: 'var(--ink-muted)' }}>
                     <div className="flex flex-col items-center justify-center">
                       <Truck className="w-10 h-10 mb-2 opacity-40 text-gray-400" />
                       <p className="text-sm font-medium text-gray-600">

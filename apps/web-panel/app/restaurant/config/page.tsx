@@ -147,7 +147,7 @@ export default async function RestaurantConfigPage({ searchParams }: PageProps) 
             </span>
           </div>
           <p className="text-xs mb-4" style={{ color: 'var(--ink-secondary)' }}>
-            Vincula a los repartidores motorizados de tu negocio mediante su correo o teléfono registrado en Al Toque para despachar órdenes.
+            Vincula a los repartidores aprobados por Administración en modalidad <strong>Flota Propia</strong> usando su correo o teléfono. Los pedidos aceptados se auto-asignarán al repartidor libre (0 pedidos en curso).
           </p>
           <DriverForm restaurantId={restaurant.id} />
           <DriverList drivers={drivers ?? []} restaurantId={restaurant.id} />

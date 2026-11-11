@@ -77,6 +77,7 @@ export async function submitDriverApplication(
     dni: string;
     birthDate: string;
     vehicleType: VehicleType;
+    requestedDriverType?: 'platform' | 'restaurant_own';
     fullName: string;
     phone: string;
     email: string | null;
@@ -93,6 +94,7 @@ export async function submitDriverApplication(
     dni: input.dni.trim(),
     birth_date: input.birthDate.trim(),
     vehicle_type: input.vehicleType,
+    requested_driver_type: input.requestedDriverType ?? 'platform',
     full_name: input.fullName.trim(),
     phone: input.phone.trim(),
     email: input.email?.trim() || null,

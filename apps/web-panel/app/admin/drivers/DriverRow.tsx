@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { toggleDriverActive } from './actions';
+import { toggleDriverActive, updateDriverType } from './actions';
 import { Phone, MapPin, ExternalLink, Truck } from 'lucide-react';
 
 export interface DriverItem {
@@ -12,6 +12,10 @@ export interface DriverItem {
   phone_verified: boolean;
   is_active: boolean;
   created_at: string;
+  driver_type_code: 'platform' | 'restaurant_own';
+  vehicle_type: string | null;
+  vehicle_plate: string | null;
+  linked_restaurants: string[];
   location?: {
     latitude: number;
     longitude: number;
@@ -34,6 +38,15 @@ export default function DriverRow({ driver }: DriverRowProps) {
     setError(null);
     startTransition(async () => {
       const result = await toggleDriverActive(driver.id, driver.is_active);
+      if (result.error) setError(result.error);
+    });
+  }
+
+  function handleChangeDriverType(nextType: 'platform' | 'restaurant_own') {
+    if (nextType === driver.driver_type_code) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await updateDriverType(driver.id, nextType);
       if (result.error) setError(result.error);
     });
   }
@@ -73,6 +86,27 @@ export default function DriverRow({ driver }: DriverRowProps) {
         {driver.email && (
           <div className="text-[11px] text-gray-400 mt-0.5 truncate max-w-[160px]">
             {driver.email}
+          </div>
+        )}
+      </td>
+
+      {/* Modalidad */}
+      <td>
+        <select
+          value={driver.driver_type_code}
+          onChange={(e) => handleChangeDriverType(e.target.value as 'platform' | 'restaurant_own')}
+          disabled={isPending}
+          className="panel-input text-xs py-1"
+          style={{ width: 'auto' }}
+        >
+          <option value="platform">⚡ Red Al Toque</option>
+          <option value="restaurant_own">🛵 Flota Propia</option>
+        </select>
+        {driver.driver_type_code === 'restaurant_own' && (
+          <div className="text-[11px] text-gray-500 mt-1">
+            {driver.linked_restaurants.length > 0
+              ? `Vinculado: ${driver.linked_restaurants.join(', ')}`
+              : 'Sin restaurante vinculado aún'}
           </div>
         )}
       </td>

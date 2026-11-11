@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { updateOrderStatus } from './actions';
-import { Truck, ChefHat, Clock, CheckCircle, XCircle } from 'lucide-react';
+import {
+  assignRestaurantOrderDriver,
+  autoAssignRestaurantOrder,
+  updateOrderStatus,
+} from './actions';
+import { Truck, ChefHat, Clock, CheckCircle, XCircle, Sparkles, User } from 'lucide-react';
 
 interface OrderPaymentInfo {
   id: string;
@@ -15,14 +20,25 @@ interface OrderPaymentInfo {
   transaction_reference?: string | null;
 }
 
+export interface FleetDriverOption {
+  id: string;
+  name: string;
+  phone: string | null;
+  activeOrdersCount: number;
+}
+
 interface Order {
   id: string;
   status: 'pending' | 'accepted' | 'preparing' | 'ready' | 'picked_up' | 'delivered' | 'cancelled';
   total: number;
   notes: string | null;
   deliveryAddress: string | null;
+  fulfillment_type: 'delivery' | 'pickup';
+  driver_id: string | null;
+  driver?: { id: string; name: string | null; phone: string | null } | null;
   estimated_prep_time: number | null;
   created_at: string;
+  updated_at?: string;
   client_id: string | null;
   order_payments?: OrderPaymentInfo | null;
 }
@@ -42,7 +58,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   accepted: { label: 'Aceptado', color: 'var(--kitchen-accepted)', bg: 'var(--info-soft)', icon: <CheckCircle className="w-4 h-4" /> },
   preparing: { label: 'Preparando', color: 'var(--kitchen-preparing)', bg: 'var(--brand-soft)', icon: <ChefHat className="w-4 h-4" /> },
   ready: { label: 'Listo', color: 'var(--kitchen-ready)', bg: 'var(--success-soft)', icon: <Truck className="w-4 h-4" /> },
-  picked_up: { label: 'Recogido', color: 'var(--ink-secondary)', bg: 'rgba(120,80,40,0.06)', icon: <Truck className="w-4 h-4" /> },
+  picked_up: { label: 'En Camino', color: '#7C3AED', bg: 'rgba(124, 58, 237, 0.1)', icon: <Truck className="w-4 h-4" /> },
   delivered: { label: 'Entregado', color: 'var(--ink-muted)', bg: 'rgba(120,80,40,0.04)', icon: <CheckCircle className="w-4 h-4" /> },
   cancelled: { label: 'Cancelado', color: 'var(--danger)', bg: 'var(--danger-soft)', icon: <XCircle className="w-4 h-4" /> },
 };
@@ -50,19 +66,28 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 interface RealtimeBoardProps {
   initialOrders: Order[];
   restaurantId: string;
+  deliveryType: 'platform' | 'restaurant_own' | 'pickup_only';
+  fleetDrivers: FleetDriverOption[];
 }
 
-export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeBoardProps) {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+export default function RealtimeBoard({
+  initialOrders,
+  restaurantId,
+  deliveryType,
+  fleetDrivers,
+}: RealtimeBoardProps) {
+  const router = useRouter();
+  const [realtimePatches, setRealtimePatches] = useState<Map<string, Order>>(new Map());
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [isConnected, setIsConnected] = useState(false);
   const [pendingActions, setPendingActions] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'pending' | 'accepted' | 'preparing' | 'ready'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'accepted' | 'preparing' | 'ready' | 'picked_up'>('pending');
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const channel = supabase
-      .channel('kitchen')
+      .channel(`kitchen-${restaurantId}`)
       .on(
         'postgres_changes',
         {
@@ -75,18 +100,24 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
           const newOrder = payload.new as Order | null;
           const oldOrder = payload.old as Order | null;
 
-          setOrders((prev) => {
-            if (payload.eventType === 'INSERT' && newOrder) {
-              return [...prev, newOrder].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          if (payload.eventType === 'DELETE' && oldOrder) {
+            setDeletedIds((prev) => new Set(prev).add(oldOrder.id));
+            router.refresh();
+            return;
+          }
+
+          if (newOrder) {
+            if (['delivered', 'cancelled'].includes(newOrder.status)) {
+              setDeletedIds((prev) => new Set(prev).add(newOrder.id));
+            } else {
+              setRealtimePatches((prev) => {
+                const next = new Map(prev);
+                next.set(newOrder.id, newOrder);
+                return next;
+              });
             }
-            if (payload.eventType === 'UPDATE' && newOrder) {
-              return prev.map((o) => (o.id === newOrder.id ? newOrder : o));
-            }
-            if (payload.eventType === 'DELETE' && oldOrder) {
-              return prev.filter((o) => o.id !== oldOrder.id);
-            }
-            return prev;
-          });
+            router.refresh();
+          }
         },
       )
       .subscribe((status) => {
@@ -96,26 +127,103 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, restaurantId]);
+  }, [supabase, restaurantId, router]);
 
-  const handleStatusUpdate = useCallback(async (orderId: string, nextStatus: string) => {
-    setPendingActions((prev) => new Set(prev).add(orderId));
-    const result = await updateOrderStatus(orderId, nextStatus, restaurantId);
-    setPendingActions((prev) => {
-      const next = new Set(prev);
-      next.delete(orderId);
-      return next;
-    });
-    if (result.error) {
-      alert(result.error);
+  const orders = useMemo(() => {
+    const byId = new Map<string, Order>();
+
+    for (const o of initialOrders) {
+      if (!deletedIds.has(o.id)) {
+        byId.set(o.id, o);
+      }
     }
-  }, [restaurantId]);
+
+    for (const [id, patch] of realtimePatches.entries()) {
+      if (deletedIds.has(id) || ['delivered', 'cancelled'].includes(patch.status)) {
+        byId.delete(id);
+        continue;
+      }
+
+      const base = byId.get(id);
+      if (base) {
+        const baseTs = base.updated_at ? new Date(base.updated_at).getTime() : 0;
+        const patchTs = patch.updated_at ? new Date(patch.updated_at).getTime() : 0;
+        if (patchTs >= baseTs) {
+          byId.set(id, {
+            ...base,
+            ...patch,
+            driver:
+              patch.driver_id === base.driver_id
+                ? base.driver
+                : patch.driver_id
+                  ? fleetDrivers.find((d) => d.id === patch.driver_id) ?? base.driver ?? null
+                  : null,
+            order_payments: base.order_payments ?? patch.order_payments ?? null,
+          });
+        }
+      } else {
+        byId.set(id, {
+          ...patch,
+          fulfillment_type: patch.fulfillment_type === 'pickup' ? 'pickup' : 'delivery',
+          driver: patch.driver_id
+            ? fleetDrivers.find((d) => d.id === patch.driver_id) ?? null
+            : null,
+        });
+      }
+    }
+
+    return Array.from(byId.values()).sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    );
+  }, [initialOrders, realtimePatches, deletedIds, fleetDrivers]);
+
+  const runOrderAction = useCallback(
+    async (orderId: string, action: () => Promise<{ error?: string; success?: boolean }>) => {
+      setPendingActions((prev) => new Set(prev).add(orderId));
+      const result = await action();
+      setPendingActions((prev) => {
+        const next = new Set(prev);
+        next.delete(orderId);
+        return next;
+      });
+      if (result.error) {
+        alert(result.error);
+      } else {
+        router.refresh();
+      }
+    },
+    [router],
+  );
+
+  const handleStatusUpdate = useCallback(
+    async (orderId: string, nextStatus: string) => {
+      await runOrderAction(orderId, () => updateOrderStatus(orderId, nextStatus, restaurantId));
+    },
+    [restaurantId, runOrderAction],
+  );
+
+  const handleAssignDriver = useCallback(
+    async (orderId: string, driverId: string | null) => {
+      await runOrderAction(orderId, () =>
+        assignRestaurantOrderDriver(orderId, driverId, restaurantId),
+      );
+    },
+    [restaurantId, runOrderAction],
+  );
+
+  const handleAutoAssign = useCallback(
+    async (orderId: string) => {
+      await runOrderAction(orderId, () => autoAssignRestaurantOrder(orderId, restaurantId));
+    },
+    [restaurantId, runOrderAction],
+  );
 
   const columns = [
     { key: 'pending', title: 'Pendiente' },
     { key: 'accepted', title: 'Aceptado' },
     { key: 'preparing', title: 'Preparando' },
     { key: 'ready', title: 'Listo' },
+    { key: 'picked_up', title: 'En Camino' },
   ] as const;
 
   return (
@@ -149,21 +257,38 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
             {isConnected ? 'En vivo' : 'Sin conexión'}
           </span>
         </div>
-        <span style={{
-          fontSize: '13px',
-          fontWeight: 600,
-          color: 'var(--ink)',
-          fontVariantNumeric: 'tabular-nums',
-          flexShrink: 0,
-        }}>
-          {orders.length} pedido{orders.length !== 1 ? 's' : ''}
-        </span>
+        <div className="flex items-center gap-3 flex-wrap">
+          <span
+            className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+              deliveryType === 'restaurant_own'
+                ? 'bg-amber-100 text-amber-800'
+                : deliveryType === 'platform'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-slate-100 text-slate-700'
+            }`}
+          >
+            {deliveryType === 'restaurant_own'
+              ? `🛵 Flota Propia (${fleetDrivers.length} activo${fleetDrivers.length === 1 ? '' : 's'})`
+              : deliveryType === 'platform'
+                ? '⚡ Red Al Toque (Plataforma)'
+                : '🏬 Solo Recojo'}
+          </span>
+          <span style={{
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'var(--ink)',
+            fontVariantNumeric: 'tabular-nums',
+            flexShrink: 0,
+          }}>
+            {orders.length} pedido{orders.length !== 1 ? 's' : ''}
+          </span>
+        </div>
       </div>
 
       {/* Mobile & Tablet: Compact segmented control */}
       <div className="lg:hidden">
-        <div 
-          className="grid grid-cols-4 gap-2 p-1 rounded-xl"
+        <div
+          className="grid grid-cols-5 gap-1.5 p-1 rounded-xl"
           style={{ 
             background: 'var(--surface-inset)',
             border: '1px solid var(--border)',
@@ -269,8 +394,12 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
                     order={order}
                     config={config}
                     nextStatus={nextStatus}
+                    deliveryType={deliveryType}
+                    fleetDrivers={fleetDrivers}
                     isPending={pendingActions.has(order.id)}
                     onStatusUpdate={handleStatusUpdate}
+                    onAssignDriver={handleAssignDriver}
+                    onAutoAssign={handleAutoAssign}
                     isMobile={true}
                   />
                 ))
@@ -281,7 +410,7 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
       </div>
 
       {/* Desktop: Kanban columns */}
-      <div className="hidden lg:grid lg:grid-cols-4 gap-5">
+      <div className="hidden lg:grid lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {columns.map(({ key, title }) => {
           const columnOrders = orders.filter((o) => o.status === key);
           const config = STATUS_CONFIG[key];
@@ -371,8 +500,12 @@ export default function RealtimeBoard({ initialOrders, restaurantId }: RealtimeB
                       order={order}
                       config={config}
                       nextStatus={nextStatus}
+                      deliveryType={deliveryType}
+                      fleetDrivers={fleetDrivers}
                       isPending={pendingActions.has(order.id)}
                       onStatusUpdate={handleStatusUpdate}
+                      onAssignDriver={handleAssignDriver}
+                      onAutoAssign={handleAutoAssign}
                       isMobile={false}
                     />
                   ))
@@ -390,17 +523,36 @@ function OrderCard({
   order,
   config,
   nextStatus,
+  deliveryType,
+  fleetDrivers,
   isPending,
   onStatusUpdate,
+  onAssignDriver,
+  onAutoAssign,
   isMobile = false,
 }: {
   order: Order;
   config: { label: string; color: string; bg: string };
   nextStatus: string | null;
+  deliveryType: 'platform' | 'restaurant_own' | 'pickup_only';
+  fleetDrivers: FleetDriverOption[];
   isPending: boolean;
   onStatusUpdate: (orderId: string, nextStatus: string) => void;
+  onAssignDriver: (orderId: string, driverId: string | null) => void;
+  onAutoAssign: (orderId: string) => void;
   isMobile?: boolean;
 }) {
+  const isPickupOrder =
+    order.fulfillment_type === 'pickup' ||
+    Boolean(order.deliveryAddress?.startsWith('Recojo en Tienda'));
+  const effectiveNextStatus =
+    isPickupOrder && order.status === 'ready' ? 'delivered' : nextStatus;
+  const nextStatusLabel =
+    isPickupOrder && order.status === 'ready'
+      ? '→ Entregado en Tienda'
+      : effectiveNextStatus
+        ? `→ ${STATUS_CONFIG[effectiveNextStatus].label}`
+        : null;
   return (
     <div
       style={{
@@ -484,6 +636,80 @@ function OrderCard({
         </div>
       )}
 
+      {/* Repartidor asignado / despacho (solo para pedidos delivery) */}
+      {!isPickupOrder && (
+        <div
+          style={{
+            marginBottom: '8px',
+            padding: '8px 10px',
+            borderRadius: '8px',
+            background: order.driver ? 'rgba(16, 185, 129, 0.08)' : 'rgba(245, 158, 11, 0.08)',
+            border: order.driver
+              ? '1px solid rgba(16, 185, 129, 0.25)'
+              : '1px solid rgba(245, 158, 11, 0.25)',
+            fontSize: '12px',
+          }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-semibold text-gray-800 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-emerald-700" />
+              {order.driver ? (
+                <span>🛵 {order.driver.name || 'Repartidor asignado'}</span>
+              ) : (
+                <span className="text-amber-800">Sin repartidor asignado</span>
+              )}
+            </span>
+            {order.driver?.phone && (
+              <span className="text-[11px] font-mono text-gray-500">
+                {order.driver.phone}
+              </span>
+            )}
+          </div>
+
+          {deliveryType === 'restaurant_own' && (
+            <div className="mt-2 flex flex-col gap-1.5">
+              {fleetDrivers.length > 0 ? (
+                <div className="flex items-center gap-1.5">
+                  <select
+                    value={order.driver_id ?? ''}
+                    onChange={(e) => onAssignDriver(order.id, e.target.value || null)}
+                    disabled={isPending}
+                    className="panel-input text-[11px] py-1 flex-1"
+                  >
+                    <option value="">-- Seleccionar motorizado --</option>
+                    {fleetDrivers.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} ({d.activeOrdersCount} en curso)
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => onAutoAssign(order.id)}
+                    disabled={isPending}
+                    title="Asignar automáticamente al repartidor con menos pedidos (0 primero)"
+                    className="panel-btn-secondary text-[11px] px-2 py-1 whitespace-nowrap"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Auto</span>
+                  </button>
+                </div>
+              ) : (
+                <p className="text-[11px] text-amber-800">
+                  No tienes repartidores propios vinculados en Configuración.
+                </p>
+              )}
+            </div>
+          )}
+
+          {deliveryType === 'platform' && !order.driver_id && (
+            <p className="text-[11px] text-amber-800 mt-1">
+              Disponible para que un repartidor de Red Al Toque lo tome en su app.
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Información de Pago */}
       {order.order_payments && (() => {
         const payment = order.order_payments;
@@ -561,9 +787,9 @@ function OrderCard({
       </div>
 
       {/* Action button */}
-      {nextStatus && (
+      {effectiveNextStatus && nextStatusLabel && (
         <button
-          onClick={() => onStatusUpdate(order.id, nextStatus)}
+          onClick={() => onStatusUpdate(order.id, effectiveNextStatus)}
           disabled={isPending}
           style={{
             width: '100%',
@@ -588,7 +814,7 @@ function OrderCard({
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          {isPending ? 'Procesando...' : `→ ${STATUS_CONFIG[nextStatus].label}`}
+          {isPending ? 'Procesando...' : nextStatusLabel}
         </button>
       )}
     </div>
