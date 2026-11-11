@@ -5,19 +5,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Dimensions,
   Linking,
-  Platform,
   Pressable,
   StyleSheet,
   Switch,
   Text,
   View,
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Callout } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
+import {
+  startBackgroundDriverTracking,
+  stopBackgroundDriverTracking,
+} from '@/lib/backgroundLocation';
 import { formatPrice } from '@/lib/format';
 import {
   saveDriverLocation,
@@ -28,7 +30,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 import { useDriverStore } from '@/store/driverStore';
 
-// Coordenadas predeterminadas de ciudades operativas (fallback)
+// Centro operativo por defecto antes de recibir GPS real
 const DEFAULT_CENTER = {
   latitude: -5.7567, // Bagua Grande, Amazonas
   longitude: -78.4419,
@@ -36,27 +38,22 @@ const DEFAULT_CENTER = {
   longitudeDelta: 0.015,
 };
 
-// Coordenadas aproximadas para restaurantes de Bagua Grande (fallback si no tienen coordenadas en BD)
-const RESTAURANT_LOCATIONS: Record<string, { latitude: number; longitude: number }> = {
-  'Brasas y Leñas': { latitude: -5.758, longitude: -78.4435 },
-  'Polleria Punta Sal': { latitude: -5.755, longitude: -78.4405 },
-  'Chifa Hong Kong': { latitude: -5.7562, longitude: -78.4428 },
-  'Pizzería La Nona': { latitude: -5.7575, longitude: -78.4412 },
-  'Burger Bros': { latitude: -5.7545, longitude: -78.444 },
-};
+interface LatLng {
+  latitude: number;
+  longitude: number;
+}
 
-function getOrderCoordinates(order: DriverOrder, index: number) {
-  const restName = order.restaurant?.name ?? '';
+function getRealOrderCoordinates(order: DriverOrder): {
+  restCoord: LatLng | null;
+  clientCoord: LatLng | null;
+} {
   const restCoord =
     order.restaurant?.latitude != null && order.restaurant?.longitude != null
       ? {
           latitude: order.restaurant.latitude,
           longitude: order.restaurant.longitude,
         }
-      : (RESTAURANT_LOCATIONS[restName] ?? {
-          latitude: DEFAULT_CENTER.latitude + (index + 1) * 0.002,
-          longitude: DEFAULT_CENTER.longitude + (index + 1) * 0.002,
-        });
+      : null;
 
   const clientCoord =
     order.delivery_latitude != null && order.delivery_longitude != null
@@ -64,10 +61,7 @@ function getOrderCoordinates(order: DriverOrder, index: number) {
           latitude: order.delivery_latitude,
           longitude: order.delivery_longitude,
         }
-      : {
-          latitude: restCoord.latitude + 0.0035 + index * 0.001,
-          longitude: restCoord.longitude + 0.004 - index * 0.001,
-        };
+      : null;
 
   return { restCoord, clientCoord };
 }
@@ -75,10 +69,14 @@ function getOrderCoordinates(order: DriverOrder, index: number) {
 export default function DriverMapScreen() {
   const insets = useSafeAreaInsets();
   const mapRef = useRef<MapView | null>(null);
+  const hasAutoCenteredRef = useRef(false);
 
   const driverId = useAuthStore((state) => state.session?.user.id);
   const isOnline = useDriverStore((state) => state.isOnline);
   const setIsOnline = useDriverStore((state) => state.setIsOnline);
+  const backgroundTrackingActive = useDriverStore(
+    (state) => state.backgroundTrackingActive,
+  );
   const driverCoords = useDriverStore((state) => state.coords);
 
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -86,7 +84,6 @@ export default function DriverMapScreen() {
   const [selectedOrderIndex, setSelectedOrderIndex] = useState(0);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [isMapReady, setIsMapReady] = useState(false);
 
   // Solicitar permisos de ubicación y obtener posición inicial
   const requestLocation = useCallback(async () => {
@@ -114,31 +111,82 @@ export default function DriverMapScreen() {
   }, []);
 
   useEffect(() => {
-    void requestLocation();
-  }, [requestLocation]);
+    let cancelled = false;
 
-  // Cargar pedidos asignados
+    Location.requestForegroundPermissionsAsync()
+      .then(async ({ status }) => {
+        const granted = status === 'granted';
+        if (cancelled) return;
+        setHasPermission(granted);
+        if (!granted) return;
+
+        const initial = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        if (cancelled) return;
+        useDriverStore.getState().setCoords({
+          latitude: initial.coords.latitude,
+          longitude: initial.coords.longitude,
+          heading: initial.coords.heading,
+          speed: initial.coords.speed,
+          accuracy: initial.coords.accuracy,
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.warn('[DriverMap] Error obteniendo ubicación:', err);
+          setHasPermission(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Cargar pedidos activos (asignados primero, luego disponibles)
   const loadOrders = useCallback(async () => {
     if (!driverId) return;
     setIsLoadingOrders(true);
     try {
       const result = await fetchDriverOrders(driverId);
-      setOrders(result.orders);
-      if (selectedOrderIndex >= result.orders.length) {
-        setSelectedOrderIndex(0);
-      }
+      const sorted = [...result.orders].sort((a, b) => {
+        const aMine = a.driver_id === driverId ? 0 : 1;
+        const bMine = b.driver_id === driverId ? 0 : 1;
+        return aMine - bMine;
+      });
+      setOrders(sorted);
     } catch (err) {
       console.warn('[DriverMap] Error cargando pedidos:', err);
     } finally {
       setIsLoadingOrders(false);
     }
-  }, [driverId, selectedOrderIndex]);
+  }, [driverId]);
 
   useEffect(() => {
-    void loadOrders();
-  }, [loadOrders]);
+    if (!driverId) return;
+    let cancelled = false;
 
-  // Suscribirse a cambios en tiempo real en pedidos (Supabase Realtime)
+    fetchDriverOrders(driverId)
+      .then((result) => {
+        if (cancelled) return;
+        const sorted = [...result.orders].sort((a, b) => {
+          const aMine = a.driver_id === driverId ? 0 : 1;
+          const bMine = b.driver_id === driverId ? 0 : 1;
+          return aMine - bMine;
+        });
+        setOrders(sorted);
+      })
+      .catch((err) => {
+        if (!cancelled) console.warn('[DriverMap] Error cargando pedidos:', err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [driverId]);
+
+  // Realtime en pedidos
   useEffect(() => {
     if (!driverId) return;
 
@@ -158,7 +206,21 @@ export default function DriverMapScreen() {
     };
   }, [driverId, loadOrders]);
 
-  // Alternar estado En Línea / Desconectado
+  // Centrar automáticamente al recibir la primera posición GPS real
+  useEffect(() => {
+    if (hasAutoCenteredRef.current || !driverCoords || !mapRef.current) return;
+    hasAutoCenteredRef.current = true;
+    mapRef.current.animateToRegion(
+      {
+        latitude: driverCoords.latitude,
+        longitude: driverCoords.longitude,
+        latitudeDelta: 0.012,
+        longitudeDelta: 0.012,
+      },
+      500,
+    );
+  }, [driverCoords]);
+
   const handleToggleOnline = async (value: boolean) => {
     if (!driverId) return;
     setIsUpdatingStatus(true);
@@ -166,19 +228,25 @@ export default function DriverMapScreen() {
       setIsOnline(value);
       await setDriverActiveStatus(driverId, value);
 
-      // Si se activa y tenemos coordenadas, actualizar ubicación
-      if (value && driverCoords) {
-        await saveDriverLocation({
-          driverId,
-          latitude: driverCoords.latitude,
-          longitude: driverCoords.longitude,
-          heading: driverCoords.heading,
-          speed: driverCoords.speed,
-          accuracy: driverCoords.accuracy,
-          isActive: true,
+      if (value) {
+        if (driverCoords) {
+          await saveDriverLocation({
+            driverId,
+            latitude: driverCoords.latitude,
+            longitude: driverCoords.longitude,
+            heading: driverCoords.heading,
+            speed: driverCoords.speed,
+            accuracy: driverCoords.accuracy,
+            isActive: true,
+          });
+        }
+        await startBackgroundDriverTracking(driverId, {
+          promptPermission: false,
         });
+      } else {
+        await stopBackgroundDriverTracking();
       }
-    } catch (err) {
+    } catch {
       Alert.alert(
         'Error',
         'No se pudo actualizar el estado de conexión. Intente nuevamente.',
@@ -189,7 +257,23 @@ export default function DriverMapScreen() {
     }
   };
 
-  // Re-centrar el mapa en la ubicación del repartidor
+  const handleEnableBackgroundGps = async () => {
+    if (!driverId) return;
+    const ok = await startBackgroundDriverTracking(driverId, {
+      promptPermission: true,
+    });
+    if (!ok) {
+      Alert.alert(
+        'Permiso de ubicación continua',
+        'Para seguir compartiendo tu ruta con la app minimizada, selecciona "Permitir todo el tiempo" en Ajustes.',
+        [
+          { text: 'Luego', style: 'cancel' },
+          { text: 'Abrir Ajustes', onPress: () => void Linking.openSettings() },
+        ],
+      );
+    }
+  };
+
   const centerOnDriver = useCallback(() => {
     if (!mapRef.current) return;
     const target = driverCoords ?? DEFAULT_CENTER;
@@ -204,10 +288,9 @@ export default function DriverMapScreen() {
     );
   }, [driverCoords]);
 
-  // Ajustar cámara para ver al repartidor y todos los puntos de pedidos activos
   const fitAllPoints = useCallback(() => {
     if (!mapRef.current) return;
-    const points: { latitude: number; longitude: number }[] = [];
+    const points: LatLng[] = [];
 
     if (driverCoords) {
       points.push({
@@ -216,9 +299,10 @@ export default function DriverMapScreen() {
       });
     }
 
-    orders.forEach((order, idx) => {
-      const { restCoord, clientCoord } = getOrderCoordinates(order, idx);
-      points.push(restCoord, clientCoord);
+    orders.forEach((order) => {
+      const { restCoord, clientCoord } = getRealOrderCoordinates(order);
+      if (restCoord) points.push(restCoord);
+      if (clientCoord) points.push(clientCoord);
     });
 
     if (points.length === 0) {
@@ -227,17 +311,35 @@ export default function DriverMapScreen() {
     }
 
     mapRef.current.fitToCoordinates(points, {
-      edgePadding: { top: 140, right: 60, bottom: 280, left: 60 },
+      edgePadding: { top: 145, right: 60, bottom: 290, left: 60 },
       animated: true,
     });
   }, [driverCoords, orders, centerOnDriver]);
 
-  // Pedido activo seleccionado para el bottom sheet
-  const activeOrder = orders[selectedOrderIndex] ?? null;
+  const safeSelectedIndex =
+    orders.length === 0 ? 0 : Math.min(selectedOrderIndex, orders.length - 1);
+  const activeOrder = orders[safeSelectedIndex] ?? null;
 
-  // Abrir navegación externa con Google Maps / Waze
+  const activeRoutePoints = useMemo(() => {
+    if (!activeOrder) return [];
+    const { restCoord, clientCoord } = getRealOrderCoordinates(activeOrder);
+    const pts: LatLng[] = [];
+    if (driverCoords) {
+      pts.push({
+        latitude: driverCoords.latitude,
+        longitude: driverCoords.longitude,
+      });
+    }
+    if (activeOrder.status !== 'picked_up' && restCoord) {
+      pts.push(restCoord);
+    }
+    if (clientCoord) {
+      pts.push(clientCoord);
+    }
+    return pts;
+  }, [activeOrder, driverCoords]);
+
   const handleOpenNavigation = (order: DriverOrder) => {
-    // Si el pedido está en camino ('picked_up'), navegar al cliente; si no, al restaurante
     const isHeadingToClient = order.status === 'picked_up';
     const destinationQuery = isHeadingToClient
       ? order.delivery_latitude != null && order.delivery_longitude != null
@@ -249,20 +351,21 @@ export default function DriverMapScreen() {
           ? `${order.restaurant.name}, ${order.restaurant.address || 'Bagua'}`
           : order.deliveryAddress || 'Bagua Grande, Amazonas';
 
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinationQuery)}`;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinationQuery)}&travelmode=driving`;
     void Linking.openURL(url);
   };
 
-  // Abrir app de llamadas para cliente o restaurante
   const handleCall = (phone?: string | null) => {
     if (!phone) {
-      Alert.alert('Teléfono no disponible', 'No hay número de contacto registrado.');
+      Alert.alert(
+        'Teléfono no disponible',
+        'No hay número de contacto registrado.',
+      );
       return;
     }
     void Linking.openURL(`tel:${phone}`);
   };
 
-  // Ubicación actual del mapa
   const initialRegion = useMemo(() => {
     return {
       latitude: driverCoords?.latitude ?? DEFAULT_CENTER.latitude,
@@ -272,11 +375,10 @@ export default function DriverMapScreen() {
     };
   }, [driverCoords]);
 
-  // Si no hay permisos otorgados
   if (hasPermission === false) {
     return (
       <View className="flex-1 items-center justify-center bg-slate-50 px-6">
-        <View className="items-center rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+        <View className="items-center rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
           <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-red-50">
             <Ionicons name="location-outline" size={32} color="#EF4444" />
           </View>
@@ -288,14 +390,11 @@ export default function DriverMapScreen() {
           </Text>
           <Pressable
             onPress={() => void Linking.openSettings()}
-            className="mt-6 w-full rounded-2xl bg-primary py-3.5 items-center active:opacity-90"
+            className="mt-6 w-full items-center rounded-2xl bg-primary py-3.5 active:opacity-90"
           >
             <Text className="font-bold text-white">Abrir Configuración</Text>
           </Pressable>
-          <Pressable
-            onPress={() => void requestLocation()}
-            className="mt-3 py-2"
-          >
+          <Pressable onPress={() => void requestLocation()} className="mt-3 py-2">
             <Text className="text-sm font-semibold text-primary">Reintentar</Text>
           </Pressable>
         </View>
@@ -305,7 +404,7 @@ export default function DriverMapScreen() {
 
   return (
     <View className="flex-1 bg-slate-100">
-      {/* MAPA NATIVO GOOGLE MAPS */}
+      {/* MAPA NATIVO GOOGLE MAPS SDK (mismo PROVIDER_GOOGLE que AddressLocationPicker) */}
       <MapView
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
@@ -315,9 +414,17 @@ export default function DriverMapScreen() {
         showsMyLocationButton={false}
         showsCompass={false}
         toolbarEnabled={false}
-        onMapReady={() => setIsMapReady(true)}
       >
-        {/* MARCADOR DEL REPARTIDOR (CON DIRECCIÓN Y PULSO) */}
+        {activeRoutePoints.length >= 2 && (
+          <Polyline
+            coordinates={activeRoutePoints}
+            strokeColor={
+              activeOrder?.status === 'picked_up' ? '#208AEF' : '#F59E0B'
+            }
+            strokeWidth={4}
+          />
+        )}
+
         {driverCoords && (
           <Marker
             coordinate={{
@@ -331,10 +438,6 @@ export default function DriverMapScreen() {
             anchor={{ x: 0.5, y: 0.5 }}
           >
             <View className="items-center justify-center">
-              {/* Anillo de pulso cuando está en línea */}
-              {isOnline && (
-                <View className="absolute h-14 w-14 rounded-full bg-emerald-500/25 animate-ping" />
-              )}
               <View
                 className={`h-11 w-11 items-center justify-center rounded-full border-2 border-white shadow-lg ${
                   isOnline ? 'bg-emerald-600' : 'bg-slate-500'
@@ -342,76 +445,71 @@ export default function DriverMapScreen() {
               >
                 <Ionicons name="bicycle" size={22} color="#ffffff" />
               </View>
-              {driverCoords.heading != null && isOnline && (
-                <View className="absolute -top-1">
-                  <Ionicons name="caret-up" size={14} color="#059669" />
-                </View>
-              )}
             </View>
           </Marker>
         )}
 
-        {/* MARCADORES DE PEDIDOS ACTIVOS */}
         {orders.map((order, index) => {
           const restName = order.restaurant?.name ?? '';
-          const { restCoord, clientCoord } = getOrderCoordinates(order, index);
-
-          const isSelected = selectedOrderIndex === index;
+          const { restCoord, clientCoord } = getRealOrderCoordinates(order);
+          const isSelected = safeSelectedIndex === index;
 
           return (
             <View key={order.id}>
-              {/* Marcador Restaurante (Recojo) */}
-              <Marker
-                coordinate={restCoord}
-                title={`Recojo: ${restName}`}
-                description={order.restaurant?.address ?? 'Restaurante'}
-                onPress={() => setSelectedOrderIndex(index)}
-              >
-                <View
-                  className={`items-center justify-center rounded-2xl border-2 border-white px-2.5 py-1.5 shadow-md ${
-                    isSelected ? 'bg-amber-600 scale-105' : 'bg-amber-500'
-                  }`}
+              {restCoord && (
+                <Marker
+                  coordinate={restCoord}
+                  title={`Recojo: ${restName}`}
+                  description={order.restaurant?.address ?? 'Restaurante'}
+                  onPress={() => setSelectedOrderIndex(index)}
                 >
-                  <View className="flex-row items-center gap-1">
-                    <Ionicons name="storefront" size={14} color="#ffffff" />
-                    <Text className="text-[11px] font-bold text-white" numberOfLines={1}>
-                      {restName || 'Restaurante'}
-                    </Text>
+                  <View
+                    className={`items-center justify-center rounded-2xl border-2 border-white px-2.5 py-1.5 shadow-md ${
+                      isSelected ? 'bg-amber-600' : 'bg-amber-500'
+                    }`}
+                  >
+                    <View className="flex-row items-center gap-1">
+                      <Ionicons name="storefront" size={14} color="#ffffff" />
+                      <Text className="text-[11px] font-bold text-white" numberOfLines={1}>
+                        {restName || 'Local'}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              </Marker>
+                </Marker>
+              )}
 
-              {/* Marcador Cliente (Entrega) */}
-              <Marker
-                coordinate={clientCoord}
-                title={`Entrega: ${order.client?.name ?? 'Cliente'}`}
-                description={order.deliveryAddress ?? 'Dirección de entrega'}
-                onPress={() => setSelectedOrderIndex(index)}
-              >
-                <View
-                  className={`items-center justify-center rounded-2xl border-2 border-white px-2.5 py-1.5 shadow-md ${
-                    isSelected ? 'bg-primary scale-105' : 'bg-blue-500'
-                  }`}
+              {clientCoord && (
+                <Marker
+                  coordinate={clientCoord}
+                  title={`Entrega: ${order.client?.name ?? 'Cliente'}`}
+                  description={order.deliveryAddress ?? 'Dirección de entrega'}
+                  onPress={() => setSelectedOrderIndex(index)}
                 >
-                  <View className="flex-row items-center gap-1">
-                    <Ionicons name="location" size={14} color="#ffffff" />
-                    <Text className="text-[11px] font-bold text-white" numberOfLines={1}>
-                      Pedido #{order.id.slice(0, 5).toUpperCase()}
-                    </Text>
+                  <View
+                    className={`items-center justify-center rounded-2xl border-2 border-white px-2.5 py-1.5 shadow-md ${
+                      isSelected ? 'bg-primary' : 'bg-blue-500'
+                    }`}
+                  >
+                    <View className="flex-row items-center gap-1">
+                      <Ionicons name="location" size={14} color="#ffffff" />
+                      <Text className="text-[11px] font-bold text-white" numberOfLines={1}>
+                        #{order.id.slice(0, 5).toUpperCase()}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              </Marker>
+                </Marker>
+              )}
             </View>
           );
         })}
       </MapView>
 
-      {/* PANEL SUPERIOR: ESTADO EN LÍNEA / CONEXIÓN */}
+      {/* PANEL SUPERIOR: ESTADO + TRACKING SEGUNDO PLANO */}
       <View
         style={{ paddingTop: Math.max(insets.top, 12) + 8 }}
-        className="absolute left-4 right-4 z-10"
+        className="absolute left-4 right-4 z-10 gap-2"
       >
-        <View className="flex-row items-center justify-between rounded-2xl border border-slate-100/80 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-md">
+        <View className="flex-row items-center justify-between rounded-2xl border border-slate-100/80 bg-white/95 px-4 py-3 shadow-lg">
           <View className="flex-row items-center gap-3">
             <View
               className={`h-3 w-3 rounded-full ${
@@ -424,9 +522,11 @@ export default function DriverMapScreen() {
               </Text>
               <Text className="text-[11px] text-slate-500">
                 {isOnline
-                  ? driverCoords
-                    ? `GPS: ±${Math.round(driverCoords.accuracy ?? 10)}m · En vivo`
-                    : 'Buscando satélites GPS...'
+                  ? backgroundTrackingActive
+                    ? 'GPS en 2do plano activo'
+                    : driverCoords
+                      ? `GPS: ±${Math.round(driverCoords.accuracy ?? 10)}m · Primer plano`
+                      : 'Buscando GPS...'
                   : 'Ubicación pausada'}
               </Text>
             </View>
@@ -449,14 +549,27 @@ export default function DriverMapScreen() {
             />
           </View>
         </View>
+
+        {isOnline && !backgroundTrackingActive && (
+          <Pressable
+            onPress={() => void handleEnableBackgroundGps()}
+            className="flex-row items-center justify-between rounded-xl border border-amber-200 bg-amber-50/95 px-3.5 py-2 shadow"
+          >
+            <Text className="flex-1 text-[11px] font-semibold text-amber-900">
+              Activa GPS en 2do plano para transmitir con pantalla bloqueada
+            </Text>
+            <Text className="ml-2 text-[11px] font-extrabold text-amber-700">
+              Activar →
+            </Text>
+          </Pressable>
+        )}
       </View>
 
-      {/* BOTONES FLOTANTES DE ACCIÓN RÁPIDA (DERECHA) */}
+      {/* BOTONES FLOTANTES (DERECHA) */}
       <View
-        style={{ top: insets.top + 80 }}
+        style={{ top: insets.top + 115 }}
         className="absolute right-4 z-10 gap-3"
       >
-        {/* Centrar en mi ubicación */}
         <Pressable
           onPress={centerOnDriver}
           className="h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-md active:bg-slate-50"
@@ -464,7 +577,6 @@ export default function DriverMapScreen() {
           <Ionicons name="navigate" size={20} color="#208AEF" />
         </Pressable>
 
-        {/* Ajustar vista a todos los pedidos */}
         {orders.length > 0 && (
           <Pressable
             onPress={fitAllPoints}
@@ -474,7 +586,6 @@ export default function DriverMapScreen() {
           </Pressable>
         )}
 
-        {/* Recargar pedidos */}
         <Pressable
           onPress={loadOrders}
           disabled={isLoadingOrders}
@@ -488,27 +599,32 @@ export default function DriverMapScreen() {
         </Pressable>
       </View>
 
-      {/* PANEL INFERIOR FLOTANTE: DETALLE DEL PEDIDO ACTIVO / RADAR */}
+      {/* PANEL INFERIOR FLOTANTE */}
       <View
         style={{ paddingBottom: Math.max(insets.bottom, 12) + 8 }}
         className="absolute bottom-0 left-4 right-4 z-10"
       >
         {activeOrder ? (
           <View className="rounded-3xl border border-slate-100 bg-white p-4 shadow-xl">
-            {/* Header del pedido y estado */}
             <View className="mb-3 flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
                 <Text className="text-base font-bold text-slate-900">
                   Pedido #{activeOrder.id.slice(0, 8).toUpperCase()}
                 </Text>
                 <OrderStatusBadge status={activeOrder.status} />
+                {activeOrder.driver_id === driverId && (
+                  <View className="rounded-full bg-emerald-100 px-2 py-0.5">
+                    <Text className="text-[10px] font-bold text-emerald-800">
+                      Tuyo
+                    </Text>
+                  </View>
+                )}
               </View>
               <Text className="text-base font-extrabold text-primary">
                 {formatPrice(activeOrder.total)}
               </Text>
             </View>
 
-            {/* Recojo en Restaurante */}
             <View className="mb-2 flex-row items-start gap-2.5 rounded-xl bg-slate-50 p-2.5">
               <View className="mt-0.5 h-6 w-6 items-center justify-center rounded-full bg-amber-100">
                 <Ionicons name="storefront" size={13} color="#D97706" />
@@ -527,14 +643,13 @@ export default function DriverMapScreen() {
               {activeOrder.restaurant?.phone && (
                 <Pressable
                   onPress={() => handleCall(activeOrder.restaurant?.phone)}
-                  className="h-8 w-8 items-center justify-center rounded-full bg-white border border-slate-200 active:bg-slate-100"
+                  className="h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white active:bg-slate-100"
                 >
                   <Ionicons name="call-outline" size={15} color="#D97706" />
                 </Pressable>
               )}
             </View>
 
-            {/* Entrega a Cliente */}
             <View className="mb-3.5 flex-row items-start gap-2.5 rounded-xl bg-slate-50 p-2.5">
               <View className="mt-0.5 h-6 w-6 items-center justify-center rounded-full bg-blue-100">
                 <Ionicons name="location" size={13} color="#208AEF" />
@@ -553,16 +668,15 @@ export default function DriverMapScreen() {
               {activeOrder.client?.phone && (
                 <Pressable
                   onPress={() => handleCall(activeOrder.client?.phone)}
-                  className="h-8 w-8 items-center justify-center rounded-full bg-white border border-slate-200 active:bg-slate-100"
+                  className="h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white active:bg-slate-100"
                 >
                   <Ionicons name="call-outline" size={15} color="#208AEF" />
                 </Pressable>
               )}
             </View>
 
-            {/* Paginador de pedidos si hay varios */}
             {orders.length > 1 && (
-              <View className="mb-3 flex-row items-center justify-between border-t border-slate-100 pt-2 px-1">
+              <View className="mb-3 flex-row items-center justify-between border-t border-slate-100 px-1 pt-2">
                 <Pressable
                   onPress={() =>
                     setSelectedOrderIndex((prev) =>
@@ -575,8 +689,8 @@ export default function DriverMapScreen() {
                   <Text className="text-xs font-semibold text-slate-600">Anterior</Text>
                 </Pressable>
 
-                <Text className="text-xs text-slate-400 font-medium">
-                  {selectedOrderIndex + 1} de {orders.length} pedidos
+                <Text className="text-xs font-medium text-slate-400">
+                  {safeSelectedIndex + 1} de {orders.length} pedidos
                 </Text>
 
                 <Pressable
@@ -593,15 +707,16 @@ export default function DriverMapScreen() {
               </View>
             )}
 
-            {/* Botones de acción principales */}
             <View className="flex-row gap-2.5">
               <Pressable
                 onPress={() => handleOpenNavigation(activeOrder)}
-                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 active:bg-emerald-700 shadow-sm"
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 shadow-sm active:bg-emerald-700"
               >
                 <Ionicons name="navigate" size={17} color="#ffffff" />
-                <Text className="font-bold text-white text-sm">
-                  {activeOrder.status === 'picked_up' ? 'Navegar a Cliente' : 'Navegar al Local'}
+                <Text className="text-sm font-bold text-white">
+                  {activeOrder.status === 'picked_up'
+                    ? 'Navegar a Cliente'
+                    : 'Navegar al Local'}
                 </Text>
               </Pressable>
 
@@ -612,10 +727,12 @@ export default function DriverMapScreen() {
                     params: { id: activeOrder.id },
                   })
                 }
-                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 active:opacity-90 shadow-sm"
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 shadow-sm active:opacity-90"
               >
                 <Ionicons name="document-text-outline" size={17} color="#ffffff" />
-                <Text className="font-bold text-white text-sm">Gestionar Pedido</Text>
+                <Text className="text-sm font-bold text-white">
+                  Gestionar Pedido
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -628,13 +745,13 @@ export default function DriverMapScreen() {
               <View className="flex-1">
                 <Text className="text-sm font-bold text-slate-800">
                   {isOnline
-                    ? 'Esperando asignación de pedidos'
+                    ? 'Esperando pedidos disponibles'
                     : 'Estás en modo desconectado'}
                 </Text>
-                <Text className="text-xs text-slate-500 mt-0.5">
+                <Text className="mt-0.5 text-xs text-slate-500">
                   {isOnline
-                    ? 'Tu ubicación en vivo está activa para recibir pedidos de tus restaurantes.'
-                    : 'Activa el switch superior para empezar a recibir pedidos.'}
+                    ? 'Tu ubicación en vivo está activa para recibir entregas de tu flota.'
+                    : 'Activa el switch superior para empezar a compartir ubicación y recibir pedidos.'}
                 </Text>
               </View>
             </View>

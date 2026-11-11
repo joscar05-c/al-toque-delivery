@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Linking,
   Pressable,
   ScrollView,
   Switch,
@@ -45,8 +44,21 @@ export default function DriverMapWebScreen() {
   }, [driverId]);
 
   useEffect(() => {
-    void loadOrders();
-  }, [loadOrders]);
+    if (!driverId) return;
+    let cancelled = false;
+
+    fetchDriverOrders(driverId)
+      .then((result) => {
+        if (!cancelled) setOrders(result.orders);
+      })
+      .catch((err) => {
+        if (!cancelled) console.warn('[DriverMapWeb] Error cargando pedidos:', err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [driverId]);
 
   useEffect(() => {
     if (!driverId) return;
@@ -73,7 +85,7 @@ export default function DriverMapWebScreen() {
     try {
       setIsOnline(value);
       await setDriverActiveStatus(driverId, value);
-    } catch (err) {
+    } catch {
       Alert.alert('Error', 'No se pudo actualizar el estado de conexión.');
       setIsOnline(!value);
     } finally {

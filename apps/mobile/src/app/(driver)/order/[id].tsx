@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DriverOrderRouteMap } from '@/components/DriverOrderRouteMap';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import {
   claimDriverOrder,
@@ -21,6 +22,7 @@ import {
 import { formatPrice } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
+import { useDriverStore } from '@/store/driverStore';
 import type {
   MenuItem,
   OrderItem,
@@ -40,6 +42,7 @@ interface DriverOrderData {
 export default function DriverOrderDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const driverId = useAuthStore((state) => state.session?.user.id);
+  const driverCoords = useDriverStore((state) => state.coords);
 
   const [data, setData] = useState<DriverOrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -203,14 +206,68 @@ export default function DriverOrderDetailScreen() {
           )}
         </View>
 
-        {/* Dirección / mapa estático */}
+        {/* Ruta y Mapa Google Cloud (Mismo SDK que Selector de Dirección del Cliente) */}
         <View className="gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-          <Text className="text-xs font-semibold uppercase text-slate-400">
-            Dirección de entrega
-          </Text>
-          <View className="min-h-28 items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-5">
-            <Ionicons name="map-outline" size={30} color="#208AEF" />
-            <Text className="text-center text-sm font-medium text-slate-700">
+          <View className="flex-row items-center justify-between gap-2">
+            <Text className="text-xs font-semibold uppercase text-slate-400">
+              Recorrido y Entrega
+            </Text>
+            {order.restaurant && (
+              <Text className="text-xs font-bold text-amber-700" numberOfLines={1}>
+                🏪 {order.restaurant.name}
+              </Text>
+            )}
+          </View>
+
+          <DriverOrderRouteMap
+            restaurantName={order.restaurant?.name ?? 'Restaurante'}
+            restaurantCoords={
+              order.restaurant?.latitude != null &&
+              order.restaurant?.longitude != null
+                ? {
+                    latitude: order.restaurant.latitude,
+                    longitude: order.restaurant.longitude,
+                  }
+                : null
+            }
+            deliveryCoords={
+              order.delivery_latitude != null &&
+              order.delivery_longitude != null
+                ? {
+                    latitude: order.delivery_latitude,
+                    longitude: order.delivery_longitude,
+                  }
+                : null
+            }
+            driverCoords={
+              driverCoords
+                ? {
+                    latitude: driverCoords.latitude,
+                    longitude: driverCoords.longitude,
+                  }
+                : null
+            }
+            isHeadingToClient={
+              order.status === 'picked_up' || order.status === 'delivered'
+            }
+            fallbackDestinationQuery={
+              order.status === 'picked_up' || order.status === 'delivered'
+                ? deliveryAddress || 'Bagua Grande, Amazonas'
+                : order.restaurant
+                  ? `${order.restaurant.name}, ${order.restaurant.address || 'Bagua'}`
+                  : deliveryAddress || 'Bagua Grande, Amazonas'
+            }
+          />
+
+          <View className="gap-1.5 rounded-xl bg-slate-50 p-3">
+            {order.restaurant?.address && (
+              <Text className="text-xs text-slate-600">
+                <Text className="font-bold text-amber-700">Recojo: </Text>
+                {order.restaurant.address}
+              </Text>
+            )}
+            <Text className="text-xs text-slate-700">
+              <Text className="font-bold text-primary">Entrega: </Text>
               {deliveryAddress || 'Dirección no disponible'}
             </Text>
           </View>

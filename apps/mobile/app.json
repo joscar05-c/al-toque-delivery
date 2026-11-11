@@ -17,7 +17,10 @@
       "package": "com.deliverygofast1.app",
       "versionCode": 15,
       "permissions": [
-        "com.google.android.gms.permission.AD_ID"
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -45,7 +48,11 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Al Toque Delivery necesita tu ubicación para compartir tu posición durante las entregas."
+          "locationAlwaysAndWhenInUsePermission": "Al Toque Delivery necesita acceso continuo a tu ubicación para transmitir entregas en vivo incluso con la app en segundo plano.",
+          "locationAlwaysPermission": "Al Toque Delivery usa tu ubicación en segundo plano para actualizar tu recorrido mientras repartes pedidos.",
+          "locationWhenInUsePermission": "Al Toque Delivery necesita tu ubicación para compartir tu posición durante las entregas.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
         }
       ],
       "expo-notifications",

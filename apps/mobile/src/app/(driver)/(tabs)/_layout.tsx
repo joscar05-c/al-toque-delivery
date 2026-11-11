@@ -3,6 +3,12 @@ import { Tabs } from 'expo-router';
 import * as Location from 'expo-location';
 import { useEffect } from 'react';
 
+import {
+  isBackgroundDriverTrackingRunning,
+  startBackgroundDriverTracking,
+  stopBackgroundDriverTracking,
+  syncBackgroundTrackingSession,
+} from '@/lib/backgroundLocation';
 import { getDriverActiveStatus, saveDriverLocation } from '@/lib/driverLocations';
 import { useAuthStore } from '@/store/authStore';
 import { useDriverStore } from '@/store/driverStore';
@@ -12,6 +18,9 @@ export default function DriverTabsLayout() {
   const driverId = useAuthStore((state) => state.session?.user.id);
   const isOnline = useDriverStore((state) => state.isOnline);
   const setIsOnline = useDriverStore((state) => state.setIsOnline);
+  const setBackgroundTrackingActive = useDriverStore(
+    (state) => state.setBackgroundTrackingActive,
+  );
   const setCoords = useDriverStore((state) => state.setCoords);
 
   // Carga inicial del estado online del repartidor
@@ -22,6 +31,48 @@ export default function DriverTabsLayout() {
       .catch((err) => console.warn('[driver-status] Error obteniendo estado:', err));
   }, [driverId, setIsOnline]);
 
+  // Sincroniza estado En Línea con el tracking GPS en segundo plano
+  useEffect(() => {
+    if (!driverId) {
+      void stopBackgroundDriverTracking();
+      return;
+    }
+
+    let cancelled = false;
+    const syncBg = async () => {
+      await syncBackgroundTrackingSession(driverId, isOnline);
+      if (isOnline) {
+        const active = await startBackgroundDriverTracking(driverId, {
+          promptPermission: false,
+        });
+        if (!cancelled) {
+          setBackgroundTrackingActive(active);
+        }
+      } else {
+        await stopBackgroundDriverTracking();
+        if (!cancelled) {
+          setBackgroundTrackingActive(false);
+        }
+      }
+    };
+
+    void syncBg().catch((err) => {
+      console.warn('[driver-bg-gps] Error sincronizando segundo plano:', err);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [driverId, isOnline, setBackgroundTrackingActive]);
+
+  // Al salir del grupo de repartidor (p. ej. logout), detener tracking en segundo plano
+  useEffect(() => {
+    return () => {
+      void stopBackgroundDriverTracking();
+    };
+  }, []);
+
+  // Tracking en primer plano para refresco inmediato de UI y mapa
   useEffect(() => {
     if (!driverId) return;
 
@@ -33,6 +84,9 @@ export default function DriverTabsLayout() {
       const permission = await Location.requestForegroundPermissionsAsync();
       if (!permission.granted || disposed) return;
 
+      const bgRunning = await isBackgroundDriverTrackingRunning();
+      if (!disposed) setBackgroundTrackingActive(bgRunning);
+
       subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Balanced,
@@ -41,7 +95,6 @@ export default function DriverTabsLayout() {
         },
         ({ coords }) => {
           if (disposed) return;
-          // Actualiza coordenadas en memoria para la UI del mapa
           setCoords({
             latitude: coords.latitude,
             longitude: coords.longitude,
@@ -50,7 +103,6 @@ export default function DriverTabsLayout() {
             accuracy: coords.accuracy,
           });
 
-          // Solo sincroniza con base de datos si el repartidor está en línea
           if (useDriverStore.getState().isOnline) {
             writeQueue = writeQueue
               .then(async () => {
@@ -83,7 +135,7 @@ export default function DriverTabsLayout() {
       disposed = true;
       subscription?.remove();
     };
-  }, [driverId, setCoords]);
+  }, [driverId, setCoords, setBackgroundTrackingActive]);
 
 
   return (
