@@ -22,6 +22,7 @@ import {
   type RestaurantWithCategory,
 } from '@/lib/restaurants';
 import { supabase } from '@/lib/supabase';
+import { useUnreadNotificationsCount } from '@/hooks/useUnreadNotificationsCount';
 import { useAuthStore } from '@/store/authStore';
 import { useCheckoutStore } from '@/store/checkoutStore';
 import type { Address, RestaurantCategory } from '@delivery/shared';
@@ -37,6 +38,7 @@ function errorMessage(e: unknown, fallback: string): string {
 
 export default function ClientHomeScreen() {
   const { session, profile } = useAuthStore();
+  const unreadNotifications = useUnreadNotificationsCount(session?.user.id);
   const selectedAddress = useCheckoutStore((state) => state.selectedAddress);
 
   const [address, setAddress] = useState<Pick<Address, 'street' | 'city'> | null>(null);
@@ -277,12 +279,28 @@ export default function ClientHomeScreen() {
                     <Text className="text-sm font-medium text-[#8E98A8]">Hola de nuevo,</Text>
                     <Text className="text-2xl font-bold text-[#1C2433]">{firstName} 👋</Text>
                   </View>
-                  <View className="h-12 w-12 rounded-full bg-white p-0.5 shadow-sm border border-slate-100 items-center justify-center">
-                    <Image
-                      source={require('../../../../assets/images/logo.png')}
-                      style={{ width: 42, height: 42, borderRadius: 21 }}
-                      contentFit="contain"
-                    />
+                  <View className="flex-row items-center gap-2.5">
+                    <Pressable
+                      onPress={() => router.push('/(client)/notifications')}
+                      className="relative h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 active:opacity-75"
+                    >
+                      <Ionicons name="notifications-outline" size={20} color="#1C2433" />
+                      {unreadNotifications > 0 && (
+                        <View className="absolute -right-0.5 -top-0.5 min-w-[18px] items-center justify-center rounded-full bg-primary px-1 py-0.5">
+                          <Text className="text-[10px] font-extrabold text-white">
+                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                          </Text>
+                        </View>
+                      )}
+                    </Pressable>
+
+                    <View className="h-12 w-12 rounded-full bg-white p-0.5 shadow-sm border border-slate-100 items-center justify-center">
+                      <Image
+                        source={require('../../../../assets/images/logo.png')}
+                        style={{ width: 42, height: 42, borderRadius: 21 }}
+                        contentFit="contain"
+                      />
+                    </View>
                   </View>
                 </View>
 

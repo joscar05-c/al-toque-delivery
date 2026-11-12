@@ -28,6 +28,7 @@ import {
   type DriverFullProfile,
 } from '@/lib/driverProfile';
 import { formatPrice } from '@/lib/format';
+import { useUnreadNotificationsCount } from '@/hooks/useUnreadNotificationsCount';
 import { useAuthStore } from '@/store/authStore';
 import { useDriverStore } from '@/store/driverStore';
 
@@ -55,6 +56,7 @@ export default function DriverProfileScreen() {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const driverId = session?.user.id;
+  const unreadNotifications = useUnreadNotificationsCount(driverId);
 
   const loadDriverProfile = useCallback(async (uid: string) => {
     try {
@@ -376,6 +378,35 @@ export default function DriverProfileScreen() {
             {formatPrice(driverInfo?.stats.totalDeliveredAmount ?? 0)}
           </Text>
         </View>
+
+        <Pressable
+          onPress={() => router.push('/(driver)/notifications')}
+          className="flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 active:bg-slate-50"
+        >
+          <View className="flex-row items-center gap-3">
+            <View className="h-9 w-9 items-center justify-center rounded-xl bg-amber-50">
+              <Ionicons name="notifications-outline" size={19} color="#F29F30" />
+            </View>
+            <View>
+              <Text className="text-sm font-bold text-slate-900">
+                Mis Notificaciones
+              </Text>
+              <Text className="text-xs text-slate-500">
+                Avisos de nuevos pedidos y asignaciones
+              </Text>
+            </View>
+          </View>
+          <View className="flex-row items-center gap-2">
+            {unreadNotifications > 0 && (
+              <View className="rounded-full bg-primary px-2 py-0.5">
+                <Text className="text-[11px] font-extrabold text-white">
+                  {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                </Text>
+              </View>
+            )}
+            <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+          </View>
+        </Pressable>
 
         <Pressable
           onPress={() => router.push('/(driver)/history')}

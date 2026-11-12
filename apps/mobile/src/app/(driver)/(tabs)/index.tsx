@@ -19,6 +19,7 @@ import {
   type DriverOrder,
 } from '@/lib/driverOrders';
 import { supabase } from '@/lib/supabase';
+import { useUnreadNotificationsCount } from '@/hooks/useUnreadNotificationsCount';
 import { useAuthStore } from '@/store/authStore';
 import type { DriverTypeCode } from '@delivery/shared';
 
@@ -26,6 +27,7 @@ import type { DriverTypeCode } from '@delivery/shared';
 export default function AvailableOrdersScreen() {
   const session = useAuthStore((state) => state.session);
   const driverId = session?.user.id;
+  const unreadNotifications = useUnreadNotificationsCount(driverId);
 
   const [orders, setOrders] = useState<DriverOrder[]>([]);
   const [isAssigned, setIsAssigned] = useState(true);
@@ -150,18 +152,34 @@ export default function AvailableOrdersScreen() {
               : 'Red Al Toque (Plataforma)'}
           </Text>
         </View>
-        <View
-          className={`rounded-full px-3 py-1 ${
-            driverType === 'restaurant_own' ? 'bg-amber-100' : 'bg-blue-100'
-          }`}
-        >
-          <Text
-            className={`text-xs font-bold ${
-              driverType === 'restaurant_own' ? 'text-amber-800' : 'text-blue-800'
+        <View className="flex-row items-center gap-2">
+          <View
+            className={`rounded-full px-3 py-1 ${
+              driverType === 'restaurant_own' ? 'bg-amber-100' : 'bg-blue-100'
             }`}
           >
-            {driverType === 'restaurant_own' ? '🛵 Flota Propia' : '⚡ Al Toque'}
-          </Text>
+            <Text
+              className={`text-xs font-bold ${
+                driverType === 'restaurant_own' ? 'text-amber-800' : 'text-blue-800'
+              }`}
+            >
+              {driverType === 'restaurant_own' ? '🛵 Flota Propia' : '⚡ Al Toque'}
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={() => router.push('/(driver)/notifications')}
+            className="relative h-9 w-9 items-center justify-center rounded-full bg-slate-100 active:opacity-75"
+          >
+            <Ionicons name="notifications-outline" size={19} color="#334155" />
+            {unreadNotifications > 0 && (
+              <View className="absolute -right-1 -top-1 min-w-[18px] items-center justify-center rounded-full bg-primary px-1 py-0.5">
+                <Text className="text-[10px] font-extrabold text-white">
+                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                </Text>
+              </View>
+            )}
+          </Pressable>
         </View>
       </View>
 

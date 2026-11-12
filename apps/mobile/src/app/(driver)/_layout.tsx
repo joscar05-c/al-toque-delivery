@@ -21,6 +21,7 @@ export default function DriverLayout() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="order/[id]" />
       <Stack.Screen name="history" />
+      <Stack.Screen name="notifications" />
     </Stack>
   );
 }

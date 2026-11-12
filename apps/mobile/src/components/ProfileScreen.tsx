@@ -26,6 +26,7 @@ import {
   fetchUserDriverApplication,
   fetchUserRestaurantApplication,
 } from '@/lib/profile';
+import { useUnreadNotificationsCount } from '@/hooks/useUnreadNotificationsCount';
 import { useAuthStore } from '@/store/authStore';
 import type { DriverApplication, RestaurantApplication, RoleName } from '@delivery/shared';
 
@@ -49,7 +50,6 @@ export function ProfileScreen() {
 
   const [driverApp, setDriverApp] = useState<DriverApplication | null>(null);
   const [restaurantApp, setRestaurantApp] = useState<RestaurantApplication | null>(null);
-  const [isLoadingApps, setIsLoadingApps] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -59,6 +59,7 @@ export function ProfileScreen() {
   const [showRestaurantModal, setShowRestaurantModal] = useState(false);
 
   const userId = session?.user.id;
+  const unreadNotifications = useUnreadNotificationsCount(userId);
 
   const loadApplications = useCallback(async (uid: string) => {
     try {
@@ -70,15 +71,30 @@ export function ProfileScreen() {
       setRestaurantApp(rApp);
     } catch (e) {
       console.warn('[profile] Error cargando solicitudes:', e);
-    } finally {
-      setIsLoadingApps(false);
     }
   }, []);
 
   useEffect(() => {
     if (!userId) return;
-    loadApplications(userId);
-  }, [userId, loadApplications]);
+    let cancelled = false;
+
+    Promise.all([
+      fetchUserDriverApplication(userId),
+      fetchUserRestaurantApplication(userId),
+    ])
+      .then(([dApp, rApp]) => {
+        if (cancelled) return;
+        setDriverApp(dApp);
+        setRestaurantApp(rApp);
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) console.warn('[profile] Error cargando solicitudes:', e);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const onRefresh = async () => {
     if (!userId) return;
@@ -206,6 +222,13 @@ export function ProfileScreen() {
           Mi Cuenta
         </Text>
         <View className="rounded-3xl bg-white px-4 py-1 shadow-sm border border-slate-100">
+          <MenuRow
+            icon="notifications-outline"
+            title="Mis Notificaciones"
+            subtitle="Historial de avisos y estados de pedidos"
+            badgeCount={unreadNotifications}
+            onPress={() => router.push('/(client)/notifications')}
+          />
           <MenuRow
             icon="location-outline"
             title="Mis Direcciones de Entrega"
@@ -395,6 +418,7 @@ function MenuRow({
   iconColor = '#F29F30',
   title,
   subtitle,
+  badgeCount = 0,
   isLast = false,
   onPress,
 }: {
@@ -402,6 +426,7 @@ function MenuRow({
   iconColor?: string;
   title: string;
   subtitle: string;
+  badgeCount?: number;
   isLast?: boolean;
   onPress: () => void;
 }) {
@@ -423,7 +448,16 @@ function MenuRow({
           </Text>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#CBD5E1" />
+      <View className="flex-row items-center gap-2">
+        {badgeCount > 0 && (
+          <View className="rounded-full bg-primary px-2 py-0.5">
+            <Text className="text-[11px] font-extrabold text-white">
+              {badgeCount > 99 ? '99+' : badgeCount}
+            </Text>
+          </View>
+        )}
+        <Ionicons name="chevron-forward" size={18} color="#CBD5E1" />
+      </View>
     </Pressable>
   );
 }

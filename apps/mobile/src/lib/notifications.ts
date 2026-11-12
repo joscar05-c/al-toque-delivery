@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
+import type { NotificationRow } from '@delivery/shared';
 
 export const ANDROID_ORDERS_CHANNEL_ID = 'al-toque-orders';
 
@@ -142,4 +143,59 @@ export async function deactivateDeviceTokenForUser(userId: string): Promise<void
   } catch (error) {
     console.warn('[push] No se pudo desactivar el token al cerrar sesión:', error);
   }
+}
+
+/** Obtiene el historial de notificaciones del usuario (más recientes primero). */
+export async function fetchUserNotifications(
+  userId: string,
+  limit = 50,
+): Promise<NotificationRow[]> {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return (data ?? []) as NotificationRow[];
+}
+
+/** Cuenta cuántas notificaciones sin leer tiene el usuario. */
+export async function fetchUnreadNotificationsCount(
+  userId: string,
+): Promise<number> {
+  const { count, error } = await supabase
+    .from('notifications')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('is_read', false);
+
+  if (error) throw error;
+  return count ?? 0;
+}
+
+/** Marca una notificación individual como leída. */
+export async function markNotificationAsRead(
+  notificationId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', notificationId);
+
+  if (error) throw error;
+}
+
+/** Marca todas las notificaciones pendientes del usuario como leídas. */
+export async function markAllNotificationsAsRead(
+  userId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('user_id', userId)
+    .eq('is_read', false);
+
+  if (error) throw error;
 }
