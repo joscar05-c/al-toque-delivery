@@ -19,27 +19,27 @@ import {
   type OrderFullDetail,
 } from '@/lib/orders';
 import { supabase } from '@/lib/supabase';
-import type { Order, OrderStatus } from '@delivery/shared';
+import type { Order, OrderPayment, OrderStatus } from '@delivery/shared';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-// Timeline de 5 pasos (el enum tiene 'ready'/'cancelled': se manejan aparte).
+// Timeline de 6 pasos en vivo (incluye 'ready'; 'cancelled' se maneja aparte).
 const STEPS: { key: OrderStatus; label: string; icon: IconName }[] = [
   { key: 'pending', label: 'Pedido recibido', icon: 'receipt-outline' },
-  { key: 'accepted', label: 'Aceptado', icon: 'checkmark-circle-outline' },
+  { key: 'accepted', label: 'Aceptado por el restaurante', icon: 'checkmark-circle-outline' },
   { key: 'preparing', label: 'Preparando tu pedido', icon: 'flame-outline' },
+  { key: 'ready', label: 'Listo en tienda', icon: 'bag-check-outline' },
   { key: 'picked_up', label: 'Repartidor en camino', icon: 'bicycle-outline' },
   { key: 'delivered', label: 'Entregado', icon: 'home-outline' },
 ];
 
-// 'ready' pinta igual que 'preparing'; 'cancelled' no usa timeline.
 const STEP_INDEX: Record<OrderStatus, number> = {
   pending: 0,
   accepted: 1,
   preparing: 2,
-  ready: 2,
-  picked_up: 3,
-  delivered: 4,
+  ready: 3,
+  picked_up: 4,
+  delivered: 5,
   cancelled: -1,
 };
 
@@ -151,7 +151,7 @@ export default function OrderDetailScreen() {
     };
   }, [detail?.order]);
 
-  // Realtime: UPDATE de este pedido -> el timeline avanza solo.
+  // Realtime: UPDATE de este pedido y de su pago -> el timeline, driver_id y tiempos avanzan solos.
   useEffect(() => {
     if (!id) return;
 
@@ -164,8 +164,30 @@ export default function OrderDetailScreen() {
           const updated = payload.new as Order;
           setDetail((prev) =>
             prev && prev.order.id === updated.id
-              ? { ...prev, order: { ...prev.order, status: updated.status } }
+              ? {
+                  ...prev,
+                  order: {
+                    ...prev.order,
+                    ...updated,
+                    restaurants: prev.order.restaurants,
+                  },
+                }
               : prev,
+          );
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'order_payments',
+          filter: `order_id=eq.${id}`,
+        },
+        (payload) => {
+          const updatedPayment = payload.new as OrderPayment;
+          setDetail((prev) =>
+            prev ? { ...prev, payment: updatedPayment } : prev,
           );
         },
       )
@@ -271,6 +293,18 @@ export default function OrderDetailScreen() {
           </View>
         ) : (
           <View className="rounded-2xl border border-slate-200 bg-white p-4">
+            {order.estimated_prep_time != null &&
+              order.estimated_prep_time > 0 &&
+              (order.status === 'accepted' ||
+                order.status === 'preparing' ||
+                order.status === 'ready') && (
+                <View className="mb-4 flex-row items-center gap-2 rounded-xl bg-amber-50 px-3 py-2.5">
+                  <Ionicons name="time-outline" size={18} color="#D97706" />
+                  <Text className="text-xs font-semibold text-amber-800">
+                    Tiempo estimado de preparación: ~{order.estimated_prep_time} min
+                  </Text>
+                </View>
+              )}
             {STEPS.map((step, index) => {
               const isDone = currentIndex >= index;
               const isLast = index === STEPS.length - 1;
@@ -392,7 +426,7 @@ export default function OrderDetailScreen() {
                   </Text>
                   {Array.isArray(item.options) && item.options.length > 0 && (
                     <Text className="text-xs text-slate-400 mt-0.5">
-                      {(item.options as Array<{ optionName: string }>).map((o) => o.optionName).join(', ')}
+                      {(item.options as { optionName: string }[]).map((o) => o.optionName).join(', ')}
                     </Text>
                   )}
                 </View>

@@ -419,3 +419,27 @@ BEGIN
       EXECUTE FUNCTION public.trg_fn_notify_driver_application_events();
   END IF;
 END $$;
+
+-- ----------------------------------------------------------------------------
+-- Realtime Publication: Ensure order_payments and notifications broadcast live
+-- ----------------------------------------------------------------------------
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime'
+      AND schemaname = 'public'
+      AND tablename = 'order_payments'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.order_payments;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime'
+      AND schemaname = 'public'
+      AND tablename = 'notifications'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+  END IF;
+END $$;

@@ -72,11 +72,11 @@ export default function ClientOrdersScreen() {
         },
         (payload) => {
           const updated = payload.new as Order;
-          // Match por id y reemplazo solo del status (conserva el join).
+          // Match por id y fusión de campos actualizados conservando el join de restaurante.
           setOrders((prev) =>
             prev.map((order) =>
               order.id === updated.id
-                ? { ...order, status: updated.status }
+                ? { ...order, ...updated, restaurants: order.restaurants }
                 : order,
             ),
           );

@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   View,
@@ -46,6 +47,7 @@ export default function DriverOrderDetailScreen() {
 
   const [data, setData] = useState<DriverOrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,8 +72,10 @@ export default function DriverOrderDetailScreen() {
     };
   }, [id]);
 
+  // Carga inicial + suscripción Realtime a cambios del pedido
   useEffect(() => {
     let cancelled = false;
+    if (!id) return;
 
     loadOrder()
       .then((result) => {
@@ -87,10 +91,57 @@ export default function DriverOrderDetailScreen() {
         if (!cancelled) setIsLoading(false);
       });
 
+    const channel = supabase
+      .channel(`driver_order_detail_${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `id=eq.${id}`,
+        },
+        () => {
+          void loadOrder()
+            .then((result) => {
+              if (cancelled) return;
+              setData(result);
+              setError(null);
+            })
+            .catch((e: unknown) => {
+              if (!cancelled) {
+                setError(
+                  e instanceof Error
+                    ? e.message
+                    : 'El pedido ya no está disponible.',
+                );
+              }
+            });
+        },
+      )
+      .subscribe();
+
     return () => {
       cancelled = true;
+      supabase.removeChannel(channel);
     };
-  }, [loadOrder]);
+  }, [id, loadOrder]);
+
+  const handleRefresh = () => {
+    if (!id || isRefreshing) return;
+    setIsRefreshing(true);
+    void loadOrder()
+      .then((result) => {
+        setData(result);
+        setError(null);
+      })
+      .catch((e: unknown) => {
+        setError(e instanceof Error ? e.message : 'Error recargando pedido');
+      })
+      .finally(() => {
+        setIsRefreshing(false);
+      });
+  };
 
   const handleAction = async (actionType: 'claim' | OrderStatus) => {
     if (!data || !driverId || isUpdating) return;
@@ -189,7 +240,16 @@ export default function DriverOrderDetailScreen() {
         <OrderStatusBadge status={order.status} />
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 16, gap: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor="#208AEF"
+          />
+        }
+      >
         {/* Cliente */}
         <View className="gap-2 rounded-2xl border border-slate-200 bg-white p-4">
           <Text className="text-xs font-semibold uppercase text-slate-400">
@@ -320,7 +380,7 @@ export default function DriverOrderDetailScreen() {
       </ScrollView>
 
       {/* Acción disponible según estado actual */}
-      {action && (
+      {action ? (
         <View className="bg-white p-4">
           <Pressable
             onPress={() => handleAction(action.actionType)}
@@ -337,7 +397,19 @@ export default function DriverOrderDetailScreen() {
             )}
           </Pressable>
         </View>
-      )}
+      ) : order.driver_id === driverId &&
+        (order.status === 'pending' ||
+          order.status === 'accepted' ||
+          order.status === 'preparing') ? (
+        <View className="border-t border-slate-100 bg-white px-4 py-3.5">
+          <View className="flex-row items-center justify-center gap-2 rounded-xl bg-amber-50 px-4 py-3">
+            <Ionicons name="time-outline" size={18} color="#D97706" />
+            <Text className="text-xs font-semibold text-amber-800">
+              Esperando que el restaurante marque el pedido como Listo…
+            </Text>
+          </View>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
