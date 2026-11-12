@@ -33,6 +33,7 @@ function mapDriverOrderRow(row: DriverOrderRpcRow): DriverOrder {
     delivery_latitude: row.delivery_latitude,
     delivery_longitude: row.delivery_longitude,
     fulfillment_type: row.fulfillment_type,
+    delivery_pin: '',
     estimated_prep_time: row.estimated_prep_time,
     estimated_ready_time: row.estimated_ready_time,
     confirmed_at: row.confirmed_at,
@@ -127,6 +128,20 @@ export async function fetchDriverOrderById(
 export async function claimDriverOrder(orderId: string): Promise<Order> {
   const { data, error } = await supabase.rpc('driver_claim_order', {
     p_order_id: orderId,
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/** Finaliza la entrega verificando el código PIN de 4 dígitos proporcionado por el cliente. */
+export async function completeDriverOrderDelivery(
+  orderId: string,
+  pin: string,
+): Promise<Order> {
+  const { data, error } = await supabase.rpc('driver_complete_delivery', {
+    p_order_id: orderId,
+    p_pin: pin.trim(),
   });
 
   if (error) throw error;

@@ -346,6 +346,45 @@ export default function OrderDetailScreen() {
           </View>
         )}
 
+        {/* Código PIN de entrega segura (4 dígitos) */}
+        {!isCancelled &&
+          order.status !== 'delivered' &&
+          order.fulfillment_type !== 'pickup' &&
+          Boolean(order.delivery_pin) && (
+            <View className="gap-3 rounded-2xl border border-blue-200 bg-blue-50/70 p-4">
+              <View className="flex-row items-center gap-2.5">
+                <View className="h-9 w-9 items-center justify-center rounded-full bg-primary/15">
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={20}
+                    color="#208AEF"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-sm font-extrabold text-slate-900">
+                    Código PIN de Entrega Segura
+                  </Text>
+                  <Text className="text-xs text-slate-600">
+                    Díctaselo al repartidor únicamente al recibir tu pedido
+                  </Text>
+                </View>
+              </View>
+
+              <View className="flex-row items-center justify-center gap-2.5 py-1">
+                {order.delivery_pin.split('').map((digit, idx) => (
+                  <View
+                    key={`${idx}-${digit}`}
+                    className="h-12 w-12 items-center justify-center rounded-xl border border-blue-200 bg-white shadow-sm"
+                  >
+                    <Text className="text-xl font-black text-primary">
+                      {digit}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
         {order.status === 'delivered' && (
           <Pressable
             onPress={() =>

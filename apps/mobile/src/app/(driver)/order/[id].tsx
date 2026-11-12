@@ -5,10 +5,12 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Modal,
   Pressable,
   RefreshControl,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,6 +19,7 @@ import { DriverOrderRouteMap } from '@/components/DriverOrderRouteMap';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import {
   claimDriverOrder,
+  completeDriverOrderDelivery,
   fetchDriverOrderById,
   type DriverOrder,
 } from '@/lib/driverOrders';
@@ -50,6 +53,11 @@ export default function DriverOrderDetailScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Estado del modal de verificación de código PIN (4 dígitos)
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState<string | null>(null);
 
   const loadOrder = useCallback(async (): Promise<DriverOrderData> => {
     if (!id) throw new Error('Pedido inválido');
@@ -146,12 +154,19 @@ export default function DriverOrderDetailScreen() {
   const handleAction = async (actionType: 'claim' | OrderStatus) => {
     if (!data || !driverId || isUpdating) return;
 
+    if (actionType === 'delivered') {
+      setPinInput('');
+      setPinError(null);
+      setShowPinModal(true);
+      return;
+    }
+
     setIsUpdating(true);
     try {
       if (actionType === 'claim') {
         await claimDriverOrder(data.order.id);
       } else {
-        // Recogida/entrega solo para el pedido asignado a este repartidor.
+        // Recogida solo para el pedido asignado a este repartidor.
         const { data: updated, error: updateError } = await supabase
           .from('orders')
           .update({ status: actionType, updated_at: new Date().toISOString() })
@@ -170,6 +185,32 @@ export default function DriverOrderDetailScreen() {
       Alert.alert(
         'No se pudo actualizar',
         e instanceof Error ? e.message : 'Inténtalo de nuevo.',
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleConfirmPinDelivery = async () => {
+    if (!data || !driverId || isUpdating) return;
+    const cleanPin = pinInput.replace(/\D/g, '').slice(0, 4);
+    if (cleanPin.length !== 4) {
+      setPinError('Ingresa los 4 dígitos del código PIN del cliente.');
+      return;
+    }
+
+    setIsUpdating(true);
+    setPinError(null);
+    try {
+      await completeDriverOrderDelivery(data.order.id, cleanPin);
+      setShowPinModal(false);
+      setPinInput('');
+      setData(await loadOrder());
+    } catch (e) {
+      setPinError(
+        e instanceof Error
+          ? e.message
+          : 'Código PIN incorrecto. Verifica con el cliente.',
       );
     } finally {
       setIsUpdating(false);
@@ -410,6 +451,106 @@ export default function DriverOrderDetailScreen() {
           </View>
         </View>
       ) : null}
+
+      {/* Modal para confirmar entrega con código PIN de 4 dígitos */}
+      <Modal
+        visible={showPinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!isUpdating) setShowPinModal(false);
+        }}
+      >
+        <View className="flex-1 items-center justify-center bg-black/50 px-6">
+          <View className="w-full max-w-sm rounded-3xl bg-white p-6 gap-4 shadow-lg">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2.5">
+                <View className="h-10 w-10 items-center justify-center rounded-2xl bg-blue-50">
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={22}
+                    color="#208AEF"
+                  />
+                </View>
+                <View>
+                  <Text className="text-base font-bold text-slate-900">
+                    Confirmar Entrega
+                  </Text>
+                  <Text className="text-xs text-slate-500">
+                    Solicita el código PIN al cliente
+                  </Text>
+                </View>
+              </View>
+
+              <Pressable
+                onPress={() => {
+                  if (!isUpdating) setShowPinModal(false);
+                }}
+                className="h-8 w-8 items-center justify-center rounded-full bg-slate-100"
+              >
+                <Ionicons name="close" size={18} color="#64748B" />
+              </Pressable>
+            </View>
+
+            <Text className="text-xs leading-4 text-slate-600">
+              Ingresa el código de 4 dígitos que aparece en la pantalla del pedido del cliente ({order.client?.name ?? 'Cliente'}).
+            </Text>
+
+            <TextInput
+              value={pinInput}
+              onChangeText={(text) => {
+                setPinInput(text.replace(/\D/g, '').slice(0, 4));
+                if (pinError) setPinError(null);
+              }}
+              placeholder="0000"
+              placeholderTextColor="#CBD5E1"
+              keyboardType="number-pad"
+              maxLength={4}
+              autoFocus
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-center text-2xl font-black tracking-[12px] text-slate-900"
+            />
+
+            {pinError && (
+              <View className="flex-row items-center gap-2 rounded-xl bg-red-50 px-3 py-2.5">
+                <Ionicons name="alert-circle" size={16} color="#DC2626" />
+                <Text className="flex-1 text-xs font-semibold text-red-700">
+                  {pinError}
+                </Text>
+              </View>
+            )}
+
+            <View className="flex-row gap-2.5 pt-1">
+              <Pressable
+                onPress={() => setShowPinModal(false)}
+                disabled={isUpdating}
+                className="flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white py-3.5 active:bg-slate-50"
+              >
+                <Text className="text-sm font-bold text-slate-600">
+                  Cancelar
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => void handleConfirmPinDelivery()}
+                disabled={isUpdating || pinInput.length !== 4}
+                className={`flex-1 items-center justify-center rounded-xl py-3.5 ${
+                  isUpdating || pinInput.length !== 4
+                    ? 'bg-primary/50'
+                    : 'bg-primary active:opacity-85'
+                }`}
+              >
+                {isUpdating ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text className="text-sm font-bold text-white">
+                    Confirmar
+                  </Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

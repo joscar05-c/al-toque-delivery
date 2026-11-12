@@ -756,6 +756,7 @@ export type Database = {
           delivery_latitude: number | null;
           delivery_longitude: number | null;
           fulfillment_type: 'delivery' | 'pickup';
+          delivery_pin: string;
           estimated_prep_time: number | null;
           estimated_ready_time: string | null;
           confirmed_at: string | null;
@@ -774,6 +775,7 @@ export type Database = {
           delivery_latitude?: number | null;
           delivery_longitude?: number | null;
           fulfillment_type?: 'delivery' | 'pickup';
+          delivery_pin?: string;
           estimated_prep_time?: number | null;
           estimated_ready_time?: string | null;
           confirmed_at?: string | null;
@@ -792,6 +794,7 @@ export type Database = {
           delivery_latitude?: number | null;
           delivery_longitude?: number | null;
           fulfillment_type?: 'delivery' | 'pickup';
+          delivery_pin?: string;
           estimated_prep_time?: number | null;
           estimated_ready_time?: string | null;
           confirmed_at?: string | null;
@@ -1350,6 +1353,10 @@ export type Database = {
       };
       driver_claim_order: {
         Args: { p_order_id: string };
+        Returns: Database['public']['Tables']['orders']['Row'];
+      };
+      driver_complete_delivery: {
+        Args: { p_order_id: string; p_pin: string };
         Returns: Database['public']['Tables']['orders']['Row'];
       };
       auto_assign_restaurant_driver: {
