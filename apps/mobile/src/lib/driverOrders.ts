@@ -33,7 +33,6 @@ function mapDriverOrderRow(row: DriverOrderRpcRow): DriverOrder {
     delivery_latitude: row.delivery_latitude,
     delivery_longitude: row.delivery_longitude,
     fulfillment_type: row.fulfillment_type,
-    delivery_pin: '',
     estimated_prep_time: row.estimated_prep_time,
     estimated_ready_time: row.estimated_ready_time,
     confirmed_at: row.confirmed_at,

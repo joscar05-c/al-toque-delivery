@@ -30,6 +30,7 @@ export interface OrderFullDetail {
   order: OrderDetail;
   items: OrderItemWithMenuItem[];
   payment: OrderPayment | null;
+  deliveryPin: string | null;
 }
 
 /** Pedidos del cliente, más recientes primero. */
@@ -43,15 +44,15 @@ export async function fetchClientOrders(
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  // Cast expl├¡cito: la forma del join la documenta el DTO.
+  // Cast explícito: la forma del join la documenta el DTO.
   return (data ?? []) as OrderWithRestaurant[];
 }
 
-/** Detalle completo: pedido + restaurante, items + platos, y pago (1:1). */
+/** Detalle completo: pedido + restaurante, items + platos, pago (1:1) y PIN privado. */
 export async function fetchOrderDetail(
   orderId: string,
 ): Promise<OrderFullDetail> {
-  const [orderRes, itemsRes, paymentRes] = await Promise.all([
+  const [orderRes, itemsRes, paymentRes, pinRes] = await Promise.all([
     supabase
       .from('orders')
       .select('*, restaurants(name, phone, address)')
@@ -66,6 +67,11 @@ export async function fetchOrderDetail(
       .select('*')
       .eq('order_id', orderId)
       .maybeSingle(),
+    supabase
+      .from('order_delivery_pins')
+      .select('pin')
+      .eq('order_id', orderId)
+      .maybeSingle(),
   ]);
 
   if (orderRes.error) throw orderRes.error;
@@ -76,6 +82,7 @@ export async function fetchOrderDetail(
     order: orderRes.data as OrderDetail,
     items: (itemsRes.data ?? []) as OrderItemWithMenuItem[],
     payment: paymentRes.data,
+    deliveryPin: pinRes.error ? null : (pinRes.data?.pin ?? null),
   };
 }
 

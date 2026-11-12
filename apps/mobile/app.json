@@ -55,7 +55,14 @@
           "isAndroidForegroundServiceEnabled": true
         }
       ],
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#F29F30",
+          "defaultChannel": "al-toque-orders"
+        }
+      ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       [

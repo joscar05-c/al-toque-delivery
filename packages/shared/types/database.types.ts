@@ -620,6 +620,32 @@ export type Database = {
           },
         ];
       };
+      order_delivery_pins: {
+        Row: {
+          created_at: string;
+          order_id: string;
+          pin: string;
+        };
+        Insert: {
+          created_at?: string;
+          order_id: string;
+          pin?: string;
+        };
+        Update: {
+          created_at?: string;
+          order_id?: string;
+          pin?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'order_delivery_pins_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: true;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       order_items: {
         Row: {
           id: string;
@@ -756,7 +782,6 @@ export type Database = {
           delivery_latitude: number | null;
           delivery_longitude: number | null;
           fulfillment_type: 'delivery' | 'pickup';
-          delivery_pin: string;
           estimated_prep_time: number | null;
           estimated_ready_time: string | null;
           confirmed_at: string | null;
@@ -775,7 +800,6 @@ export type Database = {
           delivery_latitude?: number | null;
           delivery_longitude?: number | null;
           fulfillment_type?: 'delivery' | 'pickup';
-          delivery_pin?: string;
           estimated_prep_time?: number | null;
           estimated_ready_time?: string | null;
           confirmed_at?: string | null;
@@ -794,7 +818,6 @@ export type Database = {
           delivery_latitude?: number | null;
           delivery_longitude?: number | null;
           fulfillment_type?: 'delivery' | 'pickup';
-          delivery_pin?: string;
           estimated_prep_time?: number | null;
           estimated_ready_time?: string | null;
           confirmed_at?: string | null;
@@ -1463,6 +1486,7 @@ export type MenuOptionGroup = Tables<'menu_option_groups'>;
 export type MenuOption = Tables<'menu_options'>;
 
 export type Order = Tables<'orders'>;
+export type OrderDeliveryPin = Tables<'order_delivery_pins'>;
 export type OrderItem = Tables<'order_items'>;
 export type OrderPayment = Tables<'order_payments'>;
 export type OrderStatus = Enums<'orders_status_enum'>;
