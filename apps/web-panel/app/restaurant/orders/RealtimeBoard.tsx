@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import {
@@ -8,7 +8,56 @@ import {
   autoAssignRestaurantOrder,
   updateOrderStatus,
 } from './actions';
-import { Truck, ChefHat, Clock, CheckCircle, XCircle, Sparkles, User } from 'lucide-react';
+import {
+  Truck,
+  ChefHat,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Sparkles,
+  User,
+  Volume2,
+  VolumeX,
+  BellRing,
+} from 'lucide-react';
+
+/**
+ * Reproduce un timbre de cocina de 3 notas usando Web Audio API (sin dependencias externas).
+ */
+function playKitchenChime() {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+
+    const ctx = new AudioCtx();
+    const notes = [880, 1174.66, 1318.51, 1760]; // A5, D6, E6, A6
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.14);
+
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + idx * 0.14);
+      gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + idx * 0.14 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.14 + 0.36);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime + idx * 0.14);
+      osc.stop(ctx.currentTime + idx * 0.14 + 0.38);
+    });
+
+    setTimeout(() => {
+      void ctx.close().catch(() => {});
+    }, 1500);
+  } catch {
+    // Ignorar si el navegador bloquea autoplay antes de interacción del usuario
+  }
+}
 
 interface OrderPaymentInfo {
   id: string;
@@ -82,6 +131,40 @@ export default function RealtimeBoard({
   const [isConnected, setIsConnected] = useState(false);
   const [pendingActions, setPendingActions] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'pending' | 'accepted' | 'preparing' | 'ready' | 'picked_up'>('pending');
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    return window.localStorage.getItem('al_toque_kitchen_sound') !== 'off';
+  });
+  const [newOrderAlert, setNewOrderAlert] = useState<{
+    id: string;
+    total: number;
+    fulfillmentType: 'delivery' | 'pickup';
+  } | null>(null);
+
+  const soundEnabledRef = useRef(soundEnabled);
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
+
+  const knownOrderIdsRef = useRef<Set<string>>(
+    new Set(initialOrders.map((o) => o.id)),
+  );
+  useEffect(() => {
+    for (const o of initialOrders) {
+      knownOrderIdsRef.current.add(o.id);
+    }
+  }, [initialOrders]);
+
+  const handleToggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('al_toque_kitchen_sound', next ? 'on' : 'off');
+    }
+    if (next) {
+      playKitchenChime();
+    }
+  };
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -107,6 +190,24 @@ export default function RealtimeBoard({
           }
 
           if (newOrder) {
+            const isBrandNewPending =
+              (payload.eventType === 'INSERT' || !knownOrderIdsRef.current.has(newOrder.id)) &&
+              newOrder.status === 'pending';
+
+            knownOrderIdsRef.current.add(newOrder.id);
+
+            if (isBrandNewPending) {
+              setNewOrderAlert({
+                id: newOrder.id,
+                total: Number(newOrder.total ?? 0),
+                fulfillmentType:
+                  newOrder.fulfillment_type === 'pickup' ? 'pickup' : 'delivery',
+              });
+              if (soundEnabledRef.current) {
+                playKitchenChime();
+              }
+            }
+
             if (['delivered', 'cancelled'].includes(newOrder.status)) {
               setDeletedIds((prev) => new Set(prev).add(newOrder.id));
             } else {
@@ -258,6 +359,33 @@ export default function RealtimeBoard({
           </span>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={handleToggleSound}
+            title={
+              soundEnabled
+                ? 'Alerta sonora activada (clic para silenciar)'
+                : 'Alerta sonora silenciada (clic para activar y probar)'
+            }
+            className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+              soundEnabled
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+            }`}
+          >
+            {soundEnabled ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5" />
+                Sonido activo
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-3.5 h-3.5" />
+                Silenciado
+              </>
+            )}
+          </button>
+
           <span
             className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
               deliveryType === 'restaurant_own'
@@ -284,6 +412,51 @@ export default function RealtimeBoard({
           </span>
         </div>
       </div>
+
+      {/* Banner visual y sonoro de nuevo pedido entrante */}
+      {newOrderAlert && (
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 shadow-sm"
+          role="alert"
+        >
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500 text-white shadow-sm">
+              <BellRing className="h-4 w-4 animate-bounce" />
+            </span>
+            <div>
+              <p className="text-sm font-bold text-amber-950">
+                ¡Nuevo pedido recibido! #{newOrderAlert.id.slice(0, 8).toUpperCase()}
+              </p>
+              <p className="text-xs font-medium text-amber-800">
+                {newOrderAlert.fulfillmentType === 'pickup'
+                  ? '🏬 Recojo en tienda'
+                  : '🛵 Entrega a domicilio'}{' '}
+                · Total S/ {newOrderAlert.total.toFixed(2)}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('pending');
+                setNewOrderAlert(null);
+              }}
+              className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-700 transition-colors cursor-pointer"
+            >
+              Ver en Pendientes
+            </button>
+            <button
+              type="button"
+              onClick={() => setNewOrderAlert(null)}
+              className="rounded-lg border border-amber-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition-colors cursor-pointer"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile & Tablet: Compact segmented control */}
       <div className="lg:hidden">

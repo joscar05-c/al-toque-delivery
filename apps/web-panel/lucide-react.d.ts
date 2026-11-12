@@ -55,4 +55,7 @@ declare module 'lucide-react' {
   export const CreditCard: LucideIcon;
   export const Shield: LucideIcon;
   export const Mail: LucideIcon;
+  export const Volume2: LucideIcon;
+  export const VolumeX: LucideIcon;
+  export const BellRing: LucideIcon;
 }
