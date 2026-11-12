@@ -5,6 +5,7 @@ import {
   signOutUser,
   type FirebaseUser,
 } from '@/lib/firebase';
+import { deactivateDeviceTokenForUser } from '@/lib/notifications';
 import { supabase, syncRealtimeAuth } from '@/lib/supabase';
 import type { RoleName, UserProfile } from '@delivery/shared';
 
@@ -160,6 +161,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   signOut: async () => {
+    const currentUserId = get().userId;
+    if (currentUserId) {
+      await deactivateDeviceTokenForUser(currentUserId);
+    }
     await signOutUser();
     set({
       user: null,

@@ -576,6 +576,50 @@ export type Database = {
           },
         ];
       };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          body: string;
+          type: string;
+          reference_id: string | null;
+          data: Json;
+          is_read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          body: string;
+          type: string;
+          reference_id?: string | null;
+          data?: Json;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          body?: string;
+          type?: string;
+          reference_id?: string | null;
+          data?: Json;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notifications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       order_items: {
         Row: {
           id: string;
@@ -1426,6 +1470,7 @@ export type Category = Tables<'categories'>;
 export type PaymentMethod = Tables<'payment_methods'>;
 export type Review = Tables<'reviews'>;
 export type DeviceToken = Tables<'device_tokens'>;
+export type NotificationRow = Tables<'notifications'>;
 
 /** Perfil de public.users con el nombre del rol embebido (join roles). */
 export type UserProfile = User & {

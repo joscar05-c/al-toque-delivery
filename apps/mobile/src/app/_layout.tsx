@@ -1,14 +1,21 @@
 import '../global.css';
 import '@/lib/backgroundLocation';
 
-import { Stack } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 
+import {
+  configurePushNotifications,
+  registerDeviceTokenForUser,
+} from '@/lib/notifications';
+import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 import { useOnboardingStore } from '@/store/onboardingStore';
-import { registerDeviceTokenForUser } from '@/lib/notifications';
+
+configurePushNotifications();
 
 /**
  * Layout raíz:
@@ -16,11 +23,15 @@ import { registerDeviceTokenForUser } from '@/lib/notifications';
  *    y el estado de onboarding desde AsyncStorage.
  * 2. Muestra un splash mientras se resuelve el estado inicial.
  * 3. Monta los grupos de rutas; cada grupo tiene su propio guard.
+ * 4. Registra el token FCM y gestiona el deep-linking al tocar una notificación push.
  */
 export default function RootLayout() {
+  const router = useRouter();
   const initialize = useAuthStore((state) => state.initialize);
   const isAuthLoading = useAuthStore((state) => state.isLoading);
   const userId = useAuthStore((state) => state.session?.user.id);
+  const role = useAuthStore((state) => state.role);
+  const refreshProfile = useAuthStore((state) => state.refreshProfile);
 
   const initializeOnboarding = useOnboardingStore(
     (state) => state.initializeOnboarding,
@@ -46,6 +57,70 @@ export default function RootLayout() {
       cancelled = true;
     };
   }, [userId]);
+
+  // Navegación automática cuando el usuario toca una notificación push.
+  useEffect(() => {
+    if (Platform.OS === 'web' || !userId) return;
+
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const rawData = response.notification.request.content.data as
+          | Record<string, unknown>
+          | undefined;
+        if (!rawData) return;
+
+        const notificationId =
+          typeof rawData.notificationId === 'string'
+            ? rawData.notificationId
+            : null;
+        if (notificationId) {
+          void supabase
+            .from('notifications')
+            .update({ is_read: true })
+            .eq('id', notificationId);
+        }
+
+        const target =
+          typeof rawData.target === 'string' ? rawData.target : null;
+        const orderId =
+          typeof rawData.orderId === 'string'
+            ? rawData.orderId
+            : typeof rawData.referenceId === 'string'
+              ? rawData.referenceId
+              : null;
+
+        if (target === 'driver_home') {
+          void refreshProfile().finally(() => {
+            router.replace('/(driver)/(tabs)');
+          });
+          return;
+        }
+
+        if (target === 'driver_application') {
+          router.push('/(client)/(tabs)/profile');
+          return;
+        }
+
+        if (orderId) {
+          if (target === 'driver_order' || role === 'driver') {
+            router.push({
+              pathname: '/(driver)/order/[id]',
+              params: { id: orderId },
+            });
+          } else {
+            router.push({
+              pathname: '/(client)/order/[id]',
+              params: { id: orderId },
+            });
+          }
+        }
+      },
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [refreshProfile, role, router, userId]);
 
   if (isAuthLoading || isOnboardingLoading) {
     return (
