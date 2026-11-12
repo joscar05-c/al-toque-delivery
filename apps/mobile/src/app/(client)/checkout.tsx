@@ -231,7 +231,7 @@ export default function CheckoutScreen() {
           <Ionicons name="chevron-back" size={24} color="#C4CAD3" />
         </Pressable>
         <Text className="text-lg font-semibold text-[#1C2433]">
-          Confirm Order
+          Confirmar Pedido
         </Text>
         <View className="h-10 w-10" />
       </View>
@@ -468,7 +468,7 @@ export default function CheckoutScreen() {
         {/* Métodos de pago existentes */}
         <View className="gap-3">
           <Text className="px-1 text-lg font-semibold text-[#1C2433]">
-            Payment method
+            Método de pago
           </Text>
           {paymentMethods.length === 0 ? (
             <View className="rounded-3xl bg-white p-5">
@@ -615,10 +615,12 @@ export default function CheckoutScreen() {
 
               <View className="rounded-2xl bg-[#FFF9F1] p-3.5 border border-[#F29F30]/30 gap-1">
                 <Text className="text-xs font-bold text-[#1C2433]">
-                  Número de destino: {restaurant?.phone || '999-999-999'}
+                  Número de destino:{' '}
+                  {restaurant?.phone?.trim() ||
+                    'No registrado — coordina con el restaurante'}
                 </Text>
                 <Text className="text-[11px] text-[#8E98A8]">
-                  Titular: {restaurant?.name || 'Al Toque Delivery'}
+                  Titular: {restaurant?.name || 'Restaurante'}
                 </Text>
               </View>
 
