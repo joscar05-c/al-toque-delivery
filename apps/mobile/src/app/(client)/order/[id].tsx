@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { DriverTrackingMap } from '@/components/DriverTrackingMap';
+import { callPhoneNumber } from '@/lib/contact';
 import { formatDateTime, formatPrice } from '@/lib/format';
 import {
   fetchOrderDetail,
@@ -227,7 +228,7 @@ export default function OrderDetailScreen() {
     );
   }
 
-  const { order, items, payment } = detail;
+  const { order, items, payment, deliveryPin } = detail;
   const currentIndex = STEP_INDEX[order.status];
   const isCancelled = order.status === 'cancelled';
 
@@ -350,7 +351,8 @@ export default function OrderDetailScreen() {
         {!isCancelled &&
           order.status !== 'delivered' &&
           order.fulfillment_type !== 'pickup' &&
-          Boolean(order.delivery_pin) && (
+          deliveryPin != null &&
+          deliveryPin.length > 0 && (
             <View className="gap-3 rounded-2xl border border-blue-200 bg-blue-50/70 p-4">
               <View className="flex-row items-center gap-2.5">
                 <View className="h-9 w-9 items-center justify-center rounded-full bg-primary/15">
@@ -371,7 +373,7 @@ export default function OrderDetailScreen() {
               </View>
 
               <View className="flex-row items-center justify-center gap-2.5 py-1">
-                {order.delivery_pin.split('').map((digit, idx) => (
+                {deliveryPin.split('').map((digit, idx) => (
                   <View
                     key={`${idx}-${digit}`}
                     className="h-12 w-12 items-center justify-center rounded-xl border border-blue-200 bg-white shadow-sm"
@@ -424,11 +426,27 @@ export default function OrderDetailScreen() {
             </View>
           )}
           {order.restaurants?.phone && (
-            <View className="flex-row items-center gap-1.5">
-              <Ionicons name="call-outline" size={14} color="#64748B" />
-              <Text className="text-sm text-slate-500">
-                {order.restaurants.phone}
-              </Text>
+            <View className="mt-1 flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-1.5">
+                <Ionicons name="call-outline" size={14} color="#64748B" />
+                <Text className="text-sm text-slate-600">
+                  {order.restaurants.phone}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() =>
+                  void callPhoneNumber(
+                    order.restaurants?.phone,
+                    'Este restaurante no tiene teléfono registrado.',
+                  )
+                }
+                accessibilityRole="button"
+                accessibilityLabel="Llamar al restaurante"
+                className="flex-row items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 active:opacity-70"
+              >
+                <Ionicons name="call" size={14} color="#208AEF" />
+                <Text className="text-xs font-bold text-primary">Llamar</Text>
+              </Pressable>
             </View>
           )}
         </View>

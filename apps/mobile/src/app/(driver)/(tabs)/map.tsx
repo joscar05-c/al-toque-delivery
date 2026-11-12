@@ -20,6 +20,7 @@ import {
   startBackgroundDriverTracking,
   stopBackgroundDriverTracking,
 } from '@/lib/backgroundLocation';
+import { callPhoneNumber } from '@/lib/contact';
 import { formatPrice } from '@/lib/format';
 import {
   saveDriverLocation,
@@ -356,14 +357,7 @@ export default function DriverMapScreen() {
   };
 
   const handleCall = (phone?: string | null) => {
-    if (!phone) {
-      Alert.alert(
-        'Teléfono no disponible',
-        'No hay número de contacto registrado.',
-      );
-      return;
-    }
-    void Linking.openURL(`tel:${phone}`);
+    void callPhoneNumber(phone);
   };
 
   const initialRegion = useMemo(() => {

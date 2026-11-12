@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Linking,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -22,6 +21,7 @@ import {
 import {
   RestaurantApplicationModal,
 } from '@/components/profile/RestaurantApplicationModal';
+import { openSupportWhatsApp } from '@/lib/contact';
 import {
   fetchUserDriverApplication,
   fetchUserRestaurantApplication,
@@ -133,19 +133,9 @@ export function ProfileScreen() {
   };
 
   const handleSupportContact = () => {
-    const message = encodeURIComponent(
-      `Hola Al Toque Delivery, necesito ayuda con mi cuenta de usuario (${profile?.phone ?? ''}).`,
-    );
-    const whatsappUrl = `https://wa.me/51987654321?text=${message}`;
-    Linking.canOpenURL(whatsappUrl).then((supported) => {
-      if (supported) {
-        Linking.openURL(whatsappUrl);
-      } else {
-        Alert.alert(
-          'Atención al Cliente',
-          'Puedes escribirnos por WhatsApp al +51 987 654 321 o enviarnos un correo a contacto@altoquedelivery.com.',
-        );
-      }
+    void openSupportWhatsApp({
+      title: 'Atención al Cliente',
+      message: `Hola Al Toque Delivery, necesito ayuda con mi cuenta de usuario (${profile?.phone ?? ''}).`,
     });
   };
 

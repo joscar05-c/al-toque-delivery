@@ -19,6 +19,7 @@ import {
   startBackgroundDriverTracking,
   stopBackgroundDriverTracking,
 } from '@/lib/backgroundLocation';
+import { openSupportWhatsApp } from '@/lib/contact';
 import {
   saveDriverLocation,
   setDriverActiveStatus,
@@ -192,19 +193,9 @@ export default function DriverProfileScreen() {
   };
 
   const handleSupportContact = () => {
-    const message = encodeURIComponent(
-      `Hola Al Toque Delivery, soy repartidor (${profile?.name ?? ''}, ${profile?.phone ?? ''}) y necesito soporte.`,
-    );
-    const whatsappUrl = `https://wa.me/51987654321?text=${message}`;
-    void Linking.canOpenURL(whatsappUrl).then((supported) => {
-      if (supported) {
-        void Linking.openURL(whatsappUrl);
-      } else {
-        Alert.alert(
-          'Soporte Flota Al Toque',
-          'Escríbenos por WhatsApp al +51 987 654 321 o a contacto@altoquedelivery.com.',
-        );
-      }
+    void openSupportWhatsApp({
+      title: 'Soporte Flota Al Toque',
+      message: `Hola Al Toque Delivery, soy repartidor (${profile?.name ?? ''}, ${profile?.phone ?? ''}) y necesito soporte.`,
     });
   };
 

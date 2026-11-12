@@ -23,6 +23,7 @@ import {
   fetchDriverOrderById,
   type DriverOrder,
 } from '@/lib/driverOrders';
+import { callPhoneNumber } from '@/lib/contact';
 import { formatPrice } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
@@ -300,9 +301,27 @@ export default function DriverOrderDetailScreen() {
             {order.client?.name ?? 'Cliente'}
           </Text>
           {order.client?.phone && (
-            <View className="flex-row items-center gap-2">
-              <Ionicons name="call-outline" size={16} color="#64748B" />
-              <Text className="text-sm text-slate-600">{order.client.phone}</Text>
+            <View className="mt-1 flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-2">
+                <Ionicons name="call-outline" size={16} color="#64748B" />
+                <Text className="text-sm text-slate-600">{order.client.phone}</Text>
+              </View>
+              <Pressable
+                onPress={() =>
+                  void callPhoneNumber(
+                    order.client?.phone,
+                    'El cliente no tiene teléfono registrado.',
+                  )
+                }
+                accessibilityRole="button"
+                accessibilityLabel="Llamar al cliente"
+                className="flex-row items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 active:opacity-80"
+              >
+                <Ionicons name="call" size={14} color="#FFFFFF" />
+                <Text className="text-xs font-bold text-white">
+                  Llamar cliente
+                </Text>
+              </Pressable>
             </View>
           )}
         </View>
@@ -372,6 +391,33 @@ export default function DriverOrderDetailScreen() {
               {deliveryAddress || 'Dirección no disponible'}
             </Text>
           </View>
+
+          {order.restaurant?.phone && (
+            <View className="flex-row items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-2">
+              <View className="flex-row items-center gap-1.5">
+                <Ionicons name="storefront-outline" size={15} color="#B45309" />
+                <Text className="text-xs font-medium text-amber-900">
+                  {order.restaurant.phone}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() =>
+                  void callPhoneNumber(
+                    order.restaurant?.phone,
+                    'El restaurante no tiene teléfono registrado.',
+                  )
+                }
+                accessibilityRole="button"
+                accessibilityLabel="Llamar al restaurante"
+                className="flex-row items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1.5 active:opacity-80"
+              >
+                <Ionicons name="call" size={13} color="#FFFFFF" />
+                <Text className="text-xs font-bold text-white">
+                  Llamar restaurante
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </View>
 
         {/* Resumen */}
