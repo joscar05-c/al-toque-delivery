@@ -57,7 +57,8 @@ export function RestaurantApplicationModal({
   const [categories, setCategories] = useState<
     Pick<RestaurantCategory, 'id' | 'name' | 'icon'>[]
   >([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  const isLoadingCategories = visible && !categoriesLoaded && categories.length === 0;
 
   // Form fields
   const [businessName, setBusinessName] = useState('');
@@ -72,8 +73,7 @@ export function RestaurantApplicationModal({
 
   // Cargar categorías gastronómicas
   useEffect(() => {
-    if (visible && categories.length === 0) {
-      setIsLoadingCategories(true);
+    if (visible && !categoriesLoaded && categories.length === 0) {
       fetchCategoriesForApplication()
         .then((cats) => {
           setCategories(cats);
@@ -82,12 +82,15 @@ export function RestaurantApplicationModal({
           }
         })
         .catch((e) => console.error('[restaurant modal] Error cargando categorías:', e))
-        .finally(() => setIsLoadingCategories(false));
+        .finally(() => setCategoriesLoaded(true));
     }
-  }, [visible, categories.length, categoryId]);
+  }, [visible, categoriesLoaded, categories.length, categoryId]);
 
-  // Sincronizar datos si hay solicitud previa
-  useEffect(() => {
+  // Sincronizar datos si hay solicitud previa o cambian las props iniciales
+  const syncKey = `${visible}-${application?.id ?? 'new'}-${application?.updated_at ?? ''}-${initialOwnerName}-${initialPhone}-${initialEmail ?? ''}`;
+  const [prevSyncKey, setPrevSyncKey] = useState<string | null>(null);
+  if (syncKey !== prevSyncKey) {
+    setPrevSyncKey(syncKey);
     if (application) {
       setBusinessName(application.business_name || '');
       setCategoryId(application.category_id || '');
@@ -106,7 +109,7 @@ export function RestaurantApplicationModal({
       setIsEditing(true);
     }
     setError(null);
-  }, [application, initialOwnerName, initialPhone, initialEmail, visible]);
+  }
 
   const handleSubmit = async () => {
     setError(null);

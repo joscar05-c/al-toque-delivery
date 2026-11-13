@@ -88,11 +88,29 @@ export default function RestaurantMenuScreen() {
 
   useEffect(() => {
     if (!id) return;
-    setIsLoading(true);
-    loadData().finally(() => {
-      setIsLoading(false);
-    });
-  }, [id, loadData]);
+    let active = true;
+    Promise.all([fetchRestaurantById(id), fetchRestaurantMenu(id)])
+      .then(([detail, menu]) => {
+        if (!active) return;
+        setRestaurant(detail);
+        setSections(menu);
+        setError(null);
+      })
+      .catch((e) => {
+        if (!active) return;
+        setError(
+          e instanceof Error ? e.message : 'Error cargando el restaurante',
+        );
+      })
+      .finally(() => {
+        if (active) {
+          setIsLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   const onRefresh = useCallback(async () => {
     setIsRefreshing(true);

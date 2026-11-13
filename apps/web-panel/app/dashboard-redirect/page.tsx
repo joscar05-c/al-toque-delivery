@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation';
 
-import { clearSessionCookie, getSessionUser } from '@/utils/firebase/session';
+import { getSessionUser } from '@/utils/firebase/session';
 import { createClient } from '@/utils/supabase/server';
 
 export default async function DashboardRedirect() {
   const user = await getSessionUser();
 
   if (!user) {
-    redirect('/login');
+    redirect('/login?logout=1');
   }
 
   const supabase = await createClient();
@@ -25,7 +25,6 @@ export default async function DashboardRedirect() {
     redirect('/restaurant/orders');
   }
 
-  // Rol no autorizado para el panel: se cierra la sesión.
-  await clearSessionCookie();
-  redirect('/login?error=Acceso%20denegado');
+  // Rol no autorizado para el panel: el middleware limpiará la cookie al llegar a /login?logout=1
+  redirect('/login?error=Acceso%20denegado&logout=1');
 }

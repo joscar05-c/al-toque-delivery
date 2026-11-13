@@ -61,7 +61,7 @@ export default function ClientOrdersScreen() {
     if (!session) return;
 
     const channel = supabase
-      .channel('orders_channel')
+      .channel(`orders_channel_${session.user.id}_${Date.now()}`)
       .on(
         'postgres_changes',
         {

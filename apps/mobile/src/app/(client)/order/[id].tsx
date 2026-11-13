@@ -81,11 +81,11 @@ export default function OrderDetailScreen() {
     };
   }, [id]);
 
-  // Realtime GPS: suscribe al repartidor cuando recogió el pedido.
+  // Realtime GPS: suscribe al repartidor mientras lleva el pedido en camino ('picked_up').
   useEffect(() => {
     const order = detail?.order;
     const driverId = order?.driver_id;
-    const isTracking = order?.status === 'picked_up' || order?.status === 'delivered';
+    const isTracking = order?.status === 'picked_up';
     if (!driverId || !isTracking) return;
 
     let active = true;
@@ -106,7 +106,7 @@ export default function OrderDetailScreen() {
     };
 
     const channel = supabase
-      .channel('driver_tracking')
+      .channel(`driver_tracking_${driverId}_${Date.now()}`)
       .on(
         'postgres_changes',
         {
@@ -157,7 +157,7 @@ export default function OrderDetailScreen() {
     if (!id) return;
 
     const channel = supabase
-      .channel(`order_detail_${id}`)
+      .channel(`order_detail_${id}_${Date.now()}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` },
@@ -216,7 +216,7 @@ export default function OrderDetailScreen() {
       <SafeAreaView className="flex-1 items-center justify-center gap-3 bg-white px-8">
         <Ionicons name="alert-circle-outline" size={40} color="#94A3B8" />
         <Text className="text-center text-sm text-slate-500">
-          {error ?? 'No se encontr├│ el pedido.'}
+          {error ?? 'No se encontró el pedido.'}
         </Text>
         <Pressable
           onPress={() => router.back()}
@@ -261,8 +261,8 @@ export default function OrderDetailScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-        {/* Mapa en vivo desde picked_up hasta entregado. */}
-        {(order.status === 'picked_up' || order.status === 'delivered') &&
+        {/* Mapa en vivo mientras el pedido está en camino (picked_up). */}
+        {order.status === 'picked_up' &&
           order.driver_id && (
             <View className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
               {driverCoords?.driverId === order.driver_id ? (
@@ -288,7 +288,7 @@ export default function OrderDetailScreen() {
             <View className="flex-1">
               <Text className="font-bold text-red-700">Pedido cancelado</Text>
               <Text className="text-sm text-red-500">
-                Este pedido fue cancelado y no seguir├í avanzando.
+                Este pedido fue cancelado y no seguirá avanzando.
               </Text>
             </View>
           </View>
@@ -311,7 +311,7 @@ export default function OrderDetailScreen() {
               const isLast = index === STEPS.length - 1;
               return (
                 <View key={step.key} className="flex-row">
-                  {/* Riel: c├¡rculo + conector */}
+                  {/* Riel: círculo + conector */}
                   <View className="items-center">
                     <View
                       className={`h-9 w-9 items-center justify-center rounded-full ${
@@ -499,7 +499,7 @@ export default function OrderDetailScreen() {
         <View className="gap-3 rounded-2xl border border-slate-200 bg-white p-4">
           {payment && (
             <View className="flex-row justify-between">
-              <Text className="text-sm text-slate-500">M├®todo de pago</Text>
+              <Text className="text-sm text-slate-500">Método de pago</Text>
               <Text className="text-sm font-medium uppercase text-slate-900">
                 {payment.payment_method_code}
               </Text>

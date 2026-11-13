@@ -134,7 +134,11 @@ export default function UsersManager({ users }: UsersManagerProps) {
 
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) =>
+              setStatusFilter(
+                e.target.value as 'all' | 'active' | 'suspended',
+              )
+            }
             className="panel-input text-xs"
             style={{ width: 'auto' }}
           >

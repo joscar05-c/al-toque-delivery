@@ -9,8 +9,18 @@ import { SESSION_COOKIE } from '@/utils/firebase/constants';
  * verificación criptográfica la hace `getSessionUser()` en el servidor.
  */
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
+
+  // Si llega a /login por cierre de sesión o acceso denegado, limpiar la cookie de sesión
+  if (
+    pathname === '/login' &&
+    (searchParams.has('logout') || searchParams.has('error'))
+  ) {
+    const response = NextResponse.next();
+    response.cookies.delete(SESSION_COOKIE);
+    return response;
+  }
 
   // Si el usuario está autenticado y visita /login, redirigir al dashboard
   if (pathname === '/login' && hasSession) {

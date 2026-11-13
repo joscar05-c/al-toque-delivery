@@ -143,7 +143,11 @@ export default function RestaurantsManager({
           {/* Status Filter */}
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) =>
+              setStatusFilter(
+                e.target.value as 'all' | 'active' | 'inactive' | 'partner',
+              )
+            }
             className="panel-input text-xs"
             style={{ width: 'auto' }}
           >

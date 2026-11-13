@@ -68,12 +68,11 @@ export default function DriverOrderDetailScreen() {
       supabase
         .from('order_items')
         .select('*, menu_items(name, image_url)')
-        .eq('order_id', id)
-        .order('created_at', { ascending: true }),
+        .eq('order_id', id),
     ]);
 
     if (!order) throw new Error('Pedido no encontrado o ya asignado a otro repartidor.');
-    if (itemsResult.error) throw itemsResult.error;
+    if (itemsResult.error) throw new Error(itemsResult.error.message);
 
     return {
       order,
@@ -101,7 +100,7 @@ export default function DriverOrderDetailScreen() {
       });
 
     const channel = supabase
-      .channel(`driver_order_detail_${id}`)
+      .channel(`driver_order_detail_${id}_${Date.now()}`)
       .on(
         'postgres_changes',
         {

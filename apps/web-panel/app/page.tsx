@@ -1245,7 +1245,15 @@ export default function HomePage() {
                           id="rest-city"
                           required
                           value={restCity}
-                          onChange={(e) => setRestCity(e.target.value as any)}
+                          onChange={(e) =>
+                            setRestCity(
+                              e.target.value as
+                                | 'jaen'
+                                | 'bagua'
+                                | 'chachapoyas'
+                                | 'other',
+                            )
+                          }
                           className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#3f0aa9] text-sm text-gray-900 bg-white"
                         >
                           <option value="jaen">Jaén (Cajamarca)</option>

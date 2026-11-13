@@ -81,7 +81,7 @@ export default function AvailableOrdersScreen() {
       });
 
     const channel = supabase
-      .channel(`driver-orders-${driverId}`)
+      .channel(`driver-orders-${driverId}-${Date.now()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },

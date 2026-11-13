@@ -2,6 +2,7 @@
 
 import { verifyFirebaseIdToken } from '@/utils/firebase/admin';
 import { createSessionCookie } from '@/utils/firebase/session';
+import { createServiceClient } from '@/utils/supabase/service';
 
 /**
  * Recibe el ID token de Firebase (ya confirmado en el navegador) y abre la
@@ -15,6 +16,26 @@ export async function createSessionAction(idToken: string) {
 
   try {
     const decoded = await verifyFirebaseIdToken(idToken);
+    const supabase = createServiceClient();
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role_id, is_active')
+      .eq('id', decoded.uid)
+      .maybeSingle();
+
+    if (!profile || !profile.is_active) {
+      return {
+        error: 'No se encontró una cuenta activa asociada a este número.',
+      };
+    }
+
+    if (profile.role_id !== 3 && profile.role_id !== 4) {
+      return {
+        error:
+          'Acceso denegado: esta cuenta no tiene permisos de Restaurante ni Super Admin.',
+      };
+    }
+
     await createSessionCookie(idToken, decoded.exp * 1000);
     return { ok: true };
   } catch {

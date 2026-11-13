@@ -89,7 +89,7 @@ export async function fetchDriverOrders(
       .limit(1),
   ]);
 
-  if (rpcRes.error) throw rpcRes.error;
+  if (rpcRes.error) throw new Error(rpcRes.error.message);
 
   const driverType: DriverTypeCode =
     profileRes.data?.driver_type_code === 'restaurant_own'
@@ -118,7 +118,7 @@ export async function fetchDriverOrderById(
     p_order_id: orderId,
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   const row = data?.[0];
   return row ? mapDriverOrderRow(row) : null;
 }
@@ -129,7 +129,7 @@ export async function claimDriverOrder(orderId: string): Promise<Order> {
     p_order_id: orderId,
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   return data;
 }
 
@@ -143,6 +143,6 @@ export async function completeDriverOrderDelivery(
     p_pin: pin.trim(),
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   return data;
 }

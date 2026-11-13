@@ -74,9 +74,13 @@ export async function submitPublicRestaurantApplication(input: SubmitRestaurantI
       applicationId,
       message: '¡Solicitud enviada con éxito! Nuestro equipo revisará los datos de tu restaurante y te contactará en menos de 24 horas.',
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[submitPublicRestaurantApplication] Excepción:', err);
-    return { error: err.message || 'Ocurrió un error inesperado al procesar tu solicitud.' };
+    const message =
+      err instanceof Error
+        ? err.message
+        : 'Ocurrió un error inesperado al procesar tu solicitud.';
+    return { error: message };
   }
 }
 
@@ -130,8 +134,12 @@ export async function submitPublicDriverApplication(input: SubmitDriverInput) {
       applicationId,
       message: '¡Postulación enviada exitosamente! Te contactaremos al WhatsApp para verificar tus documentos y activar tu cuenta.',
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[submitPublicDriverApplication] Excepción:', err);
-    return { error: err.message || 'Ocurrió un error inesperado al registrar tu postulación.' };
+    const message =
+      err instanceof Error
+        ? err.message
+        : 'Ocurrió un error inesperado al registrar tu postulación.';
+    return { error: message };
   }
 }

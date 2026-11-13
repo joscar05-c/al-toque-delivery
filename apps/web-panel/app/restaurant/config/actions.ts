@@ -227,11 +227,14 @@ export async function addDriver(formData: FormData) {
 
   const supabase = createServiceClient();
   const normalized = contact.trim();
-  const { data: user, error: userError } = await supabase
+  const query = supabase
     .from('users')
-    .select('id, email, phone, role_id, is_active')
-    .or(`email.eq.${normalized},phone.eq.${normalized}`)
-    .maybeSingle();
+    .select('id, email, phone, role_id, is_active');
+  const { data: user, error: userError } = await (
+    normalized.includes('@')
+      ? query.ilike('email', normalized)
+      : query.eq('phone', normalized)
+  ).maybeSingle();
 
   if (userError || !user) {
     return { error: 'No se encontró una cuenta registrada con ese email o teléfono' };

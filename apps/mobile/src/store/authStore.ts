@@ -124,14 +124,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             user.displayName ||
             (user.phoneNumber ? `Usuario ${user.phoneNumber}` : 'Usuario Nuevo');
           try {
-            await supabase.from('users').upsert({
-              id: user.uid,
-              phone: user.phoneNumber ?? null,
-              name: fallbackName,
-              role_id: 1, // client por defecto
-              is_active: true,
-              phone_verified: true,
-            });
+            await supabase.from('users').upsert(
+              {
+                id: user.uid,
+                phone: user.phoneNumber ?? null,
+                name: fallbackName,
+                role_id: 1, // client por defecto solo al crear fila nueva
+                is_active: true,
+                phone_verified: true,
+              },
+              { onConflict: 'id', ignoreDuplicates: true },
+            );
             profile = await fetchProfile(user.uid);
           } catch (e) {
             console.warn('[authStore] Fallback upsert de perfil falló:', e);

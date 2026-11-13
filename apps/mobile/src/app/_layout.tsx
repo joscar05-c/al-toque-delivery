@@ -58,66 +58,88 @@ export default function RootLayout() {
     };
   }, [userId]);
 
-  // Navegación automática cuando el usuario toca una notificación push.
+  // Navegación automática cuando el usuario toca una notificación push (incluyendo cold-start).
   useEffect(() => {
     if (Platform.OS === 'web' || !userId) return;
 
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const rawData = response.notification.request.content.data as
-          | Record<string, unknown>
-          | undefined;
-        if (!rawData) return;
+    let isMounted = true;
+    const handledResponseIds = new Set<string>();
 
-        const notificationId =
-          typeof rawData.notificationId === 'string'
-            ? rawData.notificationId
+    const handleNotificationResponse = (
+      response: Notifications.NotificationResponse | null,
+    ) => {
+      if (!isMounted || !response) return;
+
+      const responseId = response.notification.request.identifier;
+      if (responseId && handledResponseIds.has(responseId)) return;
+      if (responseId) handledResponseIds.add(responseId);
+
+      const rawData = response.notification.request.content.data as
+        | Record<string, unknown>
+        | undefined;
+      if (!rawData) return;
+
+      const notificationId =
+        typeof rawData.notificationId === 'string'
+          ? rawData.notificationId
+          : null;
+      if (notificationId) {
+        void supabase
+          .from('notifications')
+          .update({ is_read: true })
+          .eq('id', notificationId);
+      }
+
+      const target =
+        typeof rawData.target === 'string' ? rawData.target : null;
+      const orderId =
+        typeof rawData.orderId === 'string'
+          ? rawData.orderId
+          : typeof rawData.referenceId === 'string'
+            ? rawData.referenceId
             : null;
-        if (notificationId) {
-          void supabase
-            .from('notifications')
-            .update({ is_read: true })
-            .eq('id', notificationId);
-        }
 
-        const target =
-          typeof rawData.target === 'string' ? rawData.target : null;
-        const orderId =
-          typeof rawData.orderId === 'string'
-            ? rawData.orderId
-            : typeof rawData.referenceId === 'string'
-              ? rawData.referenceId
-              : null;
+      if (target === 'driver_home') {
+        void refreshProfile().finally(() => {
+          router.replace('/(driver)/(tabs)');
+        });
+        return;
+      }
 
-        if (target === 'driver_home') {
-          void refreshProfile().finally(() => {
-            router.replace('/(driver)/(tabs)');
+      if (target === 'driver_application') {
+        router.push('/(client)/(tabs)/profile');
+        return;
+      }
+
+      if (orderId) {
+        if (target === 'driver_order' || role === 'driver') {
+          router.push({
+            pathname: '/(driver)/order/[id]',
+            params: { id: orderId },
           });
-          return;
+        } else {
+          router.push({
+            pathname: '/(client)/order/[id]',
+            params: { id: orderId },
+          });
         }
+      }
+    };
 
-        if (target === 'driver_application') {
-          router.push('/(client)/(tabs)/profile');
-          return;
+    void Notifications.getLastNotificationResponseAsync()
+      .then((initialResponse) => {
+        if (initialResponse) {
+          handleNotificationResponse(initialResponse);
         }
+      })
+      .catch(() => {});
 
-        if (orderId) {
-          if (target === 'driver_order' || role === 'driver') {
-            router.push({
-              pathname: '/(driver)/order/[id]',
-              params: { id: orderId },
-            });
-          } else {
-            router.push({
-              pathname: '/(client)/order/[id]',
-              params: { id: orderId },
-            });
-          }
-        }
-      },
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      handleNotificationResponse,
     );
 
     return () => {
+      isMounted = false;
       subscription.remove();
     };
   }, [refreshProfile, role, router, userId]);

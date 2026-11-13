@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { updateMenuItem, createMenuImageUploadUrl } from './actions';
 
@@ -42,7 +42,9 @@ export default function EditMenuItemModal({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const [prevItem, setPrevItem] = useState<typeof item>(null);
+  if (item !== prevItem) {
+    setPrevItem(item);
     if (item) {
       setName(item.name || '');
       setDescription(item.description || '');
@@ -53,7 +55,7 @@ export default function EditMenuItemModal({
       setImageFile(null);
       setError(null);
     }
-  }, [item]);
+  }
 
   if (!isOpen || !item) return null;
 

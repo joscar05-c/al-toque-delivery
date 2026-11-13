@@ -11,7 +11,7 @@ import type {
   TablesInsert,
 } from '@delivery/shared';
 
-/** Pedido con datos b├ísicos del restaurante embebido (join N:1). */
+/** Pedido con datos básicos del restaurante embebido (join N:1). */
 export type OrderWithRestaurant = Order & {
   restaurants: Pick<Restaurant, 'name' | 'image_url'> | null;
 };

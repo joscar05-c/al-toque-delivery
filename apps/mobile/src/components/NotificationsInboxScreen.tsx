@@ -111,7 +111,7 @@ export function NotificationsInboxScreen({
       });
 
     const channel = supabase
-      .channel(`inbox_notifications_${userId}`)
+      .channel(`inbox_notifications_${userId}_${Date.now()}`)
       .on(
         'postgres_changes',
         {

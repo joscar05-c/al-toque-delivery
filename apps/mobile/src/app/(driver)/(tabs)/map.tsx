@@ -192,7 +192,7 @@ export default function DriverMapScreen() {
     if (!driverId) return;
 
     const channel = supabase
-      .channel('driver-map-realtime')
+      .channel(`driver-map-realtime-${driverId}-${Date.now()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },

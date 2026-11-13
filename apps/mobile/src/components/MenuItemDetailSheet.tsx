@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,63 +35,80 @@ export function MenuItemDetailSheet({
 }: MenuItemDetailSheetProps) {
   const insets = useSafeAreaInsets();
 
-  // Opciones seleccionadas indexadas por groupId: { [groupId]: OptionItem[] }
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<string, OptionItem[]>
-  >({});
+  // Opciones por defecto cuando se abre un plato (preselecciona obligatorios de 1 opción)
+  const defaultOptions: Record<string, OptionItem[]> = {};
+  if (item && item.option_groups) {
+    item.option_groups.forEach((g) => {
+      if (g.isRequired && g.maxSelect === 1 && g.options.length > 0) {
+        defaultOptions[g.id] = [g.options[0]];
+      } else {
+        defaultOptions[g.id] = [];
+      }
+    });
+  }
 
-  // Reset al abrir un nuevo plato
-  useEffect(() => {
-    if (item) {
-      const initial: Record<string, OptionItem[]> = {};
-      // Si hay grupos obligatorios de 1 opción, podemos preseleccionar la primera
-      item.option_groups?.forEach((g) => {
-        if (g.isRequired && g.maxSelect === 1 && g.options.length > 0) {
-          initial[g.id] = [g.options[0]];
-        } else {
-          initial[g.id] = [];
-        }
-      });
-      setSelectedOptions(initial);
-    }
-  }, [item]);
+  // Opciones seleccionadas indexadas por groupId, asociadas al plato actual
+  const [selectionState, setSelectionState] = useState<{
+    itemId: string | null;
+    options: Record<string, OptionItem[]>;
+  }>({ itemId: null, options: {} });
+
+  const currentItemId = item ? item.id : null;
+  const selectedOptions =
+    selectionState.itemId === currentItemId
+      ? selectionState.options
+      : defaultOptions;
 
   function handleToggleOption(groupId: string, option: OptionItem, maxSelect: number, isRequired: boolean) {
-    setSelectedOptions((prev) => {
+    setSelectionState((prevState) => {
+      const prev =
+        prevState.itemId === currentItemId ? prevState.options : defaultOptions;
       const currentList = prev[groupId] ?? [];
       const exists = currentList.some((o) => o.id === option.id);
 
       if (maxSelect === 1) {
         if (exists) {
           // Si es obligatorio, no deseleccionar la única opción
-          if (isRequired) return prev;
-          return { ...prev, [groupId]: [] };
+          if (isRequired) return { itemId: currentItemId, options: prev };
+          return {
+            itemId: currentItemId,
+            options: { ...prev, [groupId]: [] },
+          };
         }
-        return { ...prev, [groupId]: [option] };
+        return {
+          itemId: currentItemId,
+          options: { ...prev, [groupId]: [option] },
+        };
       }
 
       // maxSelect > 1 (multi-selección)
       if (exists) {
         return {
-          ...prev,
-          [groupId]: currentList.filter((o) => o.id !== option.id),
+          itemId: currentItemId,
+          options: {
+            ...prev,
+            [groupId]: currentList.filter((o) => o.id !== option.id),
+          },
         };
       }
 
       if (currentList.length >= maxSelect) {
-        return prev; // Ya alcanzó el límite máximo
+        return { itemId: currentItemId, options: prev }; // Ya alcanzó el límite máximo
       }
 
       return {
-        ...prev,
-        [groupId]: [...currentList, option],
+        itemId: currentItemId,
+        options: {
+          ...prev,
+          [groupId]: [...currentList, option],
+        },
       };
     });
   }
 
   // Comprobar si todos los grupos obligatorios cumplen con el mínimo requerido
-  const validation = useMemo(() => {
-    if (!item?.option_groups) return { isValid: true, message: null };
+  const validation = (() => {
+    if (!item || !item.option_groups) return { isValid: true, message: null };
 
     for (const group of item.option_groups) {
       const count = (selectedOptions[group.id] ?? []).length;
@@ -107,10 +124,10 @@ export function MenuItemDetailSheet({
     }
 
     return { isValid: true, message: null };
-  }, [item, selectedOptions]);
+  })();
 
   // Precio unitario efectivo sumando adicionales
-  const effectiveUnitPrice = useMemo(() => {
+  const effectiveUnitPrice = (() => {
     if (!item) return 0;
     let extra = 0;
     Object.values(selectedOptions).forEach((list) => {
@@ -119,7 +136,7 @@ export function MenuItemDetailSheet({
       });
     });
     return item.price + extra;
-  }, [item, selectedOptions]);
+  })();
 
   const totalPrice = effectiveUnitPrice * quantity;
 
